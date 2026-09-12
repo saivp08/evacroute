@@ -1,0 +1,49 @@
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Credentials and local environment (keep templates)
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+*.log
+.npm/
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Downloads and generated data; small processed/demo data can be committed
+/datasets/raw/*
+!/datasets/raw/.gitkeep
+/backend/cache/
+/backend/logs/
+
+# Local agent configuration
+.codex/
+.agents/
