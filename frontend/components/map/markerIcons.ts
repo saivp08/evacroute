@@ -2,7 +2,7 @@
 // the asset TYPE, and a colored ring identifying its STATUS — so every layer (this one and
 // future ones) reads consistently rather than inventing its own marker style.
 import L from "leaflet";
-import type { FacilityStatus, ShelterStatus, VehicleStatus, VehicleType } from "@/lib/models";
+import type { FacilityStatus, IncidentSeverity, ShelterStatus, VehicleStatus, VehicleType } from "@/lib/models";
 
 const STATUS_COLOR: Record<FacilityStatus, string> = {
   operational: "var(--success)",
@@ -125,6 +125,28 @@ export function roadClosureIcon(selected: boolean) {
   return L.divIcon({
     className: "marker-badge-icon",
     html: `<div class="road-closure-marker${selected ? " road-closure-marker-selected" : ""}"><span>!</span></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+}
+
+const INCIDENT_SEVERITY_COLOR: Record<IncidentSeverity, string> = {
+  critical: "var(--danger)",
+  high: "var(--warning)",
+  medium: "var(--caution)",
+  low: "var(--text-muted)",
+};
+
+// Incident marker: a filled circular badge (distinct from infrastructure's square, the
+// closure diamond, and vehicles' letter badge) colored by real backend severity, with a
+// slow pulse for critical incidents so the map surfaces the most urgent ones at a glance.
+export function incidentIcon(severity: IncidentSeverity, selected: boolean) {
+  const size = selected ? 30 : 22;
+  const pulse = severity === "critical" ? " incident-marker-pulse" : "";
+  return L.divIcon({
+    className: "marker-badge-icon",
+    html: `<div class="incident-marker${selected ? " incident-marker-selected" : ""}${pulse}" style="background:${INCIDENT_SEVERITY_COLOR[severity]}"><span>!</span></div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2],

@@ -1,40 +1,42 @@
 "use client";
 
-// Evacuation zone polygons for the dedicated Evacuation Zones page (Phase 8).
-//   map component -> this layer -> lib/services/dataService -> deterministic mock data
+// Evacuation zone polygons — real backend zone boundaries (population, geometry, and a
+// mandatory/advisory status derived from whether the zone currently has an active
+// incident against it; see getEvacuationZones in lib/services/dataService.ts).
+//   map component -> this layer -> lib/services/dataService -> live FastAPI backend
 // Selection is lifted to the parent screen (same pattern as VehicleLayer/RoadClosureLayer)
-// so the zone list panel and the map stay in sync. Zones are clickable; the "evacuation
-// plan" line (zone centroid -> recommended shelter) is a fixed mock path, not routing.
-import { Fragment, useEffect, useState } from "react";
-import { Marker, Polygon, Polyline, Popup, useMap } from "react-leaflet";
-import type { EvacuationZoneDetail, ZoneEvacuationStatus } from "@/lib/models";
-import { getEvacuationZoneDetails } from "@/lib/services/dataService";
-import { routeEndpointIcon } from "./markerIcons";
+// so the zone list panel and the map stay in sync.
+import { useEffect, useState } from "react";
+import { Polygon, Popup, useMap } from "react-leaflet";
+import type { EvacuationZone, EvacuationZoneStatus, LatLng } from "@/lib/models";
+import { getEvacuationZones } from "@/lib/services/dataService";
 
-const STATUS_COLOR: Record<ZoneEvacuationStatus, string> = {
-  evacuate_now: "var(--danger)",
-  evacuation_in_progress: "var(--warning)",
-  monitored: "var(--caution)",
+const STATUS_COLOR: Record<EvacuationZoneStatus, string> = {
+  mandatory: "var(--danger)",
+  warning: "var(--warning)",
+  advisory: "var(--caution)",
   clear: "var(--success)",
 };
 
-function centroidLatLng(zone: EvacuationZoneDetail): [number, number] {
-  return [zone.centroid.latitude, zone.centroid.longitude];
+function centroidOf(boundary: LatLng[]): [number, number] | null {
+  if (boundary.length === 0) return null;
+  const lat = boundary.reduce((sum, p) => sum + p.latitude, 0) / boundary.length;
+  const lng = boundary.reduce((sum, p) => sum + p.longitude, 0) / boundary.length;
+  return [lat, lng];
 }
 
 interface EvacuationZoneLayerProps {
   selectedZoneId: string | null;
   onSelectZone: (id: string) => void;
-  planVisible: boolean;
 }
 
-export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone, planVisible }: EvacuationZoneLayerProps) {
-  const [zones, setZones] = useState<EvacuationZoneDetail[]>([]);
+export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone }: EvacuationZoneLayerProps) {
+  const [zones, setZones] = useState<EvacuationZone[]>([]);
   const map = useMap();
 
   useEffect(() => {
     let cancelled = false;
-    getEvacuationZoneDetails().then((data) => {
+    getEvacuationZones().then((data) => {
       if (!cancelled) setZones(data);
     });
     return () => {
@@ -45,20 +47,21 @@ export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone, plan
   useEffect(() => {
     if (!selectedZoneId) return;
     const zone = zones.find((z) => z.id === selectedZoneId);
-    if (!zone) return;
-    map.flyTo(centroidLatLng(zone), Math.max(map.getZoom(), 13), { duration: 0.6 });
+    const center = zone ? centroidOf(zone.boundary) : null;
+    if (!center) return;
+    map.flyTo(center, Math.max(map.getZoom(), 13), { duration: 0.6 });
   }, [selectedZoneId, zones, map]);
-
-  const selectedZone = zones.find((z) => z.id === selectedZoneId) ?? null;
 
   return (
     <>
-      {zones.map((zone) => {
-        const selected = zone.id === selectedZoneId;
-        const color = STATUS_COLOR[zone.status];
-        return (
-          <Fragment key={zone.id}>
+      {zones
+        .filter((zone) => zone.boundary.length > 2)
+        .map((zone) => {
+          const selected = zone.id === selectedZoneId;
+          const color = STATUS_COLOR[zone.status];
+          return (
             <Polygon
+              key={zone.id}
               positions={zone.boundary.map((p): [number, number] => [p.latitude, p.longitude])}
               pathOptions={{
                 color,
@@ -71,44 +74,16 @@ export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone, plan
               <Popup>
                 <div className="marker-popup">
                   <div className="marker-popup-title">{zone.name}</div>
-                  <div className="marker-popup-sub">{zone.status.replace(/_/g, " ")}</div>
+                  <div className="marker-popup-sub">{zone.status}</div>
                   <div className="marker-popup-row">
                     <span>Population</span>
                     <span>{zone.population.toLocaleString()}</span>
                   </div>
-                  <div className="marker-popup-row">
-                    <span>Evacuated</span>
-                    <span>{zone.evacuated_percent}%</span>
-                  </div>
                 </div>
               </Popup>
             </Polygon>
-          </Fragment>
-        );
-      })}
-
-      {planVisible && selectedZone && (
-        <>
-          <Polyline
-            positions={[
-              centroidLatLng(selectedZone),
-              [selectedZone.shelter_location.latitude, selectedZone.shelter_location.longitude],
-            ]}
-            pathOptions={{ color: "var(--active)", weight: 4, dashArray: "10 8", className: "route-flow" }}
-          />
-          <Marker
-            position={[selectedZone.shelter_location.latitude, selectedZone.shelter_location.longitude]}
-            icon={routeEndpointIcon("destination")}
-          >
-            <Popup>
-              <div className="marker-popup">
-                <div className="marker-popup-title">{selectedZone.recommended_shelter_name}</div>
-                <div className="marker-popup-sub">Recommended shelter</div>
-              </div>
-            </Popup>
-          </Marker>
-        </>
-      )}
+          );
+        })}
     </>
   );
 }

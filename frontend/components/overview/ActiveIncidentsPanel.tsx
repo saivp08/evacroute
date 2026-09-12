@@ -18,7 +18,13 @@ const SEVERITY_HERO_CLASS: Record<IncidentSeverity, string> = {
 
 const SEVERITY_ORDER: Record<IncidentSeverity, number> = { critical: 3, high: 2, medium: 1, low: 0 };
 
-export default function ActiveIncidentsPanel({ incidents }: { incidents: Incident[] }) {
+interface ActiveIncidentsPanelProps {
+  incidents: Incident[];
+  selectedIncidentId: string | null;
+  onSelectIncident: (id: string) => void;
+}
+
+export default function ActiveIncidentsPanel({ incidents, selectedIncidentId, onSelectIncident }: ActiveIncidentsPanelProps) {
   const now = useNow();
   if (incidents.length === 0) {
     return (
@@ -33,7 +39,13 @@ export default function ActiveIncidentsPanel({ incidents }: { incidents: Inciden
 
   return (
     <OverviewPanel title="Active Incidents" count={incidents.length}>
-      <div className={SEVERITY_HERO_CLASS[top.severity]}>
+      <button
+        type="button"
+        className={`incident-hero-button ${SEVERITY_HERO_CLASS[top.severity]} ${
+          top.id === selectedIncidentId ? "incident-hero-selected" : ""
+        }`}
+        onClick={() => onSelectIncident(top.id)}
+      >
         <span className="incident-hero-severity">
           <span className={`ov-dot ${SEVERITY_DOT[top.severity]} ${top.severity === "critical" ? "ov-dot-pulse" : ""}`} aria-hidden="true" />
           {top.severity}
@@ -48,7 +60,7 @@ export default function ActiveIncidentsPanel({ incidents }: { incidents: Inciden
           </div>
           <div>
             <div className="incident-hero-stat-label">Zone</div>
-            <div className="incident-hero-stat-value">{top.zone_id ?? "—"}</div>
+            <div className="incident-hero-stat-value">{top.zone_id ?? "Unavailable"}</div>
           </div>
           <div style={{ gridColumn: "1 / -1" }}>
             <div className="incident-hero-stat-label">Last Updated</div>
@@ -57,22 +69,31 @@ export default function ActiveIncidentsPanel({ incidents }: { incidents: Inciden
             </div>
           </div>
         </div>
-      </div>
+      </button>
 
       {rest.length > 0 && (
         <ul className="ov-list">
-          {rest.map((incident) => (
-            <li key={incident.id} className="ov-row">
-              <span className={`ov-dot ${SEVERITY_DOT[incident.severity]}`} aria-hidden="true" />
-              <div className="ov-row-main">
-                <div className="ov-row-title">
-                  {incident.type.replace(/_/g, " ")}
-                  <span className="ov-row-tag">{incident.status.replace(/_/g, " ")}</span>
-                </div>
-                <div className="ov-row-sub">{incident.description}</div>
-              </div>
-            </li>
-          ))}
+          {rest.map((incident) => {
+            const selected = incident.id === selectedIncidentId;
+            return (
+              <li key={incident.id}>
+                <button
+                  type="button"
+                  className={`ov-row ov-row-button ${selected ? "ov-row-selected" : ""}`}
+                  onClick={() => onSelectIncident(incident.id)}
+                >
+                  <span className={`ov-dot ${SEVERITY_DOT[incident.severity]}`} aria-hidden="true" />
+                  <div className="ov-row-main">
+                    <div className="ov-row-title">
+                      {incident.type.replace(/_/g, " ")}
+                      <span className="ov-row-tag">{incident.status.replace(/_/g, " ")}</span>
+                    </div>
+                    <div className="ov-row-sub">{incident.description}</div>
+                  </div>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </OverviewPanel>

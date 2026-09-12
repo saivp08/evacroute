@@ -116,9 +116,18 @@ export function getHealth() {
 
 // Nearly every getX() in dataService.ts needs the scenario, the active incidents, and the
 // optimized plan together, so one in-flight request is shared across all of them instead of
-// each panel triggering its own /scenario + /optimize round trip. Cached for the page's
-// lifetime — there's no manual refresh action yet.
+// each panel triggering its own /scenario + /optimize round trip.
+//
+// Cached until explicitly invalidated (see invalidateBackendState) rather than for the
+// page's whole lifetime — lib/useLiveEvents.ts invalidates it once per poll cycle so the
+// entire app (rails, map layers, and the live-events diff engine) can actually observe
+// real backend changes (a POST /incident, a shelter occupancy update, etc.) instead of
+// forever replaying the snapshot captured on first load.
 let statePromise: Promise<{ scenario: BackendScenario; plan: BackendPlan }> | null = null;
+
+export function invalidateBackendState() {
+  statePromise = null;
+}
 
 export function getBackendState() {
   if (!statePromise) {

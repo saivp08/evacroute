@@ -6,18 +6,21 @@
 // normalizes the backend's response shape (backend/app/models) into this app's own typed
 // models (lib/models) so components never need to know about the backend's field names.
 //
-// Some entity types (hospitals, fire stations, police stations, hazards, field intel
-// reports) have no equivalent in the backend yet — those return an empty list rather than
-// invented data.
+// Data integrity rule for this whole file: every getX() either returns data derived from
+// an actual backend response, or returns an honest empty/absent value when the backend has
+// no equivalent concept (hospitals, fire/police stations, hazards, field intel reports).
+// Nothing here invents operational numbers to make a panel look populated — see
+// getNetworkStatus below for why that even applies to something as "just visual" as a
+// traffic summary.
 import type {
   EvacuationZone,
-  EvacuationZoneDetail,
   FireStation,
   Hazard,
   Hospital,
   Incident,
   IntelReport,
   LatLng,
+  NetworkStatus,
   OperationsMetrics,
   PoliceStation,
   Road,
@@ -27,9 +30,6 @@ import type {
   Shelter,
   ShelterStatus,
   SystemStatus,
-  TrafficSegment,
-  TrafficState,
-  TrafficSummary,
   Vehicle,
   VehicleRoute,
 } from "../models";
@@ -41,7 +41,6 @@ import {
   type BackendShelter,
 } from "./backendClient";
 import { buildDetour, routeLengthMiles } from "../routeMotion";
-import { mockEvacuationZoneDetails, mockHazards, mockTrafficSummary } from "../mock";
 
 function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
   return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
@@ -157,18 +156,22 @@ export async function getIncidents(): Promise<Incident[]> {
 }
 
 // No backend equivalent — the scenario has no hazard-zone concept distinct from
-// incidents/zones, so this is deterministic mock data (used by the Phase 10 Hazards
-// map-layer toggle).
+// incidents/zones. Returns an honest empty list rather than invented hazard records; the
+// Hazards map layer/panel render a genuine "no data" state for this.
 export async function getHazards(): Promise<Hazard[]> {
-  return mockHazards;
+  return [];
 }
 
 export async function getEvacuationZones(): Promise<EvacuationZone[]> {
-  const { scenario } = await getBackendState();
+  const { scenario, plan } = await getBackendState();
+  // "mandatory" vs "advisory" is a real, backend-derived signal (does this zone currently
+  // have an active incident against it?), not an invented label — every zone used to be
+  // hardcoded to "mandatory" regardless of actual state, which this replaces.
+  const zonesWithIncidents = new Set(plan.incidents.map((incident) => incident.zone).filter((id): id is string => id !== null));
   return scenario.zones.map((zone) => ({
     id: zone.id,
     name: zone.name,
-    status: "mandatory",
+    status: zonesWithIncidents.has(zone.id) ? "mandatory" : "advisory",
     population: zone.population,
     boundary: toLatLngList(zone.boundary[0] ?? []),
   }));
@@ -258,11 +261,13 @@ export async function getRoadClosures(): Promise<RoadClosure[]> {
     });
 }
 
-// Frontend-only "SIMULATE CLOSURE" demo: the live backend has no road-closure/reroute
-// concept for a dispatched vehicle, so this is a deterministic mock layered on top of
-// whichever route the vehicle actually has right now (real or otherwise). Same vehicle +
-// same route always produces the same detour — see buildDetour in lib/routeMotion.ts.
-// A vehicle with no active route has no reroute scenario, which is a normal state.
+// Frontend-only "SIMULATE CLOSURE" demo control, explicitly and visibly triggered by the
+// operator (a button, not ambient state): the live backend has no closure/reroute concept
+// for a dispatched vehicle, so this is a deterministic geometric detour layered on top of
+// whichever route the vehicle actually has right now. Same vehicle + same route always
+// produces the same detour — see buildDetour in lib/routeMotion.ts. Kept isolated from the
+// real-data event stream/alerts (lib/useLiveEvents.ts): this demo's fixed message never
+// feeds into anything presented as an organic backend event.
 export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEvent | null> {
   const route = await getVehicleRoute(vehicleId);
   if (!route) return null;
@@ -281,50 +286,20 @@ export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEve
   };
 }
 
-// Phase 8 — dedicated Evacuation Zones page. Deterministic mock data: the live backend's
-// zones (see getEvacuationZones above) carry no status/hazard/priority/plan fields, so this
-// intentionally does not go through backendClient.
-export async function getEvacuationZoneDetails(): Promise<EvacuationZoneDetail[]> {
-  return mockEvacuationZoneDetails;
-}
-
-// Deterministic string hash (no Math.random) so the same road always gets the same mock
-// traffic state on every load, without needing to store a state per road anywhere.
-function hashPercent(id: string): number {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
-  }
-  return hash % 100;
-}
-
-// Buckets sized to land on the Traffic Summary panel's fixed 62/21/11/6 split for
-// non-blocked roads. A road already open/congested/closed/blocked (see getRoads above) that
-// is actually blocked or closed carries that over as TrafficState "blocked" instead of
-// getting an independent mock bucket. `cycle` is folded into the hash so the mock
-// congestion subtly reshuffles over time (see TrafficLayer) without becoming random.
-function buildTrafficState(road: Road, cycle: number): TrafficState {
-  if (road.status === "blocked" || road.status === "closed") return "blocked";
-  const bucket = hashPercent(`${road.id}:${cycle}`);
-  if (bucket < 62) return "free";
-  if (bucket < 83) return "moderate";
-  if (bucket < 94) return "heavy";
-  return "severe";
-}
-
-// Phase 10 — traffic visualization layer. Reuses the same road geometry as getRoads(), just
-// with a deterministic mock congestion state per road instead of real traffic measurement.
-export async function getTrafficSegments(cycle = 0): Promise<TrafficSegment[]> {
+// Real network-health snapshot: percentages/counts computed here in the frontend from the
+// actual per-road status getRoads() already derives from backend incident data — never a
+// fixed/invented distribution. The backend currently only distinguishes open vs. closed at
+// the road level (see getRoads above), so that's all this reports.
+export async function getNetworkStatus(): Promise<NetworkStatus> {
   const roads = await getRoads();
-  return roads.map((road) => ({
-    road_id: road.id,
-    name: road.name,
-    coordinates: road.coordinates,
-    state: buildTrafficState(road, cycle),
-  }));
-}
-
-// Fixed mock network-wide stats for the Traffic Summary panel — see mockTrafficSummary.
-export async function getTrafficSummary(): Promise<TrafficSummary> {
-  return mockTrafficSummary;
+  const closed_count = roads.filter((road) => road.status !== "open").length;
+  const open_count = roads.length - closed_count;
+  const total_roads = roads.length;
+  return {
+    total_roads,
+    open_count,
+    closed_count,
+    open_percent: total_roads > 0 ? Math.round((open_count / total_roads) * 100) : 0,
+    closed_percent: total_roads > 0 ? Math.round((closed_count / total_roads) * 100) : 0,
+  };
 }

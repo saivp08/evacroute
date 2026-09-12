@@ -67,14 +67,17 @@
   --active-rgb: 114, 176, 171;
 
   /* Type scale: a deliberate hierarchy, not one giant font-size bump.
-     display > critical-value > metric-value > panel-heading > body > meta > micro */
-  --fs-display: 1.75rem;
+     display > critical-value > metric-value > panel-heading > body > meta > micro.
+     Section headers bumped to the 18-22px range and operational/secondary text to 15-17px
+     / 13-15px per the command-center readability spec — this previously read too small for
+     an operator glancing at the console during an active incident. */
+  --fs-display: 2rem;
   --fs-critical: 2.5rem;
-  --fs-metric: 1.9rem;
-  --fs-heading: 1.05rem;
-  --fs-body: 1rem;
-  --fs-meta: 0.85rem;
-  --fs-micro: 0.75rem;
+  --fs-metric: 2.1rem;
+  --fs-heading: 1.2rem;
+  --fs-body: 1.05rem;
+  --fs-meta: 0.9rem;
+  --fs-micro: 0.8rem;
 
   /* Soft, warm-toned shadows (tinted with ink, not pure black) — a light UI needs far less
      shadow than the old dark theme did to still read as "elevated." */
@@ -248,11 +251,11 @@ main {
 }
 
 .status-bar-brand-name {
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-weight: 800;
+  font-size: 1.7rem;
   letter-spacing: 0.01em;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
 .status-bar-brand-tag {
@@ -267,7 +270,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--fs-micro);
+  font-size: 0.95rem;
   font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -275,17 +278,23 @@ main {
   color: var(--text-secondary);
   border: 1px solid var(--border-soft);
   background: rgba(var(--peacock-rgb), 0.05);
-  border-radius: 4px;
-  padding: 6px 12px;
+  border-radius: 6px;
+  padding: 7px 14px;
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--success);
   --pulse-rgb: var(--success-rgb);
   animation: pulse-ring 2.4s ease-out infinite;
+}
+
+.status-dot-inactive {
+  background: var(--text-muted);
+  --pulse-rgb: 113, 134, 154;
+  animation: none;
 }
 
 .status-pill-ok {
@@ -306,7 +315,8 @@ main {
 }
 
 .status-bar-time {
-  font-size: var(--fs-meta);
+  font-size: 1.05rem;
+  font-weight: 600;
   font-family: var(--mono);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
@@ -336,6 +346,7 @@ main {
 }
 
 .overview-screen {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -617,6 +628,23 @@ main {
 .incident-hero-inactive {
   border-color: var(--border-soft);
   background: rgba(var(--peacock-rgb), 0.04);
+}
+
+.incident-hero-button {
+  display: block;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.18s var(--ease), transform 0.18s var(--ease);
+}
+
+.incident-hero-button:hover {
+  transform: translateY(-1px);
+}
+
+.incident-hero-selected {
+  box-shadow: 0 0 0 2px var(--active), var(--elevation-1);
 }
 
 .incident-hero-severity {
@@ -1037,6 +1065,33 @@ main {
   box-shadow: 0 0 12px rgba(var(--danger-rgb), 0.85), var(--elevation-2);
 }
 
+.incident-marker {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--surface-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--elevation-2);
+}
+
+.incident-marker span {
+  color: var(--text-on-bright);
+  font-weight: 800;
+  font-size: 13px;
+  font-family: var(--mono);
+}
+
+.incident-marker-selected {
+  border-color: var(--active);
+  border-width: 3px;
+}
+
+.incident-marker-pulse {
+  animation: road-glow 2s ease-in-out infinite;
+}
+
 /* Leaflet popups, restyled to match the operations console instead of default white.
    !important is needed because leaflet.css is injected client-side (dynamic import) and
    can land after this stylesheet in the cascade, otherwise winning equal-specificity ties. */
@@ -1254,6 +1309,248 @@ main {
   margin: 0 4px;
   padding-top: 10px;
   border-top: 1px solid var(--border-soft);
+}
+
+/* ---- Real-time alert system: critical banner, toasts, live operations stream, and the
+   context drawer. Every value they render comes from lib/useLiveEvents.ts, which only ever
+   emits events built from actual backend-derived entities — nothing here is decorative
+   fake activity. ---- */
+
+.critical-alert {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(560px, calc(100% - 32px));
+  padding: 16px 18px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--danger);
+  border-radius: 14px;
+  box-shadow: var(--elevation-3);
+  animation: fade-in-up 0.25s var(--ease) both;
+}
+
+.critical-alert-icon {
+  flex-shrink: 0;
+  color: var(--danger);
+  font-size: 1.4rem;
+  line-height: 1;
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+.critical-alert-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.critical-alert-title {
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--danger);
+  margin-bottom: 4px;
+}
+
+.critical-alert-message {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+
+.critical-alert-detail {
+  margin-top: 3px;
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+}
+
+.critical-alert-time {
+  margin-top: 6px;
+  font-size: var(--fs-micro);
+  font-family: var(--mono);
+  color: var(--text-muted);
+}
+
+.critical-alert-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.critical-alert-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.critical-alert-dismiss:hover {
+  color: var(--text-primary);
+}
+
+.toast-stack {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(320px, calc(100% - 32px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--text-muted);
+  border-radius: 10px;
+  box-shadow: var(--elevation-2);
+  font-size: var(--fs-meta);
+  color: var(--text-primary);
+  animation: fade-in-up 0.2s var(--ease) both;
+}
+
+.toast-warning {
+  border-left-color: var(--warning);
+}
+
+.toast-info {
+  border-left-color: var(--success);
+}
+
+.toast-glyph {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+.toast-message {
+  text-transform: capitalize;
+}
+
+/* Compact bottom event stream — a single scrollable row rather than a tall list, so it
+   never competes with the map for vertical space. */
+.ops-stream {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--border-soft);
+  background: var(--surface-glass-strong);
+}
+
+.ops-stream-label {
+  flex-shrink: 0;
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.ops-stream-track {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.ops-stream-empty {
+  font-size: var(--fs-meta);
+  color: var(--text-muted);
+}
+
+.ops-stream-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.ops-stream-time {
+  font-family: var(--mono);
+  color: var(--text-muted);
+  font-size: var(--fs-micro);
+}
+
+.ops-stream-item-critical {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.ops-stream-item-warning {
+  color: var(--warning);
+}
+
+/* Floating "investigate" drawer for incidents/closures/shelters/zones — an overlay on the
+   map itself (per the design system's "floating map controls, overlays, callouts"
+   guidance) rather than another card competing with the rails. */
+.context-drawer {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 50;
+  width: min(320px, calc(100% - 32px));
+  padding: 16px 18px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  box-shadow: var(--elevation-3);
+  animation: fade-in-up 0.2s var(--ease) both;
+}
+
+.context-drawer-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.context-drawer-close:hover {
+  color: var(--text-primary);
+}
+
+.context-drawer-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  padding-right: 20px;
+}
+
+.context-drawer-subtitle {
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+  margin-top: 2px;
+  margin-bottom: 12px;
+  text-transform: capitalize;
+}
+
+.context-drawer-grid {
+  margin: 0;
 }
 
 @media (max-width: 1100px) {

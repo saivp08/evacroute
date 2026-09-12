@@ -7,24 +7,45 @@ function fillClass(pct: number) {
   return "ov-fill-safe";
 }
 
-export default function ShelterCapacityPanel({ shelters }: { shelters: Shelter[] }) {
+interface ShelterCapacityPanelProps {
+  shelters: Shelter[];
+  selectedShelterId: string | null;
+  onSelectShelter: (id: string) => void;
+}
+
+export default function ShelterCapacityPanel({ shelters, selectedShelterId, onSelectShelter }: ShelterCapacityPanelProps) {
+  if (shelters.length === 0) {
+    return (
+      <OverviewPanel title="Shelters" count={0}>
+        <p className="empty-note">No shelter data available.</p>
+      </OverviewPanel>
+    );
+  }
+
   return (
-    <OverviewPanel title="Shelter Capacity" count={shelters.length}>
+    <OverviewPanel title="Shelters" count={shelters.length}>
       <ul className="ov-list">
         {shelters.map((shelter) => {
           const pct = shelter.capacity > 0 ? Math.round((shelter.occupancy / shelter.capacity) * 100) : 0;
+          const selected = shelter.id === selectedShelterId;
           return (
-            <li key={shelter.id} className="ov-row ov-row-stacked">
-              <div className="ov-row-title">
-                {shelter.name}
-                <span className="ov-row-tag">{shelter.status}</span>
-              </div>
-              <div className="ov-row-sub">
-                {shelter.occupancy.toLocaleString()} / {shelter.capacity.toLocaleString()} ({pct}%)
-              </div>
-              <div className="ov-progress">
-                <div className={`ov-progress-fill ${fillClass(pct)}`} style={{ width: `${Math.min(pct, 100)}%` }} />
-              </div>
+            <li key={shelter.id}>
+              <button
+                type="button"
+                className={`ov-row ov-row-button ov-row-stacked ${selected ? "ov-row-selected" : ""}`}
+                onClick={() => onSelectShelter(shelter.id)}
+              >
+                <div className="ov-row-title">
+                  {shelter.name}
+                  <span className="ov-row-tag">{shelter.status}</span>
+                </div>
+                <div className="ov-row-sub">
+                  {shelter.occupancy.toLocaleString()} / {shelter.capacity.toLocaleString()} ({pct}%)
+                </div>
+                <div className="ov-progress">
+                  <div className={`ov-progress-fill ${fillClass(pct)}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+                </div>
+              </button>
             </li>
           );
         })}

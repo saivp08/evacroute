@@ -89,28 +89,17 @@ export interface Road {
   closure_reason: string | null;
 }
 
-// Phase 10 — traffic visualization. A separate, richer five-tier state than RoadStatus
-// above (which only distinguishes open/congested/closed/blocked for the base road layer).
-// Fetched via getTrafficSegments(): deterministic mock congestion per road, not a real
-// traffic simulation or measurement.
-export type TrafficState = "free" | "moderate" | "heavy" | "severe" | "blocked";
-
-export interface TrafficSegment {
-  road_id: string;
-  name: string;
-  coordinates: LatLng[];
-  state: TrafficState;
-}
-
-// Deterministic mock network-wide stats for the Traffic Summary panel — fixed values, not
-// aggregated from TrafficSegment (see getTrafficSummary in lib/services/dataService.ts).
-export interface TrafficSummary {
-  free_percent: number;
-  moderate_percent: number;
-  heavy_percent: number;
-  severe_percent: number;
-  vehicle_count: number;
-  average_speed_mph: number;
+// Real network-health snapshot computed in the frontend from getRoads()'s actual per-road
+// status (see getNetworkStatus in lib/services/dataService.ts) — no fabricated congestion
+// tiers or invented percentages. The backend only distinguishes open vs. closed at the
+// road level today, so that is all this reports; if it ever reports finer-grained
+// congestion, extend this shape then rather than inventing intermediate tiers now.
+export interface NetworkStatus {
+  total_roads: number;
+  open_count: number;
+  closed_count: number;
+  open_percent: number;
+  closed_percent: number;
 }
 
 export type RoadClosureStatus = "closed" | "reopened";
@@ -220,31 +209,6 @@ export interface EvacuationZone {
   boundary: LatLng[];
 }
 
-export type ZoneEvacuationStatus = "evacuate_now" | "evacuation_in_progress" | "monitored" | "clear";
-export type ZoneHazardLevel = "extreme" | "high" | "moderate" | "low";
-export type ZonePriority = "critical" | "high" | "medium" | "low";
-
-// Richer operational record for the dedicated Evacuation Zones page (Phase 8) — distinct
-// from EvacuationZone above, which only feeds the Overview's compact status list. Fetched
-// via getEvacuationZoneDetails(): deterministic mock only, since neither the live backend
-// nor EvacuationZone models this granularity (status/hazard/priority/evacuation plan).
-export interface EvacuationZoneDetail {
-  id: string;
-  name: string;
-  status: ZoneEvacuationStatus;
-  priority: ZonePriority;
-  hazard_level: ZoneHazardLevel;
-  population: number;
-  evacuated_percent: number;
-  recommended_shelter_id: string;
-  recommended_shelter_name: string;
-  shelter_location: LatLng;
-  boundary: LatLng[];
-  centroid: LatLng;
-  plan_distance_miles: number;
-  plan_eta_minutes: number;
-}
-
 // The following are operations-console concepts (platform health, analyst reports,
 // aggregate metrics) rather than physical entities — the backend may not model them the
 // same way, but they still flow through the service layer like everything else here.
@@ -272,4 +236,24 @@ export interface OperationsMetrics {
   evacuation_flow_per_hour: number;
   avg_response_eta_minutes: number;
   transportation_bottlenecks: number;
+}
+
+// A single observed CHANGE in real backend-derived state (a new incident appeared, a
+// closure appeared, a shelter's occupancy moved, a vehicle's status changed) — built by
+// lib/useLiveEvents.ts diffing successive polls of the existing dataService getters. This
+// is never fabricated content: every field is derived from an actual entity already
+// fetched through the data service. The backend has no push/event endpoint yet, so this is
+// the frontend's own change-detection layer, sitting on top of (not bypassing) the
+// existing data flow — see the module doc comment in lib/useLiveEvents.ts.
+export type OperationalEventKind = "incident" | "closure" | "shelter" | "vehicle";
+export type OperationalEventSeverity = "critical" | "warning" | "info";
+
+export interface OperationalEvent {
+  id: string;
+  kind: OperationalEventKind;
+  severity: OperationalEventSeverity;
+  message: string;
+  detail: string | null;
+  timestamp: string;
+  entityId: string | null;
 }

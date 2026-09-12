@@ -26,7 +26,7 @@ export const MAP_LAYER_LABELS: Record<MapLayerKey, string> = {
   traffic: "Traffic",
   roadClosures: "Road Closures",
   emergencyRoutes: "Emergency Routes",
-  evacuationZones: "Evacuation Zones",
+  evacuationZones: "Evacuation",
   shelters: "Shelters",
   hospitals: "Hospitals",
   fleet: "Fleet",
@@ -35,12 +35,12 @@ export const MAP_LAYER_LABELS: Record<MapLayerKey, string> = {
 
 export type MapLayerVisibility = Record<MapLayerKey, boolean>;
 
-// Matches the Overview map's behavior before Phase 10 existed: closures/routes/shelters/
-// hospitals/fleet were already always shown, so they default on; Traffic, Evacuation Zones,
-// and Hazards are new additive overlays and default off so the map looks unchanged until a
-// user opts in.
+// "traffic" gates the real, backend-derived road-status layer (RoadLayer) — every road's
+// actual open/closed status, not a fabricated congestion simulation. Closures/routes/
+// shelters/hospitals/fleet/roads default on since that was already the map's baseline
+// state; Evacuation Zones and Hazards default off as opt-in overlays.
 export const DEFAULT_MAP_LAYER_VISIBILITY: MapLayerVisibility = {
-  traffic: false,
+  traffic: true,
   roadClosures: true,
   emergencyRoutes: true,
   evacuationZones: false,

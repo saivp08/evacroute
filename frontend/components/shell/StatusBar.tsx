@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Incident } from "@/lib/models";
-import { getIncidents } from "@/lib/services/dataService";
+import type { SystemStatus } from "@/lib/models";
+import { getSystemStatuses } from "@/lib/services/dataService";
 
 export default function StatusBar() {
   const [now, setNow] = useState<Date | null>(null);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [statuses, setStatuses] = useState<SystemStatus[] | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -16,16 +16,28 @@ export default function StatusBar() {
 
   useEffect(() => {
     let cancelled = false;
-    getIncidents().then((data) => {
-      if (!cancelled) setIncidents(data);
-    });
+    function poll() {
+      getSystemStatuses()
+        .then((data) => {
+          if (!cancelled) setStatuses(data);
+        })
+        .catch(() => {
+          if (!cancelled) setStatuses([]);
+        });
+    }
+    poll();
+    const id = setInterval(poll, 15000);
     return () => {
       cancelled = true;
+      clearInterval(id);
     };
   }, []);
 
-  const criticalCount = incidents.filter((i) => i.severity === "critical").length;
-  const isCritical = criticalCount > 0;
+  // The backend's own reported health, not a status we infer from incident counts — see
+  // getSystemStatuses in lib/services/dataService.ts (backed by GET /health).
+  const backendStatus = statuses?.find((s) => s.id === "backend-api");
+  const isOperational = backendStatus?.status === "operational";
+  const isUnknown = statuses === null;
 
   return (
     <header className="app-status-bar">
@@ -39,15 +51,20 @@ export default function StatusBar() {
         </div>
       </div>
       <div className="status-bar-right">
-        {isCritical ? (
-          <span className="status-pill status-pill-critical">
-            <span className="status-dot status-dot-critical" aria-hidden="true" />
-            {criticalCount} Critical Incident{criticalCount > 1 ? "s" : ""}
+        {isUnknown ? (
+          <span className="status-pill">
+            <span className="status-dot status-dot-inactive" aria-hidden="true" />
+            Connecting…
           </span>
-        ) : (
+        ) : isOperational ? (
           <span className="status-pill status-pill-ok">
             <span className="status-dot" aria-hidden="true" />
             System Operational
+          </span>
+        ) : (
+          <span className="status-pill status-pill-critical">
+            <span className="status-dot status-dot-critical" aria-hidden="true" />
+            Backend Connection Unavailable
           </span>
         )}
         <span className="status-bar-time">{now ? now.toLocaleTimeString() : "--:--:--"}</span>

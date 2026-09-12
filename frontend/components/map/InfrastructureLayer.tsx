@@ -5,23 +5,31 @@
 // This layer owns its own fetch so it can be dropped into any map without the parent
 // screen needing to know about infrastructure data.
 import { useEffect, useState } from "react";
-import { Marker, Popup } from "react-leaflet";
+import { Marker, Popup, useMap } from "react-leaflet";
 import type { FireStation, Hospital, PoliceStation, Shelter } from "@/lib/models";
 import { getFireStations, getHospitals, getPoliceStations, getShelters } from "@/lib/services/dataService";
 import { fireStationIcon, hospitalIcon, policeStationIcon, shelterIcon } from "./markerIcons";
 
 interface InfrastructureLayerProps {
-  // Fire/police stations have no Phase 10 layer-control toggle, so they stay unconditional;
-  // only Hospitals and Shelters are individually togglable (see LayerControlPanel).
+  // Fire/police stations have no layer-control toggle, so they stay unconditional; only
+  // Hospitals and Shelters are individually togglable (see LayerControlPanel).
   showHospitals?: boolean;
   showShelters?: boolean;
+  selectedShelterId?: string | null;
+  onSelectShelter?: (id: string) => void;
 }
 
-export default function InfrastructureLayer({ showHospitals = true, showShelters = true }: InfrastructureLayerProps) {
+export default function InfrastructureLayer({
+  showHospitals = true,
+  showShelters = true,
+  selectedShelterId = null,
+  onSelectShelter,
+}: InfrastructureLayerProps) {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [fireStations, setFireStations] = useState<FireStation[]>([]);
   const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
+  const map = useMap();
 
   useEffect(() => {
     let cancelled = false;
@@ -38,6 +46,13 @@ export default function InfrastructureLayer({ showHospitals = true, showShelters
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!selectedShelterId) return;
+    const shelter = shelters.find((s) => s.id === selectedShelterId);
+    if (!shelter) return;
+    map.flyTo([shelter.latitude, shelter.longitude], Math.max(map.getZoom(), 14), { duration: 0.6 });
+  }, [selectedShelterId, shelters, map]);
 
   return (
     <>
@@ -66,7 +81,12 @@ export default function InfrastructureLayer({ showHospitals = true, showShelters
       ))}
 
       {showShelters && shelters.map((shelter) => (
-        <Marker key={shelter.id} position={[shelter.latitude, shelter.longitude]} icon={shelterIcon(shelter.status)}>
+        <Marker
+          key={shelter.id}
+          position={[shelter.latitude, shelter.longitude]}
+          icon={shelterIcon(shelter.status)}
+          eventHandlers={onSelectShelter ? { click: () => onSelectShelter(shelter.id) } : undefined}
+        >
           <Popup>
             <div className="marker-popup">
               <div className="marker-popup-title">{shelter.name}</div>
