@@ -1,39 +1,35 @@
 "use client";
 
 // Emergency vehicle marker layer (MapLibre).
-//   map component -> this layer -> lib/services/dataService -> live backend
-// Selection is lifted to the parent screen (so the Fleet panel and the map stay in sync);
-// this layer just reacts to `selectedVehicleId` by flying the camera and enlarging the
-// matching marker. No routing/movement is invented here — `vehicle.route` is the backend's
-// own dispatch route, drawn and interpolated as-is only when that vehicle is selected.
+//   OverviewScreen's poll loop -> this layer (via the `vehicles` prop) -> live backend
+// Vehicles come in as a prop (see IncidentLayer for why) rather than a one-time internal
+// fetch — a vehicle newly dispatched by a reported incident needs to actually appear moving
+// on the map, not just in the Fleet rail. Selection is lifted to the parent screen (so the
+// Fleet panel and the map stay in sync); this layer just reacts to `selectedVehicleId` by
+// flying the camera and enlarging the matching marker. No routing/movement is invented here —
+// `vehicle.route` is the backend's own dispatch route, drawn and interpolated as-is only when
+// that vehicle is selected.
 import { useEffect, useState } from "react";
 import { Marker, Source, Layer, useMap } from "react-map-gl/maplibre";
 import type { GeoJSON } from "geojson";
-import type { LatLng, RouteUpdateEvent, Vehicle, VehicleRoute, VehicleType } from "@/lib/models";
-import { getRerouteEvent, getVehicleRoute, getVehicles } from "@/lib/services/dataService";
+import type { LatLng, RouteUpdateEvent, Vehicle, VehicleRoute } from "@/lib/models";
+import { getRerouteEvent, getVehicleRoute } from "@/lib/services/dataService";
 import { useTickingEta } from "@/lib/useTickingEta";
 import { interpolateRoute, truncateRoute } from "@/lib/routeMotion";
 import type { RerouteState } from "@/lib/reroute";
 import { useTheme } from "@/lib/theme";
-import { getMapPalette } from "@/lib/mapColors";
+import { getMapPalette, getVehicleTypeColor } from "@/lib/mapColors";
 import { useAnimatedLineDash } from "@/lib/useAnimatedLineDash";
 import MarkerBadge from "./MarkerBadge";
-import { AmbulanceIcon, ClosureIcon, FireEngineIcon, PoliceIcon, RescueIcon } from "./icons";
 
 const RESPONSE_ROUTE_LAYER_ID = "vehicle-selected-route-line";
+const RESPONSE_ROUTE_GLOW_LAYER_ID = "vehicle-selected-route-glow";
 const ALTERNATE_ROUTE_LAYER_ID = "vehicle-alternate-route-line";
 
 const ACTIVE_STATUSES = new Set(["en_route", "on_scene"]);
 // One full pass down the route every 45s — a deliberately unhurried, readable pace.
 const CYCLE_MS = 45000;
 const TICK_MS = 250;
-
-const VEHICLE_ICON: Record<VehicleType, typeof AmbulanceIcon> = {
-  ambulance: AmbulanceIcon,
-  fire_engine: FireEngineIcon,
-  police_vehicle: PoliceIcon,
-  rescue_team: RescueIcon,
-};
 
 function toLine(coordinates: LatLng[]): GeoJSON.Feature<GeoJSON.LineString> {
   return {
@@ -44,6 +40,7 @@ function toLine(coordinates: LatLng[]): GeoJSON.Feature<GeoJSON.LineString> {
 }
 
 interface VehicleLayerProps {
+  vehicles: Vehicle[];
   selectedVehicleId: string | null;
   onSelectVehicle: (id: string) => void;
   // Only ever set for the currently-selected vehicle — the parent resets it to null
@@ -52,29 +49,19 @@ interface VehicleLayerProps {
   // "Emergency Routes" layer toggle: hides just the route/detour lines while vehicle
   // markers themselves stay controlled by the separate "Fleet" toggle.
   showRoutes?: boolean;
+  hasSelection?: boolean;
 }
 
-export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, reroute, showRoutes = true }: VehicleLayerProps) {
+export default function VehicleLayer({ vehicles: fetchedVehicles, selectedVehicleId, onSelectVehicle, reroute, showRoutes = true, hasSelection }: VehicleLayerProps) {
   const { current: map } = useMap();
   const { theme } = useTheme();
   const palette = getMapPalette(theme);
-  const [fetchedVehicles, setFetchedVehicles] = useState<Vehicle[]>([]);
   const vehicles = useTickingEta(fetchedVehicles);
 
   // Drives the along-route animation for every actively-moving vehicle at once. A single
   // shared clock (rather than one timer per vehicle) is enough since each vehicle's own
   // route shape still makes their movement look independent.
   const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    getVehicles().then((data) => {
-      if (!cancelled) setFetchedVehicles(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     const start = Date.now();
@@ -142,8 +129,45 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
 
   return (
     <>
+      {/* Every currently-dispatched vehicle's real route glows automatically — not just the
+          one the user happens to have selected — so "an emergency unit is responding" is
+          visible on the map without requiring a click. The selected vehicle's own route
+          (below) still gets the brighter, more detailed treatment and draws on top. */}
+      {showRoutes &&
+        vehicles
+          .filter((vehicle) => vehicle.id !== selectedVehicleId && ACTIVE_STATUSES.has(vehicle.status) && vehicle.route.length > 1)
+          .map((vehicle) => {
+            const color = getVehicleTypeColor(theme, vehicle.type);
+            return (
+              <Source key={`route-${vehicle.id}`} id={`vehicle-route-${vehicle.id}`} type="geojson" data={toLine(vehicle.route)}>
+                <Layer
+                  id={`vehicle-route-${vehicle.id}-glow`}
+                  type="line"
+                  layout={{ "line-cap": "round", "line-join": "round" }}
+                  paint={{ "line-color": color, "line-width": 10, "line-blur": 6, "line-opacity": hasSelection ? 0.15 : 0.3 }}
+                />
+                <Layer
+                  id={`vehicle-route-${vehicle.id}-line`}
+                  type="line"
+                  layout={{ "line-cap": "round", "line-join": "round" }}
+                  paint={{ "line-color": color, "line-width": 2.5, "line-opacity": hasSelection ? 0.35 : 0.7 }}
+                />
+              </Source>
+            );
+          })}
+
       {showRoutes && selectedRoute && selectedRoute.coordinates.length > 1 && (
         <Source id="vehicle-selected-route" type="geojson" data={toLine(selectedRoute.coordinates)}>
+          {/* Soft halo underneath the bright core line — the "illuminated route" look,
+              native to the line layer rather than a second SVG overlay. */}
+          {!rerouteActive && (
+            <Layer
+              id={RESPONSE_ROUTE_GLOW_LAYER_ID}
+              type="line"
+              layout={{ "line-cap": "round", "line-join": "round" }}
+              paint={{ "line-color": palette.warning, "line-width": 14, "line-blur": 8, "line-opacity": 0.35 }}
+            />
+          )}
           <Layer
             id={RESPONSE_ROUTE_LAYER_ID}
             type="line"
@@ -151,7 +175,7 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
             paint={{
               "line-color": rerouteActive ? palette.textMuted : palette.warning,
               "line-width": rerouteActive ? 3 : 5,
-              "line-opacity": rerouteActive ? 0.5 : 0.9,
+              "line-opacity": rerouteActive ? 0.5 : 0.95,
               "line-dasharray": rerouteActive ? [1, 2] : [0, 4, 3],
             }}
           />
@@ -175,9 +199,7 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
           latitude={rerouteEvent.closure_point.latitude}
           anchor="center"
         >
-          <MarkerBadge color={palette.danger} size={26} pulse>
-            <ClosureIcon size={16} color="#fff" />
-          </MarkerBadge>
+          <MarkerBadge color={palette.danger} size={14} pulse />
         </Marker>
       )}
 
@@ -192,9 +214,9 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
         const display = moving
           ? interpolateRoute(motionPath, progress)
           : { latitude: vehicle.latitude, longitude: vehicle.longitude, headingDeg: 0 };
-        const Icon = VEHICLE_ICON[vehicle.type];
         const active = vehicle.status === "en_route" || vehicle.status === "on_scene";
-        const color = active ? palette.emergency : vehicle.status === "available" ? palette.success : palette.textMuted;
+        const color = getVehicleTypeColor(theme, vehicle.type);
+        const size = selected ? 22 : 17;
 
         return (
           <Marker
@@ -207,10 +229,28 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
               onSelectVehicle(vehicle.id);
             }}
           >
-            <div style={{ transform: moving ? `rotate(${display.headingDeg}deg)` : undefined }}>
-              <MarkerBadge color={color} size={selected ? 40 : 30} selected={selected} pulse={active}>
-                <Icon size={selected ? 24 : 18} color="#fff" style={{ transform: moving ? `rotate(${-display.headingDeg}deg)` : undefined }} />
-              </MarkerBadge>
+            {/* A moving unit is just the glowing point itself, no attached illustration — a
+                short trailing glow (oriented to heading) is the only concession to motion. */}
+            <div style={{ position: "relative" }}>
+              {moving && (
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    width: 4,
+                    height: size * 1.6,
+                    transform: `translate(-50%, -100%) rotate(${display.headingDeg + 180}deg)`,
+                    transformOrigin: "50% 100%",
+                    background: `linear-gradient(to top, ${color}, transparent)`,
+                    opacity: 0.5,
+                    borderRadius: 2,
+                    pointerEvents: "none",
+                  }}
+                />
+              )}
+              <MarkerBadge color={color} size={size} selected={selected} pulse={active} dimmed={hasSelection && !selected} />
             </div>
           </Marker>
         );

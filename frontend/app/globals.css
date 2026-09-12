@@ -6,44 +6,49 @@
    the semantic tokens below, so the whole app (header, rails, cards, drawers, popups,
    alerts, map overlays, controls, buttons) re-themes automatically. */
 :root {
-  --bg-primary: #07111f;
-  --surface-primary: #0d1b2a;
-  --surface-elevated: #13263a;
-  --surface-elevated-2: #183149;
-  --border: #29445c;
-  --border-soft: rgba(175, 192, 207, 0.14);
-  --surface-glass: rgba(19, 38, 58, 0.94);
-  --surface-glass-strong: rgba(13, 27, 42, 0.97);
+  /* True black + navy command-center palette: black dominates (~80-90% of the surface),
+     navy defines panels/surfaces one step up from black, and bright accents are reserved for
+     operationally-meaningful things (routes, beacons, status) rather than filling panels. */
+  --bg-primary: #02050a;
+  --bg-map: #03070d;
+  --surface-primary: #07111f;
+  --surface-elevated: #0a1624;
+  --surface-elevated-2: #0e1c2d;
+  --border: #17283b;
+  --border-soft: rgba(166, 182, 198, 0.12);
+  --surface-glass: rgba(7, 17, 31, 0.94);
+  --surface-glass-strong: rgba(2, 5, 10, 0.97);
 
-  --text-primary: #f4f7fa;
-  --text-secondary: #afc0cf;
-  --text-muted: #71869a;
+  --text-primary: #f5f7fa;
+  --text-secondary: #a6b6c6;
+  --text-muted: #647589;
   /* Text placed on a bright/filled chip (status fills, the brand mark) rather than on the
      surfaces above. */
-  --text-on-bright: #041016;
+  --text-on-bright: #02050a;
   /* RGB of --text-primary, for neutral hover/tint washes (rgba(var(--ink-rgb), alpha))
      instead of a hand-picked gray per component. */
-  --ink-rgb: 244, 247, 250;
+  --ink-rgb: 245, 247, 250;
 
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* ---- Operational colors ----
      Fixed meaning everywhere, never decorative: danger = critical/blocked, warning =
      degraded, caution = congestion, success = safe/recommended, emergency = EMS response,
-     active = selected/active route. */
-  --danger: #ff4d4d;
-  --warning: #ff9f43;
+     active = selected/active route. These are the only saturated colors permitted to appear
+     against the black/navy base — reserved for routes, beacons, and status, never panels. */
+  --danger: #ff4f52;
+  --warning: #ffc857;
   --caution: #f4d35e;
-  --success: #43d17a;
-  --emergency: #38a8ff;
-  --active: #54e0ff;
+  --success: #54d68b;
+  --emergency: #42afff;
+  --active: #59e1ff;
 
-  --danger-rgb: 255, 77, 77;
-  --warning-rgb: 255, 159, 67;
+  --danger-rgb: 255, 79, 82;
+  --warning-rgb: 255, 200, 87;
   --caution-rgb: 244, 211, 94;
-  --success-rgb: 67, 209, 122;
-  --emergency-rgb: 56, 168, 255;
-  --active-rgb: 84, 224, 255;
+  --success-rgb: 84, 214, 139;
+  --emergency-rgb: 66, 175, 255;
+  --active-rgb: 89, 225, 255;
 
   /* Type scale: a deliberate hierarchy, not one giant font-size bump. Theme-independent. */
   --fs-display: 2rem;
@@ -67,6 +72,7 @@
    dark palette's colors dropped onto a white background. */
 :root[data-theme="light"] {
   --bg-primary: #eef2f6;
+  --bg-map: #eef2f6;
   --surface-primary: #ffffff;
   --surface-elevated: #ffffff;
   --surface-elevated-2: #f4f7fa;
@@ -362,7 +368,10 @@ main {
 .app-content {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  /* The app is a fixed-viewport command center, not a scrolling page — anything that needs
+     to scroll (the side rail, a long panel) does so internally via its own overflow-y, never
+     by growing this shell past the viewport. */
+  overflow: hidden;
 }
 
 @media (max-width: 860px) {
@@ -396,8 +405,15 @@ main {
 .overview-main-row {
   flex: 1;
   min-height: 0;
+  height: 100%;
   display: grid;
   grid-template-columns: 268px 1fr 268px;
+  /* Without this, an implicit auto-sized grid row grows to fit its TALLEST column's natural
+     content height (once .ov-panel stopped force-shrinking) instead of staying capped at the
+     row's real available height — that's what made the whole page taller than the viewport
+     and scroll, rather than just the rail scrolling internally via .overview-col's own
+     overflow-y. minmax(0, 1fr) caps the row at the available space so children can shrink. */
+  grid-template-rows: minmax(0, 1fr);
   gap: 12px;
   padding: 12px;
 }
@@ -407,6 +423,7 @@ main {
   flex-direction: column;
   gap: 12px;
   min-height: 0;
+  overflow-y: auto;
 }
 
 .overview-map-area {
@@ -417,7 +434,7 @@ main {
 /* Panels read as soft off-white paper cards floating over the app background — solid fill,
    a hairline border, and a gentle shadow rather than glass/blur or a hard drop shadow. */
 .ov-panel {
-  flex: 1;
+  flex: 0 0 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -447,6 +464,18 @@ main {
   color: var(--text-primary);
 }
 
+.ov-panel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ov-panel-subtitle {
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
 .ov-panel-count {
   font-size: var(--fs-micro);
   font-weight: 700;
@@ -462,6 +491,140 @@ main {
   min-height: 0;
   overflow-y: auto;
   padding: 6px 12px;
+}
+
+/* Quick-glance rail rows — the persistent side rail's ONLY job is "what is happening?"
+   at readable-but-compact size. Clicking a row opens the full .inspector-panel; the
+   rail itself never carries the operational detail. */
+.rail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rail-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 6px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-soft);
+  font: inherit;
+  font-size: var(--fs-meta);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s var(--ease);
+}
+
+.rail-list > li:last-child .rail-row {
+  border-bottom: none;
+}
+
+.rail-row:hover {
+  background: rgba(var(--ink-rgb), 0.08);
+}
+
+.rail-row-selected {
+  background: rgba(var(--active-rgb), 0.1);
+  box-shadow: inset 3px 0 0 var(--active);
+}
+
+.rail-row-glyph {
+  flex-shrink: 0;
+}
+
+/* Category is read from SHAPE (matching the map's symbol shapes) at a fixed neutral tone —
+   status/severity color is carried separately (the rail's .ov-dot, or the inspector's own
+   status pill), so shape and color each communicate exactly one thing instead of a
+   decorative icon communicating both. Shared between the rail rows and the inspector
+   panel headers. */
+.entity-shape {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.entity-shape-circle {
+  border-radius: 50%;
+}
+
+.entity-shape-square {
+  border-radius: 2px;
+}
+
+.entity-shape-square-outline {
+  background: transparent !important;
+  border: 2px solid var(--text-secondary);
+  border-radius: 2px;
+}
+
+.entity-shape-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.entity-shape-diamond {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.rail-row-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.rail-row-meta {
+  font-size: var(--fs-micro);
+  font-family: var(--mono);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.rail-empty {
+  padding: 12px 4px;
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+}
+
+.rail-more {
+  margin: 6px 4px 2px;
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+
+.rail-list-tall {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.rail-search {
+  width: 100%;
+  margin: 2px 0 8px;
+  padding: 7px 10px;
+  background: rgba(var(--ink-rgb), 0.05);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: var(--fs-micro);
+  font-family: inherit;
+}
+
+.rail-search::placeholder {
+  color: var(--text-muted);
+}
+
+.rail-search:focus {
+  outline: none;
+  border-color: var(--active);
 }
 
 .ov-list {
@@ -551,31 +714,37 @@ main {
 
 .dot-critical {
   background: var(--danger);
+  color: var(--danger);
   --pulse-rgb: var(--danger-rgb);
 }
 
 .dot-warning {
   background: var(--warning);
+  color: var(--warning);
   --pulse-rgb: var(--warning-rgb);
 }
 
 .dot-caution {
   background: var(--caution);
+  color: var(--caution);
   --pulse-rgb: var(--caution-rgb);
 }
 
 .dot-safe {
   background: var(--success);
+  color: var(--success);
   --pulse-rgb: var(--success-rgb);
 }
 
 .dot-response {
   background: var(--emergency);
+  color: var(--emergency);
   --pulse-rgb: var(--emergency-rgb);
 }
 
 .dot-inactive {
   background: var(--text-muted);
+  color: var(--text-muted);
   --pulse-rgb: 113, 134, 154;
 }
 
@@ -910,10 +1079,25 @@ main {
   min-height: 0;
 }
 
+.map-frame-canvas-picking .maplibregl-canvas {
+  cursor: crosshair !important;
+}
+
 .base-map {
   height: 100%;
   width: 100%;
-  background: var(--bg-primary);
+  background: var(--bg-map);
+}
+
+/* OSM's standard raster tiles only come in one (light) palette — dark mode inverts just the
+   tile canvas (not the marker/panel DOM layers stacked on top of it, which sit as separate
+   elements) into a navy/charcoal look, the common "dark-mode basemap via CSS filter"
+   technique used when no free dark tile source is reliably available. */
+.base-map-dark .maplibregl-canvas {
+  /* Pushed darker/blacker to match the new near-black command-center base — background
+     geography should read as quiet charcoal/navy so the bright operational routes and
+     beacons are the only things that actually stand out. */
+  filter: invert(1) hue-rotate(180deg) brightness(0.75) contrast(1) saturate(0.75);
 }
 
 /* Headline KPIs sit directly above the map inside the same dark frame — still reads as one
@@ -954,34 +1138,108 @@ main {
   color: var(--text-secondary) !important;
 }
 
-/* Generic map-marker badge — every point entity (vehicle/shelter/hospital/incident/
-   closure/hazard) wraps one of the real SVG icons in components/map/icons.tsx with this
-   same status-ring + selected-scale language, so the map reads consistently across types
-   while still being visually distinguishable by shape/icon. */
-.map-marker-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Every point on the map (vehicle/shelter/hospital/incident/closure node) is this same
+   plain glowing beacon — a bright color core plus a soft halo, never an illustrated icon.
+   POINT = unit/object, RING = status/selection, GLOW = active/important, PULSE = new/urgent. */
+.map-beacon {
+  display: block;
   border: none;
-  border-radius: 999px;
-  padding: 5px;
+  border-radius: 50%;
+  padding: 0;
   cursor: pointer;
-  box-shadow: var(--elevation-2);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  background: var(--beacon-color);
+  /* A dark outline plus a strong halo so the beacon reads clearly regardless of what's
+     underneath it — the basemap's own imagery (streets, buildings, its built-in points of
+     interest) is busy and colorful enough that a subtle glow alone got lost in it. */
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.55),
+    0 0 0 3.5px rgba(255, 255, 255, 0.5),
+    0 0 12px 4px color-mix(in srgb, var(--beacon-color) 85%, transparent);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), opacity 0.2s var(--ease);
 }
 
-.map-marker-badge-square {
-  border-radius: 8px;
+.map-beacon-square {
+  border-radius: 3px;
 }
 
-.map-marker-badge-selected {
-  box-shadow: 0 0 0 3px var(--active), var(--elevation-3);
-  transform: scale(1.08);
+/* A shelter's fill is hollow, communicating capacity/status through the RING itself rather
+   than a filled dot — a status color makes the ring, a small core dot stays constant. */
+.map-beacon-ring {
+  background: transparent;
+  border: 3px solid var(--beacon-color);
+  box-shadow: 0 0 8px 1px color-mix(in srgb, var(--beacon-color) 60%, transparent);
+  position: relative;
+}
+
+.map-beacon-ring::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--beacon-color);
+}
+
+.map-beacon-selected {
+  box-shadow:
+    0 0 0 2px var(--surface-elevated),
+    0 0 0 4px var(--beacon-color),
+    0 0 14px 4px color-mix(in srgb, var(--beacon-color) 75%, transparent);
+  transform: scale(1.25);
   z-index: 5;
 }
 
-.map-marker-badge-pulse {
-  animation: road-glow 2s ease-in-out infinite;
+.map-beacon-pulse {
+  animation: beacon-pulse 2s ease-in-out infinite;
+}
+
+.map-beacon-dimmed {
+  opacity: 0.35;
+  filter: saturate(0.6);
+}
+
+@keyframes beacon-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(0, 0, 0, 0.55),
+      0 0 0 3.5px rgba(255, 255, 255, 0.5),
+      0 0 10px 3px color-mix(in srgb, var(--beacon-color) 75%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1.5px rgba(0, 0, 0, 0.25),
+      0 0 14px 6px color-mix(in srgb, var(--beacon-color) 80%, transparent);
+  }
+}
+
+/* Expanding detection ring for a newly-arrived/active incident — a real geometric pulse,
+   not a pictogram, with intensity read from severity via the size/opacity the caller sets. */
+.map-incident-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 2px solid var(--beacon-color);
+  transform: translate(-50%, -50%);
+  animation: incident-ring-expand 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes incident-ring-expand {
+  0% {
+    width: 100%;
+    height: 100%;
+    opacity: 0.9;
+  }
+  100% {
+    width: 300%;
+    height: 300%;
+    opacity: 0;
+  }
 }
 
 /* Selected vehicle's route endpoints: a hollow ring at the start, a pin at the destination —
@@ -1258,9 +1516,11 @@ main {
 
 .critical-alert-icon {
   flex-shrink: 0;
-  color: var(--danger);
-  font-size: 1.4rem;
-  line-height: 1;
+  width: 12px;
+  height: 12px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--danger);
   animation: pulse-dot 1.4s ease-in-out infinite;
 }
 
@@ -1353,11 +1613,6 @@ main {
   border-left-color: var(--success);
 }
 
-.toast-glyph {
-  flex-shrink: 0;
-  font-size: 0.9rem;
-}
-
 .toast-message {
   text-transform: capitalize;
 }
@@ -1422,57 +1677,151 @@ main {
   color: var(--warning);
 }
 
-/* Floating "investigate" drawer for incidents/closures/shelters/zones — an overlay on the
-   map itself (per the design system's "floating map controls, overlays, callouts"
-   guidance) rather than another card competing with the rails. */
-.context-drawer {
+/* Large operational inspector panel — the primary "tell me everything important about
+   this thing" surface. Opens over the map (map stays visible/interactive behind it)
+   when a rail row or map entity is clicked. Sized and typeset per the explicit spec:
+   title 24-30px, primary metric 32-48px, section heading 17-20px, important info
+   16-18px, secondary info 14-16px — deliberately far larger than the old, cramped
+   .context-drawer it replaces so nothing operational is rendered at 10-12px. */
+.inspector-panel {
   position: absolute;
-  bottom: 16px;
+  top: 16px;
   right: 16px;
+  bottom: 16px;
   z-index: 50;
-  width: min(320px, calc(100% - 32px));
-  padding: 16px 18px;
+  width: min(420px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  padding: 28px 30px;
   background: var(--surface-elevated);
   border: 1px solid var(--border-soft);
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow: var(--elevation-3);
-  animation: fade-in-up 0.2s var(--ease) both;
+  overflow-y: auto;
+  animation: fade-in-up 0.25s var(--ease) both;
 }
 
-.context-drawer-close {
+.inspector-close {
   position: absolute;
-  top: 10px;
-  right: 12px;
+  top: 18px;
+  right: 20px;
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 1.3rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
 }
 
-.context-drawer-close:hover {
+.inspector-close:hover {
   color: var(--text-primary);
 }
 
-.context-drawer-title {
-  font-size: 1.15rem;
+.inspector-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-right: 32px;
+  margin-bottom: 20px;
+}
+
+.inspector-accent {
+  width: 16px;
+  height: 16px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.inspector-title {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.15;
   font-weight: 800;
   color: var(--text-primary);
-  text-transform: capitalize;
-  padding-right: 20px;
 }
 
-.context-drawer-subtitle {
-  font-size: var(--fs-meta);
+.inspector-subtitle {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--text-secondary);
-  margin-top: 2px;
-  margin-bottom: 12px;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.context-drawer-grid {
+.inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inspector-metric-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.inspector-metric-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.inspector-metric-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.inspector-metric-value-uppercase {
+  text-transform: uppercase;
+}
+
+.inspector-metric-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.inspector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inspector-section-heading {
   margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.inspector-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 1.05rem;
+}
+
+.inspector-row-label {
+  color: var(--text-secondary);
+}
+
+.inspector-row-value {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-align: right;
+}
+
+.inspector-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 /* Compact always-on map key — small enough to never compete with the map itself. */
@@ -1549,6 +1898,54 @@ main {
   resize: vertical;
 }
 
+.incident-report-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.incident-report-label {
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.incident-report-select,
+.incident-report-text-input {
+  background: rgba(var(--ink-rgb), 0.04);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: var(--fs-meta);
+  color: var(--text-primary);
+}
+
+.incident-report-location-row {
+  display: flex;
+  gap: 6px;
+}
+
+.incident-report-location-row .incident-report-text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.incident-report-pick-button {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  font-size: var(--fs-micro);
+  white-space: nowrap;
+}
+
+.incident-report-pick-button-active {
+  background: var(--active);
+  color: var(--bg-primary);
+  border-color: var(--active);
+}
+
 .incident-report-status {
   margin: 0 4px 4px;
   font-size: var(--fs-meta);
@@ -1576,6 +1973,75 @@ main {
   margin-bottom: 4px;
 }
 
+.incident-report-hint {
+  margin: 0 4px 4px;
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+
+.incident-report-ai-badge {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(var(--active-rgb), 0.16);
+  color: var(--active);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  vertical-align: middle;
+}
+
+.incident-report-dropzone {
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(var(--ink-rgb), 0.03);
+}
+
+.incident-report-dropzone-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  text-align: center;
+  font-size: var(--fs-micro);
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+}
+
+.incident-report-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.incident-report-image-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.incident-report-image-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.incident-report-remove-image {
+  padding: 6px 10px;
+  font-size: var(--fs-micro);
+}
+
+.incident-report-image-done {
+  color: var(--active);
+}
+
 @media (max-width: 1100px) {
   .overview-main-row {
     grid-template-columns: 240px 1fr 240px;
@@ -1586,10 +2052,29 @@ main {
   }
 }
 
+/* Side rails stay AT THE SIDE (never stacked above/below the map) down to a much narrower
+   width than before — narrower columns first, real single-column stacking only as a last
+   resort on genuinely phone-width screens. */
 @media (max-width: 860px) {
+  .overview-main-row {
+    grid-template-columns: 200px 1fr 200px;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .metrics-strip-value {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 620px) {
   .overview-main-row {
     grid-template-columns: 1fr;
     grid-auto-rows: min-content;
+    /* This is the one layout this app allows to scroll as a whole — a single narrow phone
+       column genuinely doesn't fit map + both rails in one fixed viewport, unlike the
+       side-by-side layout above where every column scrolls internally instead. */
+    overflow-y: auto;
   }
 
   .overview-col {
@@ -1603,4 +2088,230 @@ main {
   .metrics-strip {
     grid-template-columns: 1fr;
   }
+}
+
+/* Floating operations assistant — fixed to the viewport so it sits over everything (map,
+   rails, panels) rather than competing for space inside the grid layout. */
+.assistant-root {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.assistant-fab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-weight: 800;
+  font-size: var(--fs-meta);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: var(--elevation-3);
+}
+
+.assistant-fab-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--active);
+  box-shadow: 0 0 8px 2px color-mix(in srgb, var(--active) 70%, transparent);
+}
+
+.assistant-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(400px, calc(100vw - 40px));
+  height: min(520px, calc(100vh - 120px));
+  background: var(--surface-glass-strong);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--elevation-3);
+  overflow: hidden;
+  animation: fade-in-up 0.2s var(--ease) both;
+}
+
+.assistant-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.assistant-panel-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.assistant-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.assistant-close:hover {
+  color: var(--text-primary);
+}
+
+.assistant-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assistant-quick-prompts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assistant-empty-hint {
+  margin: 0 0 4px;
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+}
+
+.assistant-quick-prompt {
+  text-align: left;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-elevated);
+  color: var(--active);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.assistant-quick-prompt:hover {
+  border-color: var(--active);
+}
+
+.assistant-message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assistant-message-user {
+  align-items: flex-end;
+}
+
+.assistant-message-assistant {
+  align-items: flex-start;
+}
+
+.assistant-message-bubble {
+  max-width: 88%;
+  padding: 10px 13px;
+  border-radius: 12px;
+  font-size: var(--fs-meta);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.assistant-message-user .assistant-message-bubble {
+  background: var(--emergency);
+  color: var(--text-on-bright);
+  border-bottom-right-radius: 3px;
+}
+
+.assistant-message-assistant .assistant-message-bubble {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  border-bottom-left-radius: 3px;
+}
+
+.assistant-message-typing {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.assistant-references {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 88%;
+}
+
+.assistant-reference-button {
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--active);
+  background: transparent;
+  color: var(--active);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.assistant-reference-button:hover {
+  background: rgba(var(--active-rgb), 0.12);
+}
+
+.assistant-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--border-soft);
+  flex-shrink: 0;
+}
+
+.assistant-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--fs-meta);
+}
+
+.assistant-input:focus {
+  outline: none;
+  border-color: var(--active);
+}
+
+.assistant-send {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--active);
+  color: var(--text-on-bright);
+  font-weight: 800;
+  font-size: var(--fs-micro);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.assistant-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

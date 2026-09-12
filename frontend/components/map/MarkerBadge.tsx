@@ -1,32 +1,38 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 interface MarkerBadgeProps {
   color: string;
   size?: number;
-  shape?: "circle" | "square";
+  shape?: "circle" | "square" | "ring";
   selected?: boolean;
   pulse?: boolean;
+  // Set when some OTHER object on the map is selected, so this one should recede rather
+  // than compete for attention — a GIS-style "dim the unrelated" treatment rather than
+  // hiding it outright.
+  dimmed?: boolean;
   onClick?: () => void;
-  children: ReactNode;
 }
 
-// Shared wrapper for every point marker on the map (vehicles, shelters, hospitals,
-// incidents, closures) — gives them all the same status-colored badge + selected-state
-// scale-up + optional pulse, while the actual icon inside (components/map/icons.tsx)
-// differs per entity type so they stay visually distinguishable.
-export default function MarkerBadge({ color, size = 30, shape = "circle", selected, pulse, onClick, children }: MarkerBadgeProps) {
+// Every point on the map — vehicle, shelter, hospital, incident, closure node — is this same
+// plain glowing beacon: a bright core with a soft halo, never an illustrated icon. Category
+// is read from color + shape (circle = mobile unit, square = fixed facility, ring = a
+// facility whose fill communicates capacity); status/selection is read from the halo, pulse,
+// and a selection ring, per POINT/RING/GLOW/PULSE language rather than pictograms.
+export default function MarkerBadge({ color, size = 14, shape = "circle", selected, pulse, dimmed, onClick }: MarkerBadgeProps) {
   return (
     <button
       type="button"
-      className={`map-marker-badge ${shape === "square" ? "map-marker-badge-square" : ""} ${
-        selected ? "map-marker-badge-selected" : ""
-      } ${pulse ? "map-marker-badge-pulse" : ""}`}
-      style={{ background: color, width: size, height: size }}
+      aria-hidden={onClick ? undefined : true}
+      className={`map-beacon ${shape === "square" ? "map-beacon-square" : shape === "ring" ? "map-beacon-ring" : ""} ${
+        selected ? "map-beacon-selected" : ""
+      } ${pulse ? "map-beacon-pulse" : ""} ${dimmed ? "map-beacon-dimmed" : ""}`}
+      style={{
+        width: size,
+        height: size,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        ["--beacon-color" as string]: color,
+      }}
       onClick={onClick}
-    >
-      {children}
-    </button>
+    />
   );
 }

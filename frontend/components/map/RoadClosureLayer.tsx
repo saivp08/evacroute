@@ -1,19 +1,16 @@
 "use client";
 
 // Road closure events (MapLibre).
-//   map component -> this layer -> lib/services/dataService -> live backend
-// Purely a visual/event layer: no route avoidance or automatic rerouting is computed from
-// a closure existing here. Selection is lifted to the parent screen so the Road Closures
-// panel and the map stay in sync, the same pattern every layer uses.
-import { useEffect, useState } from "react";
+//   OverviewScreen's poll loop -> this layer (via props) -> live backend
+// Takes `closures` as a prop (see IncidentLayer for why) rather than fetching its own copy —
+// a newly-reported road closure needs to actually appear here, not just in the rail.
+import { useEffect } from "react";
 import { Marker, Source, Layer, useMap } from "react-map-gl/maplibre";
 import type { GeoJSON } from "geojson";
 import type { RoadClosure } from "@/lib/models";
-import { getRoadClosures } from "@/lib/services/dataService";
 import { useTheme } from "@/lib/theme";
 import { getMapPalette } from "@/lib/mapColors";
 import MarkerBadge from "./MarkerBadge";
-import { ClosureIcon } from "./icons";
 
 function midpoint(coordinates: RoadClosure["coordinates"]): [number, number] {
   const mid = coordinates[Math.floor((coordinates.length - 1) / 2)];
@@ -39,25 +36,16 @@ function toLine(closure: RoadClosure): GeoJSON.Feature<GeoJSON.LineString> {
 }
 
 interface RoadClosureLayerProps {
+  closures: RoadClosure[];
   selectedClosureId: string | null;
   onSelectClosure: (id: string) => void;
+  hasSelection?: boolean;
 }
 
-export default function RoadClosureLayer({ selectedClosureId, onSelectClosure }: RoadClosureLayerProps) {
-  const [closures, setClosures] = useState<RoadClosure[]>([]);
+export default function RoadClosureLayer({ closures, selectedClosureId, onSelectClosure, hasSelection }: RoadClosureLayerProps) {
   const { current: map } = useMap();
   const { theme } = useTheme();
   const palette = getMapPalette(theme);
-
-  useEffect(() => {
-    let cancelled = false;
-    getRoadClosures().then((data) => {
-      if (!cancelled) setClosures(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     if (!selectedClosureId || !map) return;
@@ -77,11 +65,32 @@ export default function RoadClosureLayer({ selectedClosureId, onSelectClosure }:
           return (
             <div key={closure.id}>
               <Source id={`closure-${closure.id}`} type="geojson" data={toLine(closure)}>
+                {/* Soft red halo underneath the sharp dashed line — the same "illuminated
+                    route" native-line-layer technique used for evacuation/response routes,
+                    so an affected road reads as visually active, not just a thin line. */}
+                {!(hasSelection && !selected) && (
+                  <Layer
+                    id={`closure-${closure.id}-glow`}
+                    type="line"
+                    layout={{ "line-cap": "round" }}
+                    paint={{
+                      "line-color": palette.danger,
+                      "line-width": selected ? 18 : 12,
+                      "line-blur": selected ? 10 : 7,
+                      "line-opacity": selected ? 0.45 : 0.3,
+                    }}
+                  />
+                )}
                 <Layer
                   id={`closure-${closure.id}-line`}
                   type="line"
                   layout={{ "line-cap": "round" }}
-                  paint={{ "line-color": palette.danger, "line-width": selected ? 7 : 5, "line-dasharray": [1, 1.5], "line-opacity": selected ? 1 : 0.85 }}
+                  paint={{
+                    "line-color": palette.danger,
+                    "line-width": selected ? 7 : 5,
+                    "line-dasharray": [1, 1.5],
+                    "line-opacity": selected ? 1 : hasSelection ? 0.35 : 0.85,
+                  }}
                 />
               </Source>
               <Marker
@@ -94,9 +103,7 @@ export default function RoadClosureLayer({ selectedClosureId, onSelectClosure }:
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                  <MarkerBadge color={palette.danger} size={selected ? 34 : 24} selected={selected} pulse>
-                    <ClosureIcon size={selected ? 20 : 14} color="#fff" />
-                  </MarkerBadge>
+                  <MarkerBadge color={palette.danger} size={selected ? 20 : 15} selected={selected} pulse dimmed={hasSelection && !selected} />
                   <span className="map-closure-label">{closureLabel(closure)}</span>
                 </div>
               </Marker>

@@ -25,6 +25,7 @@ import { LIVE_POLL_MS } from "@/lib/useLiveEvents";
 
 const GHOST_MS = 2600;
 const ROUTE_LAYER_ID = "evac-route-line";
+const ROUTE_GLOW_LAYER_ID = "evac-route-glow";
 
 function toLine(coordinates: LatLng[]): GeoJSON.Feature<GeoJSON.LineString> {
   return {
@@ -123,10 +124,16 @@ export default function EvacuationRouteLayer() {
       {routes.length > 0 && (
         <Source id="evac-routes" type="geojson" data={toMultiLine(routes)}>
           <Layer
+            id={ROUTE_GLOW_LAYER_ID}
+            type="line"
+            layout={{ "line-cap": "round", "line-join": "round" }}
+            paint={{ "line-color": palette.active, "line-width": 13, "line-blur": 7, "line-opacity": 0.3 }}
+          />
+          <Layer
             id={ROUTE_LAYER_ID}
             type="line"
             layout={{ "line-cap": "round", "line-join": "round" }}
-            paint={{ "line-color": palette.active, "line-width": 5, "line-opacity": 0.85 }}
+            paint={{ "line-color": palette.active, "line-width": 4.5, "line-opacity": 0.9 }}
           />
         </Source>
       )}

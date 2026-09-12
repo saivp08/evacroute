@@ -15,9 +15,7 @@ interface CriticalAlertBannerProps {
 export default function CriticalAlertBanner({ event, onViewOnMap, onDismiss }: CriticalAlertBannerProps) {
   return (
     <div className="critical-alert" role="alert">
-      <div className="critical-alert-icon" aria-hidden="true">
-        ●
-      </div>
+      <div className="critical-alert-icon" aria-hidden="true" />
       <div className="critical-alert-body">
         <div className="critical-alert-title">Critical Transport Alert</div>
         <div className="critical-alert-message">{event.message}</div>

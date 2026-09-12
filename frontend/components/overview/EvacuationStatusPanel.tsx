@@ -1,4 +1,5 @@
 import type { EvacuationZone, EvacuationZoneStatus } from "@/lib/models";
+import { ZONE_SHAPE, shapeClassName } from "@/lib/entitySymbols";
 import OverviewPanel from "./OverviewPanel";
 
 const STATUS_DOT: Record<EvacuationZoneStatus, string> = {
@@ -17,36 +18,29 @@ interface EvacuationStatusPanelProps {
 export default function EvacuationStatusPanel({ zones, selectedZoneId, onSelectZone }: EvacuationStatusPanelProps) {
   if (zones.length === 0) {
     return (
-      <OverviewPanel title="Evacuation Zones" count={0}>
-        <p className="empty-note">No evacuation zone data available.</p>
+      <OverviewPanel title="Evacuation" count={0}>
+        <p className="rail-empty">No evacuation zone data available.</p>
       </OverviewPanel>
     );
   }
 
   return (
-    <OverviewPanel title="Evacuation Zones" count={zones.length}>
-      <ul className="ov-list">
-        {zones.map((zone) => {
-          const selected = zone.id === selectedZoneId;
-          return (
-            <li key={zone.id}>
-              <button
-                type="button"
-                className={`ov-row ov-row-button ${selected ? "ov-row-selected" : ""}`}
-                onClick={() => onSelectZone(zone.id)}
-              >
-                <span className={`ov-dot ${STATUS_DOT[zone.status]}`} aria-hidden="true" />
-                <div className="ov-row-main">
-                  <div className="ov-row-title">
-                    {zone.name}
-                    <span className="ov-row-tag">{zone.status}</span>
-                  </div>
-                  <div className="ov-row-sub">{zone.population.toLocaleString()} people</div>
-                </div>
-              </button>
-            </li>
-          );
-        })}
+    <OverviewPanel title="Evacuation" count={zones.length}>
+      <ul className="rail-list">
+        {zones.map((zone) => (
+          <li key={zone.id}>
+            <button
+              type="button"
+              className={`rail-row ${zone.id === selectedZoneId ? "rail-row-selected" : ""}`}
+              onClick={() => onSelectZone(zone.id)}
+            >
+              <span className={`rail-row-glyph ${shapeClassName(ZONE_SHAPE)}`} aria-hidden="true" />
+              <span className="rail-row-text">{zone.name}</span>
+              <span className="rail-row-meta">{zone.status}</span>
+              <span className={`ov-dot ${STATUS_DOT[zone.status]}`} aria-hidden="true" />
+            </button>
+          </li>
+        ))}
       </ul>
     </OverviewPanel>
   );

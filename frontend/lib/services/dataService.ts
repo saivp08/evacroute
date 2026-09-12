@@ -38,6 +38,8 @@ import {
   getBackendState,
   getHealth,
   invalidateBackendState,
+  resetIncidents as resetIncidentsOnBackend,
+  resolveIncident as resolveIncidentOnBackend,
   submitIncidentReport as submitIncidentReportToBackend,
   type BackendCoordinate,
   type BackendResponderRoute,
@@ -317,10 +319,27 @@ export async function getNetworkStatus(): Promise<NetworkStatus> {
 export async function submitIncidentReport(report: string): Promise<IncidentReportResult> {
   const result = await submitIncidentReportToBackend(report);
   invalidateBackendState();
+  // The backend appends newly-applied incidents to the end of its active-incident list and
+  // never reorders it, so the last `applied_events.length` entries are exactly the ones this
+  // request just created — real ids read off the response, not guessed.
+  const newIncidentIds = result.applied_events.length > 0
+    ? result.incidents.slice(-result.applied_events.length).map((incident) => incident.id)
+    : [];
   return {
     appliedIncidentCount: result.applied_events.length,
     ambulancesDispatched: result.ambulances.length,
     rescueTeamsDispatched: result.rescue_teams.length,
     notes: result.notes,
+    newIncidentIds,
   };
+}
+
+export async function resetIncidents(): Promise<void> {
+  await resetIncidentsOnBackend();
+  invalidateBackendState();
+}
+
+export async function resolveIncident(incidentId: string): Promise<void> {
+  await resolveIncidentOnBackend(incidentId);
+  invalidateBackendState();
 }

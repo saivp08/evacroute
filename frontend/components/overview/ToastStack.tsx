@@ -7,12 +7,6 @@ import { useEffect } from "react";
 import type { OperationalEvent } from "@/lib/models";
 
 const TOAST_TTL_MS = 6000;
-const KIND_GLYPH: Record<OperationalEvent["kind"], string> = {
-  incident: "▲",
-  closure: "⛔",
-  shelter: "⌂",
-  vehicle: "▣",
-};
 
 interface ToastStackProps {
   toasts: (OperationalEvent & { toastId: string })[];
@@ -38,9 +32,6 @@ function Toast({ toast, onDismiss }: { toast: OperationalEvent & { toastId: stri
 
   return (
     <div className={`toast toast-${toast.severity}`}>
-      <span className="toast-glyph" aria-hidden="true">
-        {KIND_GLYPH[toast.kind]}
-      </span>
       <span className="toast-message">{toast.message}</span>
     </div>
   );

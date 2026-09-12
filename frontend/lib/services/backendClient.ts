@@ -148,6 +148,67 @@ export function getHealth() {
   return fetchJson<{ status: string }>("/health");
 }
 
+// Clears every active incident back to the real scenario baseline (POST /incidents/reset) —
+// used by the demo-cycle loop once a seeded incident's real responder has actually reached
+// it, so the next seeded incident starts from a clean, real state rather than layering on
+// top of a resolved one.
+export function resetIncidents() {
+  return fetchJson<BackendPlan>("/incidents/reset", { method: "POST" });
+}
+
+// Removes exactly one active incident (e.g. once its real dispatched responder has actually
+// reached it) — other concurrently active incidents are untouched. POST /incident/{id}/resolve.
+export function resolveIncident(incidentId: string) {
+  return fetchJson<BackendPlan>(`/incident/${encodeURIComponent(incidentId)}/resolve`, { method: "POST" });
+}
+
+export type AssistantReferenceKind = "vehicle" | "incident" | "closure" | "shelter" | "zone";
+
+export interface AssistantReference {
+  kind: AssistantReferenceKind;
+  id: string;
+  label: string;
+}
+
+export interface AssistantChatResult {
+  reply: string;
+  references: AssistantReference[];
+}
+
+export interface AssistantChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export function sendAssistantMessage(message: string, history: AssistantChatTurn[]) {
+  return fetchJson<AssistantChatResult>("/assistant/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message, history }),
+  });
+}
+
+export type IncidentImageType = "FIRE" | "FLOOD" | "ROAD_CLOSURE" | "CRASH" | "MEDICAL_EMERGENCY" | "WILDFIRE" | "HAZARDOUS_MATERIAL" | "OTHER";
+export type IncidentImageSeverity = "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+
+export interface ImageAnalysisResult {
+  incident_type: IncidentImageType;
+  severity: IncidentImageSeverity | null;
+  description: string;
+  affected_road: string | null;
+  estimated_people_affected: number | null;
+  environmental_conditions: string[];
+  confidence: { incident_type: number; severity: number };
+}
+
+export function analyzeIncidentImage(imageBase64: string, mimeType: string, contextText: string) {
+  return fetchJson<ImageAnalysisResult>("/incident/analyze-image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image_base64: imageBase64, mime_type: mimeType, context_text: contextText || null }),
+  });
+}
+
 // Nearly every getX() in dataService.ts needs the scenario, the active incidents, and the
 // optimized plan together, so one in-flight request is shared across all of them instead of
 // each panel triggering its own /scenario + /optimize round trip.

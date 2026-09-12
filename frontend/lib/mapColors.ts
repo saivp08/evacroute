@@ -5,6 +5,7 @@
 // deliberate, minimal duplication the map migration required; keep both in sync with
 // globals.css if either palette changes.
 import type { ThemeMode } from "./theme";
+import type { VehicleType } from "./models";
 
 export interface MapPalette {
   danger: string;
@@ -17,13 +18,13 @@ export interface MapPalette {
 }
 
 const DARK: MapPalette = {
-  danger: "#ff4d4d",
-  warning: "#ff9f43",
+  danger: "#ff4f52",
+  warning: "#ffc857",
   caution: "#f4d35e",
-  success: "#43d17a",
-  emergency: "#38a8ff",
-  active: "#54e0ff",
-  textMuted: "#71869a",
+  success: "#54d68b",
+  emergency: "#42afff",
+  active: "#59e1ff",
+  textMuted: "#647589",
 };
 
 const LIGHT: MapPalette = {
@@ -38,4 +39,25 @@ const LIGHT: MapPalette = {
 
 export function getMapPalette(theme: ThemeMode): MapPalette {
   return theme === "light" ? LIGHT : DARK;
+}
+
+// Vehicle markers are plain glowing dots with no interior icon — category is read from this
+// color alone (not a shape/pictogram), so each type gets a fixed, distinct hue rather than
+// the shared status colors above.
+const VEHICLE_TYPE_COLOR_DARK: Record<VehicleType, string> = {
+  ambulance: "#22d3ee",
+  fire_engine: "#fb7a3c",
+  police_vehicle: "#8b7cf6",
+  rescue_team: "#2dd4a7",
+};
+
+const VEHICLE_TYPE_COLOR_LIGHT: Record<VehicleType, string> = {
+  ambulance: "#0e93a8",
+  fire_engine: "#c1591f",
+  police_vehicle: "#5b4fc4",
+  rescue_team: "#188066",
+};
+
+export function getVehicleTypeColor(theme: ThemeMode, type: VehicleType): string {
+  return (theme === "light" ? VEHICLE_TYPE_COLOR_LIGHT : VEHICLE_TYPE_COLOR_DARK)[type];
 }

@@ -184,6 +184,12 @@ export interface Incident {
   longitude: number;
   zone_id: string | null;
   reported_at: string;
+  // The specific category the reporting user actually picked (e.g. "Flooding"), attached
+  // client-side right after a successful submission — not part of the backend's own
+  // taxonomy (which only knows the broader HAZARD_UPDATE/ROAD_CLOSURE/etc. categories used
+  // for real routing effects). Display-only: falls back to `type` when absent, e.g. for
+  // incidents that existed before this session or came from elsewhere.
+  reportedTypeLabel?: string;
 }
 
 export type HazardType = "wildfire" | "flood" | "hurricane" | "earthquake" | "other";
@@ -265,4 +271,5 @@ export interface IncidentReportResult {
   ambulancesDispatched: number;
   rescueTeamsDispatched: number;
   notes: string[];
+  newIncidentIds: string[];
 }
