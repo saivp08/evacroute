@@ -89,6 +89,30 @@ export interface Road {
   closure_reason: string | null;
 }
 
+// Phase 10 — traffic visualization. A separate, richer five-tier state than RoadStatus
+// above (which only distinguishes open/congested/closed/blocked for the base road layer).
+// Fetched via getTrafficSegments(): deterministic mock congestion per road, not a real
+// traffic simulation or measurement.
+export type TrafficState = "free" | "moderate" | "heavy" | "severe" | "blocked";
+
+export interface TrafficSegment {
+  road_id: string;
+  name: string;
+  coordinates: LatLng[];
+  state: TrafficState;
+}
+
+// Deterministic mock network-wide stats for the Traffic Summary panel — fixed values, not
+// aggregated from TrafficSegment (see getTrafficSummary in lib/services/dataService.ts).
+export interface TrafficSummary {
+  free_percent: number;
+  moderate_percent: number;
+  heavy_percent: number;
+  severe_percent: number;
+  vehicle_count: number;
+  average_speed_mph: number;
+}
+
 export type RoadClosureStatus = "closed" | "reopened";
 
 // A discrete closure EVENT — richer than Road.status (which is just the road's current

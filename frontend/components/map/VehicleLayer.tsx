@@ -27,9 +27,17 @@ interface VehicleLayerProps {
   // Only ever set for the currently-selected vehicle — the parent resets it to null
   // whenever selection changes, so this layer doesn't need to re-check the id itself.
   reroute: RerouteState | null;
+  // Phase 10 "Emergency Routes" layer toggle: hides just the route/detour polylines while
+  // vehicle markers themselves stay controlled by the separate "Fleet" toggle.
+  showRoutes?: boolean;
 }
 
-export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, reroute }: VehicleLayerProps) {
+export default function VehicleLayer({
+  selectedVehicleId,
+  onSelectVehicle,
+  reroute,
+  showRoutes = true,
+}: VehicleLayerProps) {
   const [fetchedVehicles, setFetchedVehicles] = useState<Vehicle[]>([]);
   const vehicles = useTickingEta(fetchedVehicles);
   const markerRefs = useRef(new Map<string, L.Marker>());
@@ -104,7 +112,7 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
 
   return (
     <>
-      {selectedRoute && selectedRoute.coordinates.length > 1 && (
+      {showRoutes && selectedRoute && selectedRoute.coordinates.length > 1 && (
         <>
           <Polyline
             positions={selectedRoute.coordinates.map((p): [number, number] => [p.latitude, p.longitude])}
@@ -135,14 +143,14 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
         </>
       )}
 
-      {alternateCoordinates.length > 1 && (
+      {showRoutes && alternateCoordinates.length > 1 && (
         <Polyline
           positions={alternateCoordinates.map((p): [number, number] => [p.latitude, p.longitude])}
           pathOptions={{ color: "var(--active)", weight: 5, dashArray: "10 8", className: "route-flow" }}
         />
       )}
 
-      {rerouteActive && rerouteEvent && (
+      {showRoutes && rerouteActive && rerouteEvent && (
         <Marker
           position={[rerouteEvent.closure_point.latitude, rerouteEvent.closure_point.longitude]}
           icon={roadClosureIcon(false)}

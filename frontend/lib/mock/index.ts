@@ -17,6 +17,7 @@ import type {
   Shelter,
   ShelterAllocationDetail,
   SystemStatus,
+  TrafficSummary,
   Vehicle,
   VehicleRoute,
 } from "../models";
@@ -423,12 +424,22 @@ export const mockHazards: Hazard[] = [
   {
     id: "HAZ-1",
     type: "wildfire",
-    name: "Placeholder Wildfire",
-    latitude: 40.46,
-    longitude: -79.92,
-    radius_meters: 5000,
+    name: "Fountaingrove Ridge Fire",
+    latitude: 38.4685,
+    longitude: -122.708,
+    radius_meters: 2600,
     severity: "critical",
-    started_at: "2026-01-01T09:00:00Z",
+    started_at: minutesAgo(210),
+  },
+  {
+    id: "HAZ-2",
+    type: "wildfire",
+    name: "Bennett Ridge Spot Fire",
+    latitude: 38.418,
+    longitude: -122.694,
+    radius_meters: 1400,
+    severity: "high",
+    started_at: minutesAgo(65),
   },
 ];
 
@@ -703,3 +714,15 @@ export const mockShelterAllocations: ShelterAllocationDetail[] = [
     hazard_exposure: "medium",
   },
 ];
+
+// Deterministic mock network-wide stats for the Phase 10 Traffic Summary panel — fixed
+// values per the operations spec's worked example, not derived from the per-road traffic
+// states (see buildTrafficState in lib/services/dataService.ts).
+export const mockTrafficSummary: TrafficSummary = {
+  free_percent: 62,
+  moderate_percent: 21,
+  heavy_percent: 11,
+  severe_percent: 6,
+  vehicle_count: 2481,
+  average_speed_mph: 18,
+};

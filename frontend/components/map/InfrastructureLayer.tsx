@@ -10,7 +10,14 @@ import type { FireStation, Hospital, PoliceStation, Shelter } from "@/lib/models
 import { getFireStations, getHospitals, getPoliceStations, getShelters } from "@/lib/services/dataService";
 import { fireStationIcon, hospitalIcon, policeStationIcon, shelterIcon } from "./markerIcons";
 
-export default function InfrastructureLayer() {
+interface InfrastructureLayerProps {
+  // Fire/police stations have no Phase 10 layer-control toggle, so they stay unconditional;
+  // only Hospitals and Shelters are individually togglable (see LayerControlPanel).
+  showHospitals?: boolean;
+  showShelters?: boolean;
+}
+
+export default function InfrastructureLayer({ showHospitals = true, showShelters = true }: InfrastructureLayerProps) {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [fireStations, setFireStations] = useState<FireStation[]>([]);
@@ -34,7 +41,7 @@ export default function InfrastructureLayer() {
 
   return (
     <>
-      {hospitals.map((hospital) => (
+      {showHospitals && hospitals.map((hospital) => (
         <Marker key={hospital.id} position={[hospital.latitude, hospital.longitude]} icon={hospitalIcon(hospital.status)}>
           <Popup>
             <div className="marker-popup">
@@ -58,7 +65,7 @@ export default function InfrastructureLayer() {
         </Marker>
       ))}
 
-      {shelters.map((shelter) => (
+      {showShelters && shelters.map((shelter) => (
         <Marker key={shelter.id} position={[shelter.latitude, shelter.longitude]} icon={shelterIcon(shelter.status)}>
           <Popup>
             <div className="marker-popup">

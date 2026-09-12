@@ -29,6 +29,9 @@ import type {
   ShelterRecommendation,
   ShelterStatus,
   SystemStatus,
+  TrafficSegment,
+  TrafficState,
+  TrafficSummary,
   Vehicle,
   VehicleRoute,
 } from "../models";
@@ -40,7 +43,7 @@ import {
   type BackendShelter,
 } from "./backendClient";
 import { buildDetour, routeLengthMiles } from "../routeMotion";
-import { mockEvacuationZoneDetails, mockShelterAllocations } from "../mock";
+import { mockEvacuationZoneDetails, mockHazards, mockShelterAllocations, mockTrafficSummary } from "../mock";
 
 function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
   return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
@@ -155,10 +158,11 @@ export async function getIncidents(): Promise<Incident[]> {
   });
 }
 
-// No backend equivalent yet — the scenario has no hazard-zone concept distinct from
-// incidents/zones.
+// No backend equivalent — the scenario has no hazard-zone concept distinct from
+// incidents/zones, so this is deterministic mock data (used by the Phase 10 Hazards
+// map-layer toggle).
 export async function getHazards(): Promise<Hazard[]> {
-  return [];
+  return mockHazards;
 }
 
 export async function getEvacuationZones(): Promise<EvacuationZone[]> {
@@ -340,4 +344,45 @@ export async function getShelterRecommendations(zoneId: string): Promise<Shelter
       congestion_level: entry.shelter.congestion_level,
       hazard_exposure: entry.shelter.hazard_exposure,
     }));
+}
+
+// Deterministic string hash (no Math.random) so the same road always gets the same mock
+// traffic state on every load, without needing to store a state per road anywhere.
+function hashPercent(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return hash % 100;
+}
+
+// Buckets sized to land on the Traffic Summary panel's fixed 62/21/11/6 split for
+// non-blocked roads. A road already open/congested/closed/blocked (see getRoads above) that
+// is actually blocked or closed carries that over as TrafficState "blocked" instead of
+// getting an independent mock bucket. `cycle` is folded into the hash so the mock
+// congestion subtly reshuffles over time (see TrafficLayer) without becoming random.
+function buildTrafficState(road: Road, cycle: number): TrafficState {
+  if (road.status === "blocked" || road.status === "closed") return "blocked";
+  const bucket = hashPercent(`${road.id}:${cycle}`);
+  if (bucket < 62) return "free";
+  if (bucket < 83) return "moderate";
+  if (bucket < 94) return "heavy";
+  return "severe";
+}
+
+// Phase 10 — traffic visualization layer. Reuses the same road geometry as getRoads(), just
+// with a deterministic mock congestion state per road instead of real traffic measurement.
+export async function getTrafficSegments(cycle = 0): Promise<TrafficSegment[]> {
+  const roads = await getRoads();
+  return roads.map((road) => ({
+    road_id: road.id,
+    name: road.name,
+    coordinates: road.coordinates,
+    state: buildTrafficState(road, cycle),
+  }));
+}
+
+// Fixed mock network-wide stats for the Traffic Summary panel — see mockTrafficSummary.
+export async function getTrafficSummary(): Promise<TrafficSummary> {
+  return mockTrafficSummary;
 }

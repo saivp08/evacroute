@@ -35,7 +35,13 @@ import FieldIntelligencePanel from "./FieldIntelligencePanel";
 import MetricsStrip from "./MetricsStrip";
 import RoutePanel from "./RoutePanel";
 import RoadClosuresPanel from "./RoadClosuresPanel";
+import LayerControlPanel from "./LayerControlPanel";
+import TrafficSummaryPanel from "./TrafficSummaryPanel";
+import TrafficLayerLoader from "@/components/map/TrafficLayerLoader";
+import HazardLayerLoader from "@/components/map/HazardLayerLoader";
+import EvacuationZoneLayerLoader from "@/components/map/EvacuationZoneLayerLoader";
 import type { RerouteState } from "@/lib/reroute";
+import { DEFAULT_MAP_LAYER_VISIBILITY, type MapLayerKey } from "@/lib/mapLayers";
 
 // How long each stage of the "SIMULATE CLOSURE" demo takes. Purely a UI pacing choice —
 // no data is computed here, just a fixed, replayable animation timeline.
@@ -58,6 +64,11 @@ export default function OverviewScreen() {
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [selectedClosureId, setSelectedClosureId] = useState<string | null>(null);
   const [reroute, setReroute] = useState<RerouteState | null>(null);
+  const [layers, setLayers] = useState(DEFAULT_MAP_LAYER_VISIBILITY);
+
+  function toggleLayer(key: MapLayerKey) {
+    setLayers((current) => ({ ...current, [key]: !current[key] }));
+  }
 
   // Switching to a different vehicle always starts fresh — a reroute demo shouldn't carry
   // over onto whatever vehicle the user selects next.
@@ -133,6 +144,8 @@ export default function OverviewScreen() {
     <div className="overview-screen">
       <div className="overview-main-row">
         <aside className="overview-col overview-col-left">
+          <LayerControlPanel layers={layers} onToggle={toggleLayer} />
+          <TrafficSummaryPanel />
           <ActiveIncidentsPanel incidents={data.incidents} />
           <RoadClosuresPanel
             closures={data.roadClosures}
@@ -150,14 +163,26 @@ export default function OverviewScreen() {
             </div>
             <div className="map-frame-canvas">
               <BaseMapLoader>
-                <RoadLayerLoader />
-                <RoadClosureLayerLoader selectedClosureId={selectedClosureId} onSelectClosure={setSelectedClosureId} />
-                <InfrastructureLayerLoader />
-                <VehicleLayerLoader
-                  selectedVehicleId={selectedVehicleId}
-                  onSelectVehicle={setSelectedVehicleId}
-                  reroute={reroute}
-                />
+                {/* Traffic replaces the base road layer's styling while toggled on — both
+                    draw the same road geometry, so showing both at once would just be
+                    wasted overdraw with no visual benefit. */}
+                {layers.traffic ? <TrafficLayerLoader /> : <RoadLayerLoader />}
+                {layers.roadClosures && (
+                  <RoadClosureLayerLoader selectedClosureId={selectedClosureId} onSelectClosure={setSelectedClosureId} />
+                )}
+                {layers.evacuationZones && (
+                  <EvacuationZoneLayerLoader selectedZoneId={null} onSelectZone={() => {}} planVisible={false} />
+                )}
+                {layers.hazards && <HazardLayerLoader />}
+                <InfrastructureLayerLoader showHospitals={layers.hospitals} showShelters={layers.shelters} />
+                {layers.fleet && (
+                  <VehicleLayerLoader
+                    selectedVehicleId={selectedVehicleId}
+                    onSelectVehicle={setSelectedVehicleId}
+                    reroute={reroute}
+                    showRoutes={layers.emergencyRoutes}
+                  />
+                )}
               </BaseMapLoader>
             </div>
           </div>
