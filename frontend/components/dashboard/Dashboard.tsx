@@ -1,5 +1,7 @@
 "use client";
 
+// Archived, unrouted snapshot demo. app/page.tsx uses the API-backed AppShell.
+
 import { useState } from "react";
 import MapPanel from "@/components/map/MapPanel";
 import ZoneList from "@/components/panels/ZoneList";

@@ -20,7 +20,7 @@ export default function ShelterCapacityPanel({ shelters }: { shelters: Shelter[]
                 <span className="ov-row-tag">{shelter.status}</span>
               </div>
               <div className="ov-row-sub">
-                {shelter.occupancy.toLocaleString()} / {shelter.capacity.toLocaleString()} ({pct}%)
+                Current + planned: {shelter.occupancy.toLocaleString()} / {shelter.capacity.toLocaleString()} ({pct}%)
               </div>
               <div className="ov-progress">
                 <div className={`ov-progress-fill ${fillClass(pct)}`} style={{ width: `${Math.min(pct, 100)}%` }} />

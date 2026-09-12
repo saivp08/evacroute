@@ -2,12 +2,12 @@
 
 EvacRoute is a planned real-time disaster transportation coordination platform for first responders and emergency management teams.
 
-**Current status:** The backend supports routing, optimization, structured incidents, cached public data, and OpenAI report parsing. See [backend setup](backend/README.md) and the [API contract](backend/API.md).
+**Current status:** The backend supports routing, optimization, structured incidents, cached public data, and OpenAI report parsing. The frontend overview connects to the real API. See [integration setup, demo, and validation](INTEGRATION.md), [backend setup](backend/README.md), and the [API contract](backend/API.md).
 
 ## Architecture
 
-- Backend: Python + FastAPI. Planned additions: NetworkX, OSMnx, Google OR-Tools, and OpenAI API.
-- Frontend: Next.js App Router + React + TypeScript. Leaflet or Mapbox will be selected later.
+- Backend: Python + FastAPI, NetworkX, OSMnx, Google OR-Tools, and OpenAI API.
+- Frontend: Next.js App Router + React + TypeScript + Leaflet.
 - Planned data: OpenStreetMap, FEMA National Shelter System, U.S. Census population data, and Kincade Wildfire Evacuation Traffic Dataset.
 
 ```text
@@ -20,7 +20,7 @@ Emergency reports
   -> Interactive map/dashboard
 ```
 
-Only skeleton runtime dependencies are installed. Add the planned libraries when their implementation begins.
+Runtime dependencies are declared in the backend requirements and frontend package files.
 
 ## Repository layout
 
@@ -102,7 +102,7 @@ On macOS/Linux, use `python3`, `.venv/bin/python`, `cp`, and `npm` instead of `p
 ### Environment and local communication
 
 - `backend/.env`: `OPEN_AI_API_KEY=` enables natural-language parsing. Uvicorn loads this file with `--env-file .env`; structured endpoints work without a key. Optional settings are `OPEN_AI_MODEL` (default `gpt-4.1-mini`), `OPEN_AI_BASE_URL`, and `OPEN_AI_TIMEOUT_SECONDS`.
-- `frontend/.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8000` is the URL future frontend requests should use via `process.env.NEXT_PUBLIC_API_URL`. The placeholder page does not make API requests.
+- `frontend/.env.local`: `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000` configures the live API service. Initial load fetches the scenario and current optimization plan.
 - FastAPI permits browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` using CORS. If ports change, update the URL and allowed origins together.
 - Restart the frontend after changing its environment. Never put secrets in `NEXT_PUBLIC_` variables or commit real keys.
 

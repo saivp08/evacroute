@@ -1,5 +1,6 @@
 "use client";
 
+import { OperationsProvider } from "@/lib/services/OperationsProvider";
 import { useState } from "react";
 import Sidebar, { type NavKey } from "./Sidebar";
 import StatusBar from "./StatusBar";
@@ -30,7 +31,7 @@ export default function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="app-shell">
+    <OperationsProvider><div className="app-shell">
       <Sidebar active={active} onSelect={setActive} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="app-main">
         <StatusBar sectionLabel={SECTION_LABEL[active]} onMenuClick={() => setSidebarOpen((v) => !v)} />
@@ -42,6 +43,6 @@ export default function AppShell() {
           )}
         </div>
       </div>
-    </div>
+    </div></OperationsProvider>
   );
 }

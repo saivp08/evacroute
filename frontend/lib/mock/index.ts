@@ -1,6 +1,4 @@
-// Temporary development fallback data, shaped exactly like the models in lib/models —
-// which is in turn shaped like the eventual FastAPI response. Only lib/services should
-// import from this file; components must never import mock data directly.
+// Archived visual fixtures. Not imported by the live app or API service.
 import type {
   EvacuationZone,
   FireStation,

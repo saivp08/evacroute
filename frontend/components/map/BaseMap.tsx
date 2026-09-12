@@ -16,8 +16,8 @@ export interface BaseMapProps {
   children?: ReactNode;
 }
 
-// Pittsburgh, PA — default operating area for development.
-const DEFAULT_CENTER: [number, number] = [40.4406, -79.9959];
+// Default local demo area; the live overview passes its backend scenario center.
+const DEFAULT_CENTER: [number, number] = [38.4404, -122.7141];
 const DEFAULT_ZOOM = 12;
 
 function ResizeObserverBridge() {

@@ -1,9 +1,9 @@
 import type { Vehicle, VehicleStatus } from "@/lib/models";
-import { useTickingEta } from "@/lib/useTickingEta";
 import OverviewPanel from "./OverviewPanel";
 
 const STATUS_DOT: Record<VehicleStatus, string> = {
   available: "dot-safe",
+  assigned: "dot-response",
   en_route: "dot-response",
   on_scene: "dot-response",
   returning: "dot-caution",
@@ -17,9 +17,10 @@ interface EmergencyFleetPanelProps {
 }
 
 export default function EmergencyFleetPanel({ vehicles, selectedVehicleId, onSelectVehicle }: EmergencyFleetPanelProps) {
-  const ticked = useTickingEta(vehicles);
+  const ticked = vehicles;
   return (
     <OverviewPanel title="Emergency Fleet" count={ticked.length}>
+      {vehicles.length === 0 && <p className="empty-note">No emergency resources available.</p>}
       <ul className="ov-list">
         {ticked.map((vehicle) => {
           const selected = vehicle.id === selectedVehicleId;
@@ -49,7 +50,7 @@ export default function EmergencyFleetPanel({ vehicles, selectedVehicleId, onSel
                         <span>{vehicle.destination ?? "—"}</span>
                       </div>
                       <div className="ov-row-detail-line">
-                        <span>ETA</span>
+                        <span>Planned ETA</span>
                         <span>{vehicle.eta_minutes !== null ? `${vehicle.eta_minutes} min` : "—"}</span>
                       </div>
                       <div className="ov-row-detail-line">

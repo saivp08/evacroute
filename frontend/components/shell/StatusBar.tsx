@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Incident } from "@/lib/models";
-import { getIncidents } from "@/lib/services/dataService";
+import { useOperations } from "@/lib/services/OperationsProvider";
 
 interface StatusBarProps {
   sectionLabel: string;
@@ -11,7 +10,8 @@ interface StatusBarProps {
 
 export default function StatusBar({ sectionLabel, onMenuClick }: StatusBarProps) {
   const [now, setNow] = useState<Date | null>(null);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const { data, busy, error } = useOperations();
+  const incidents = data?.incidents ?? [];
 
   useEffect(() => {
     setNow(new Date());
@@ -19,17 +19,7 @@ export default function StatusBar({ sectionLabel, onMenuClick }: StatusBarProps)
     return () => clearInterval(id);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    getIncidents().then((data) => {
-      if (!cancelled) setIncidents(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const criticalCount = incidents.filter((i) => i.severity === "critical").length;
+  const criticalCount = incidents.filter((i) => i.severity === "critical" || i.severity === "high").length;
   const isCritical = criticalCount > 0;
 
   return (
@@ -41,10 +31,10 @@ export default function StatusBar({ sectionLabel, onMenuClick }: StatusBarProps)
         <span className="status-bar-section">{sectionLabel}</span>
       </div>
       <div className="status-bar-right">
-        {isCritical ? (
+        {error || !data || busy ? (<span className="status-pill">{busy ?? (error ? "Request failed" : "Connecting")}</span>) : isCritical ? (
           <span className="status-pill status-pill-critical">
             <span className="status-dot status-dot-critical" aria-hidden="true" />
-            {criticalCount} Critical Incident{criticalCount > 1 ? "s" : ""}
+            {criticalCount} High-priority Incident{criticalCount > 1 ? "s" : ""}
           </span>
         ) : (
           <span className="status-pill status-pill-ok">

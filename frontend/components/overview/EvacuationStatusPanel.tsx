@@ -3,6 +3,8 @@ import OverviewPanel from "./OverviewPanel";
 
 const STATUS_DOT: Record<EvacuationZoneStatus, string> = {
   clear: "dot-safe",
+  planned: "dot-response",
+  unplanned: "dot-inactive",
   advisory: "dot-caution",
   warning: "dot-warning",
   mandatory: "dot-critical",

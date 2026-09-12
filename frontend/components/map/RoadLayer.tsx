@@ -1,40 +1,22 @@
 "use client";
 
-// Road network layer.
-//   map component -> this layer -> lib/services/dataService -> mock data (today) / backend (later)
-// Uses getRoads(), which existed in the service layer but had no consumer until now — this
-// wires it up as the visual road-status layer the console has been missing. Purely visual:
-// no routing/pathfinding, just rendering each road's own status.
-import { useEffect, useState } from "react";
 import { Polyline, Popup } from "react-leaflet";
 import type { Road, RoadStatus } from "@/lib/models";
-import { getRoads } from "@/lib/services/dataService";
 
 const ROAD_STYLE: Record<RoadStatus, { color: string; weight: number; dashArray?: string; opacity: number; className?: string }> = {
   open: { color: "#64748b", weight: 3, opacity: 0.55 },
+  restricted: { color: "var(--status-caution)", weight: 4, opacity: 0.85 },
   congested: { color: "var(--status-caution)", weight: 4, opacity: 0.85 },
   blocked: { color: "var(--status-critical)", weight: 5, dashArray: "2 8", opacity: 0.95, className: "road-blocked" },
   closed: { color: "var(--status-critical)", weight: 4, dashArray: "1 10", opacity: 0.7 },
 };
 
-export default function RoadLayer() {
-  const [roads, setRoads] = useState<Road[]>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-    getRoads().then((data) => {
-      if (!cancelled) setRoads(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export default function RoadLayer({ roads }: { roads: Road[] }) {
   return (
     <>
       {roads.map((road) => (
         <Polyline
-          key={road.id}
+          key={`${road.id}-${road.status}`}
           positions={road.coordinates.map((p): [number, number] => [p.latitude, p.longitude])}
           pathOptions={ROAD_STYLE[road.status]}
         >

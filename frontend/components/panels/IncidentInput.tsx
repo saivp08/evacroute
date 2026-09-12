@@ -3,20 +3,19 @@
 import { useState } from "react";
 
 interface IncidentInputProps {
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string) => void | Promise<boolean>;
   disabled?: boolean;
 }
 
-const EXAMPLE = "Wildfire shifted east. Highway 12 is blocked by debris and injuries were reported in Tract 1517.01.";
+const EXAMPLE = "College Avenue is completely blocked by debris. Twelve people are injured in Zone C. This is a high-severity medical incident requiring urgent assistance.";
 
 export default function IncidentInput({ onSubmit, disabled }: IncidentInputProps) {
   const [text, setText] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim()) return;
-    onSubmit(text.trim());
-    setText("");
+    if (disabled || !text.trim()) return;
+    if (await onSubmit(text.trim()) !== false) setText("");
   }
 
   return (
@@ -28,10 +27,11 @@ export default function IncidentInput({ onSubmit, disabled }: IncidentInputProps
         onChange={(e) => setText(e.target.value)}
         placeholder={EXAMPLE}
         rows={3}
+        maxLength={8000}
         disabled={disabled}
       />
       <button type="submit" disabled={disabled || !text.trim()}>
-        Submit report
+        {disabled ? "Please wait..." : "Submit report"}
       </button>
     </form>
   );

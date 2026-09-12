@@ -1348,3 +1348,13 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* API actions reuse the existing console colors and button treatment. */
+.operations-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 0 0 12px; }
+.operations-actions button, .overview-loading button { background: var(--panel-bg); color: var(--text); border: 1px solid var(--panel-border); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+.operations-actions button:disabled { opacity: 0.5; cursor: wait; }
+.operations-actions span { font-size: 12px; color: var(--text-dim); }
+.operations-error { color: var(--status-critical); padding: 10px; margin-bottom: 12px; border: 1px solid currentColor; border-radius: 6px; }
+.overview-col .incident-form { padding: 12px; }
+
+.ov-row-button { color: inherit; }

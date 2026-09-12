@@ -1,17 +1,8 @@
-// Typed entity models for EvacRoute.
-//
-// These describe the shape the FastAPI backend is expected to return (snake_case fields,
-// flat latitude/longitude, string status enums) — see backend/app/models, currently empty.
-// There is no backend yet, so these are authored here first; when the backend adds real
-// Pydantic models, reconcile field-for-field with whatever it actually returns.
-//
-// Nothing outside lib/services should import from here directly for data VALUES — only
-// for these types. Actual data comes from lib/services/dataService.ts.
-
+// UI view models. Wire types and conversions live in lib/services.
 export type LatLng = { latitude: number; longitude: number };
 
-export type VehicleType = "ambulance" | "fire_engine" | "police_vehicle";
-export type VehicleStatus = "available" | "en_route" | "on_scene" | "returning" | "out_of_service";
+export type VehicleType = "ambulance" | "rescue_team" | "fire_engine" | "police_vehicle";
+export type VehicleStatus = "available" | "assigned" | "en_route" | "on_scene" | "returning" | "out_of_service";
 export type VehiclePriority = "low" | "medium" | "high" | "critical";
 
 export interface Vehicle {
@@ -79,7 +70,7 @@ export interface PoliceStation {
 // by `type`, so a single map layer can render/style all four consistently.
 export type InfrastructureAsset = Hospital | Shelter | FireStation | PoliceStation;
 
-export type RoadStatus = "open" | "congested" | "blocked" | "closed";
+export type RoadStatus = "open" | "restricted" | "congested" | "blocked" | "closed";
 
 export interface Road {
   id: string;
@@ -110,10 +101,10 @@ export interface Incident {
   description: string;
   severity: IncidentSeverity;
   status: IncidentStatus;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   zone_id: string | null;
-  reported_at: string;
+  reported_at: string | null;
 }
 
 export type HazardType = "wildfire" | "flood" | "hurricane" | "earthquake" | "other";
@@ -129,7 +120,7 @@ export interface Hazard {
   started_at: string;
 }
 
-export type EvacuationZoneStatus = "clear" | "advisory" | "warning" | "mandatory";
+export type EvacuationZoneStatus = "planned" | "unplanned" | "clear" | "advisory" | "warning" | "mandatory";
 
 export interface EvacuationZone {
   id: string;
@@ -137,6 +128,9 @@ export interface EvacuationZone {
   status: EvacuationZoneStatus;
   population: number;
   boundary: LatLng[];
+  boundaries?: LatLng[][];
+  latitude?: number;
+  longitude?: number;
 }
 
 // The following are operations-console concepts (platform health, analyst reports,

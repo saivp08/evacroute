@@ -1,4 +1,4 @@
-// Builds the live ScenarioState from the static real-data snapshots in lib/data/*.json,
+// Archived snapshot demo (not imported by the live app). Builds ScenarioState from the static real-data snapshots in lib/data/*.json,
 // and applies incident updates client-side. No backend, no routing algorithm — zone/shelter
 // assignment is a simple nearest-available-capacity match, and ambulance/blocked-road
 // "routes" are straight connectors for visualization, not road-network paths.

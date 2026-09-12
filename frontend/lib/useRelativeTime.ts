@@ -14,7 +14,8 @@ export function useNow(intervalMs = 15000) {
   return now;
 }
 
-export function formatRelativeTime(isoTimestamp: string, now: number): string {
+export function formatRelativeTime(isoTimestamp: string | null, now: number): string {
+  if (!isoTimestamp) return "Not provided";
   const deltaSeconds = Math.max(0, Math.round((now - new Date(isoTimestamp).getTime()) / 1000));
   if (deltaSeconds < 60) return "just now";
   const minutes = Math.floor(deltaSeconds / 60);
@@ -23,6 +24,7 @@ export function formatRelativeTime(isoTimestamp: string, now: number): string {
   return `${hours}h ${minutes % 60}m ago`;
 }
 
-export function formatClock(isoTimestamp: string): string {
+export function formatClock(isoTimestamp: string | null): string {
+  if (!isoTimestamp) return "Not provided";
   return new Date(isoTimestamp).toLocaleTimeString(undefined, { hour12: false });
 }

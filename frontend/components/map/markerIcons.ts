@@ -29,12 +29,14 @@ function badgeIcon(letter: string, ringColor: string) {
 
 const VEHICLE_LETTER: Record<VehicleType, string> = {
   ambulance: "A",
+  rescue_team: "R",
   fire_engine: "E",
   police_vehicle: "V",
 };
 
 const VEHICLE_STATUS_COLOR: Record<VehicleStatus, string> = {
   available: "var(--status-safe)",
+  assigned: "var(--status-response)",
   en_route: "var(--status-response)",
   on_scene: "var(--status-response)",
   returning: "var(--status-caution)",
