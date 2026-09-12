@@ -45,7 +45,7 @@ def optimize_evacuation(graph: nx.MultiDiGraph, scenario: ScenarioResponse) -> O
             if path is not None:
                 # OR-Tools requires integer costs: round route time to milliseconds.
                 arc = solver.add_arc_with_capacity_and_unit_cost(
-                    i, len(zones) + j, zone.population, round(path.travel_time_s * 1000)
+                    i, len(zones) + j, zone.population, round(path.effective_travel_time_s * 1000)
                 )
                 assignment_arcs.append((arc, zone, shelter, path))
     for j, shelter in enumerate(shelters):
@@ -70,9 +70,11 @@ def optimize_evacuation(graph: nx.MultiDiGraph, scenario: ScenarioResponse) -> O
             id=f"route-{zone.id}-{shelter.id}", zone=zone.id, zone_name=zone.name,
             shelter=shelter.id, shelter_name=shelter.name, people=people,
             travel_time_s=path.travel_time_s, distance_m=path.distance_m,
+            effective_travel_time_s=path.effective_travel_time_s,
             coordinates=path.coordinates, nodes=path.nodes, edge_ids=path.edge_ids,
         ))
     person_seconds = sum(r.people * r.travel_time_s for r in routes)
+    effective_person_seconds = sum(r.people * r.effective_travel_time_s for r in routes)
     return OptimizationResponse(
         evacuation_routes=routes,
         shelter_assignments=[ShelterAssignment(
@@ -84,5 +86,7 @@ def optimize_evacuation(graph: nx.MultiDiGraph, scenario: ScenarioResponse) -> O
             total_available_shelter_capacity=capacity,
             average_travel_time_s=round(person_seconds / demand, 3) if demand else 0,
             total_person_travel_time_s=round(person_seconds, 3),
+            average_effective_travel_time_s=round(effective_person_seconds / demand, 3) if demand else 0,
+            total_person_effective_travel_time_s=round(effective_person_seconds, 3),
         ),
     )

@@ -1,4 +1,4 @@
-# EvacRoute backend — Tasks 1 and 2
+# EvacRoute backend — Tasks 1–3
 
 Real OpenStreetMap driving roads for a roughly 5 × 5 km bounding box around downtown Santa Rosa, California (center `38.4404, -122.7141`). OSMnx keeps the largest weakly connected component and simplifies road geometry. This covers a bounded demo area, not all of Santa Rosa.
 
@@ -26,6 +26,9 @@ Startup fails with an error if the graph cannot be loaded or downloaded; it neve
 - `GET /health` → `{"status":"ok"}`.
 - `GET /scenario` → the structure below. Loaded once at startup and reused between requests.
 - `POST /optimize` → a calculated evacuation plan for the built-in scenario; no request body required. See below.
+- `POST /incident` → apply a structured road incident and return the recalculated plan.
+- `GET /incidents` → current active incident effects.
+- `POST /incidents/reset` → clear effects and return the baseline plan.
 - Interactive schema: http://localhost:8000/docs.
 - Allowed browser origins: `http://localhost:3000` and `http://127.0.0.1:3000`.
 
@@ -94,7 +97,7 @@ Invoke-RestMethod http://localhost:8000/scenario
 
 Tests use a tiny offline graph for health, API contract, CORS, geometry, speed fallback, demand/capacity, and cache round trips. If the real GraphML cache exists, the integration test also verifies its endpoint and site-node membership/proximity while forbidding OSM downloads; otherwise that test is explicitly skipped. Start the backend once to populate it before running the full suite.
 
-Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; incidents, emergency resources, and frontend changes remain out of scope.
+Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; Task 3 adds structured road incidents. Emergency resources, Grok, and frontend changes remain out of scope.
 
 Display the returned **© OpenStreetMap contributors** attribution with its link on the frontend map. Sources: [OSM attribution](https://www.openstreetmap.org/copyright), [OSMnx graph download and caching APIs](https://osmnx.readthedocs.io/en/stable/user-reference.html).
 
@@ -174,3 +177,105 @@ Infeasibility returns **HTTP 409**, not a partial plan or an opaque server error
 Metrics: 2,000 evacuees, 2,000 assigned, 2,400 initially available spaces, 217.218 seconds average travel time, 434,436.8 person-seconds total. Post-assignment free space is A: 400, B: 0, C: 0. Fresh OSM downloads may change these results.
 
 Task 2 validation: **11 tests passed**, including the real cached scenario, capacity and per-zone conservation, optimality against an exhaustive tiny-case oracle, split zones, directed reachability failure, parallel edges, reversed/multi-edge geometry, repeated identical responses, unchanged scenario state, CORS, zero demand, and co-located sites. Live startup, health, JSON response, route endpoints, capacities, and `pip check` also passed. Two existing upstream Starlette/httpx deprecation warnings remain.
+
+## Task 3: dynamic road incidents
+
+No new installed dependencies. The incident resolver uses the existing Shapely/pyproj geospatial dependencies. Run the backend with a **single worker**: incident state is in memory per process and is lost on restart or development reload. A process-local lock serializes incident updates, reset, and optimization so concurrent calls do not interleave state changes.
+
+The original graph is treated as read-only, and the GraphML file is never updated. Each calculation copies the base graph, initializes neutral dynamic attributes, and overlays active effects. `/scenario` remains baseline map data. Use `/incidents` and `affected_edge_ids` to style incident roads against `/scenario.roads[].id`.
+
+### Cost and lifecycle semantics
+
+```text
+effective_travel_time = base travel_time
+                      × (1 + 4 × hazard_risk)
+                      × damage_penalty
+                      × debris_penalty
+```
+
+| Effect | Low | Medium | High |
+| --- | --- | --- | --- |
+| HAZARD_UPDATE: hazard_risk | 0.25 (2× cost) | 0.5 (3× cost) | 1 (5× cost) |
+| ROAD_DAMAGE: damage_penalty | 1.5× | 2× | 4× |
+| DEBRIS: debris_penalty | 2× | 5× | blocked |
+
+Neutral defaults: `blocked=false`, `hazard_risk=0`, `damage_penalty=1`, `debris_penalty=1`. ROAD_CLOSURE blocks regardless of severity. Blocked edges are omitted from shortest-path routing, including parallel-edge selection. Both shortest paths and OR-Tools assignment use effective cost, rounded to milliseconds for flow costs. There is no traffic or road-capacity simulation.
+
+Existing `travel_time_s` and travel-time metrics retain their free-flow meaning along the selected route. Additive fields `effective_travel_time_s` on routes and `average_effective_travel_time_s` / `total_person_effective_travel_time_s` in metrics report penalized cost, not measured travel time. At baseline these equal their existing counterparts.
+
+Updates replace the effect of the **same type on each targeted edge**. Different effect types multiply together. An identical repeat produces the same normalized incident and plan; it never stacks duplicate penalties. A severity update replaces the old severity. When an update only overlaps part of an older incident, the older record retains only its unaffected edge IDs. IDs are stable hashes of normalized type, severity, and original affected edge IDs; this list is active state, not an event history.
+
+ROAD_REOPEN removes closures and high-severity blocking debris on selected edges; it preserves hazards, damage, and nonblocking debris. Reopen is returned as the normalized action but is not retained as an active incident. Reset clears every effect, does not consume shelter space, and reproduces the baseline `/optimize` response exactly.
+
+### Requests and responses
+
+POST `/incident` accepts exactly one targeting format:
+
+```json
+{"type":"ROAD_CLOSURE","edge_id":"56073223:56093740:0","severity":"high"}
+```
+
+```json
+{"type":"ROAD_DAMAGE","edge_ids":["56073223:56093740:0"],"severity":"medium"}
+```
+
+```json
+{"type":"HAZARD_UPDATE","road_name":"El Rancho Way","severity":"high"}
+```
+
+```json
+{"type":"DEBRIS","latitude":38.44,"longitude":-122.71,"severity":"low"}
+```
+
+Types and severity are case-sensitive; omitted severity defaults to `high`. Edge IDs target exact **directed** edges; reverse directions are not automatically included. An `edge_ids` list can explicitly select both directions. Road names match exactly, ignoring case and surrounding whitespace, including list-valued OSM names; **all matching segments and directions** are affected, not just the first match. Abbreviations such as `Ave` are not expanded; use names from `/scenario`.
+
+Coordinates choose one nearest directed edge by metric geometry distance in Santa Rosa's UTM zone (EPSG:32610), with edge-ID tie breaking. Points farther than 150 meters from every edge are rejected. This lookup is for the Santa Rosa demo; it is not a global road resolver. Coordinate arrays in all responses remain **[latitude, longitude]**.
+
+Successful HTTP 200 response has plan fields directly at the top level (not nested under `plan`):
+
+```text
+{
+  "incident": {
+    "id": "incident-...", "type": "ROAD_CLOSURE", "severity": "high",
+    "affected_edge_ids": ["56073223:56093740:0"]
+  },
+  "affected_edge_ids": ["56073223:56093740:0"],
+  "incidents": [/* normalized active incident records */],
+  "evacuation_routes": [/* existing route fields + effective_travel_time_s */],
+  "shelter_assignments": [/* unchanged contract */],
+  "metrics": {/* existing metrics + effective cost metrics */}
+}
+```
+
+GET `/incidents` returns `{"incidents":[...]}`. POST `/incidents/reset` takes no body and returns `evacuation_routes`, `shelter_assignments`, `metrics`, and `incidents: []`. POST `/optimize` always uses current incident effects while retaining its three top-level fields.
+
+Invalid structure/type/severity returns HTTP 422. Unknown road names, edge IDs, or distant coordinates return HTTP 404:
+
+```json
+{"detail":{"code":"road_target_not_found","message":"Unknown edge IDs: missing"}}
+```
+
+**Incident updates are atomic:** if the candidate effects make a complete plan infeasible, POST `/incident` returns HTTP 409 with the existing optimization error fields plus `"incident_applied": false`. The incident is rejected and the previously active state remains intact. The frontend must show that error and must not display the rejected closure as active. Reset remains available. No shelter occupancy changes between calls.
+
+### Deterministic Santa Rosa closure demo
+
+Use [demo_incident.json](demo_incident.json): **El Rancho Way, directed edge `56073223:56093740:0`**. This edge serves 850 baseline evacuees across both Zone B assignments. Closing it changes their geometry but preserves all zone-to-shelter population assignments.
+
+| Route | People | Baseline seconds → closed seconds | Baseline meters → closed meters |
+| --- | ---: | --- | --- |
+| Zone B → Shelter B | 150 | 294.036 → 330.784 | 2788.552 → 3118.037 |
+| Zone B → Shelter C | 700 | 205.401 → 242.150 | 1835.698 → 2165.183 |
+
+Both detour from node `56073223` via `56073225` and `56093744`, rejoining at `56093740`. Other routes remain unchanged. Total assigned stays 2,000; available capacity stays 2,400. Mean time rises from 217.218 to 232.837 seconds; total person-time rises from 434,436.8 to 465,673.3 seconds. If the OSM cache is intentionally refreshed, revalidate the demo edge and results.
+
+From `backend/`, with the server running:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8000/optimize
+Invoke-RestMethod -Method Post http://localhost:8000/incident -ContentType 'application/json' -InFile demo_incident.json
+Invoke-RestMethod http://localhost:8000/incidents
+Invoke-RestMethod -Method Post http://localhost:8000/incidents/reset
+Invoke-RestMethod -Method Post http://localhost:8000/optimize
+```
+
+Validation: **29 tests passed**, including all Task 1/2 tests, targeting, penalty composition, duplicate updates, partial reopen, blocked-edge exclusion, atomic failure, unchanged base graph/cache, and real demo reset. Live baseline/closure/reset JSON is saved locally in ignored `backend/cache/task3_*.json`; the post-reset response matches baseline exactly. Two upstream deprecation warnings remain. No Task 4 functionality is included.

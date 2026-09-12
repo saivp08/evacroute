@@ -12,6 +12,7 @@ class RoadPath:
     nodes: list[str]
     edge_ids: list[str]
     travel_time_s: float
+    effective_travel_time_s: float
     distance_m: float
     coordinates: list[Coordinate]
 
@@ -24,9 +25,12 @@ def compute_shortest_paths(
     routing_graph = nx.DiGraph()
     routing_graph.add_nodes_from(sorted(graph.nodes))
     for source, target, key, edge in sorted(graph.edges(keys=True, data=True)):
+        if edge.get("blocked", False):
+            continue
+        cost = edge.get("effective_travel_time", edge["travel_time"])
         existing = routing_graph.get_edge_data(source, target)
-        if existing is None or edge["travel_time"] < existing["travel_time"]:
-            routing_graph.add_edge(source, target, travel_time=edge["travel_time"], key=key)
+        if existing is None or cost < existing["travel_time"]:
+            routing_graph.add_edge(source, target, travel_time=cost, key=key)
 
     paths = {}
     for zone in sorted(zones, key=lambda item: item.id):
@@ -39,7 +43,7 @@ def compute_shortest_paths(
                 continue  # Unreachable pairs must not become assignment arcs.
             coordinates = []
             edge_ids = []
-            seconds = distance = 0.0
+            seconds = distance = effective_seconds = 0.0
             for source, target in zip(nodes, nodes[1:]):
                 key = routing_graph[source][target]["key"]
                 edge = graph[source][target][key]
@@ -56,6 +60,7 @@ def compute_shortest_paths(
                 coordinates.extend(points if not coordinates else points[1:])
                 edge_ids.append(f"{source}:{target}:{key}")
                 seconds += float(edge["travel_time"])
+                effective_seconds += float(edge.get("effective_travel_time", edge["travel_time"]))
                 distance += float(edge["length"])
             if not coordinates:
                 # Co-located sites require no travel; keep a valid two-point line.
@@ -64,6 +69,7 @@ def compute_shortest_paths(
             paths[zone.id, shelter.id] = RoadPath(
                 nodes=[str(node) for node in nodes], edge_ids=edge_ids,
                 travel_time_s=round(seconds, 3), distance_m=round(distance, 3),
+                effective_travel_time_s=round(effective_seconds, 3),
                 coordinates=[(round(lat, 6), round(lon, 6)) for lat, lon in coordinates],
             )
     return paths

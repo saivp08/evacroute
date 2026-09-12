@@ -13,6 +13,7 @@ class EvacuationRoute(BaseModel):
     shelter_name: str
     people: int = Field(gt=0)
     travel_time_s: float = Field(ge=0)
+    effective_travel_time_s: float = Field(ge=0)
     distance_m: float = Field(ge=0)
     coordinates: list[Coordinate] = Field(min_length=2)
     nodes: list[str]
@@ -32,6 +33,8 @@ class OptimizationMetrics(BaseModel):
     total_available_shelter_capacity: int = Field(ge=0)
     average_travel_time_s: float = Field(ge=0)
     total_person_travel_time_s: float = Field(ge=0)
+    average_effective_travel_time_s: float = Field(ge=0)
+    total_person_effective_travel_time_s: float = Field(ge=0)
 
 
 class OptimizationResponse(BaseModel):
