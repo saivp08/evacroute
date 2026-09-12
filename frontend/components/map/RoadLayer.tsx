@@ -1,26 +1,33 @@
 "use client";
 
-// Road network layer.
-//   map component -> this layer -> lib/services/dataService -> mock data (today) / backend (later)
-// Uses getRoads(), which existed in the service layer but had no consumer until now — this
-// wires it up as the visual road-status layer the console has been missing. Purely visual:
-// no routing/pathfinding, just rendering each road's own status.
-import { useEffect, useState } from "react";
-import { Polyline, Popup } from "react-leaflet";
-import type { Road, RoadStatus } from "@/lib/models";
+// Road network layer (MapLibre) — a single vector GeoJSON line layer instead of one
+// Polyline DOM element per road (the old Leaflet approach), which is what actually lets
+// thousands of road segments stay smooth: MapLibre renders the whole layer in one WebGL
+// draw call.
+//   map component -> this layer -> lib/services/dataService -> live backend
+import { useEffect, useMemo, useState } from "react";
+import { Source, Layer } from "react-map-gl/maplibre";
+import type { GeoJSON } from "geojson";
+import type { Road } from "@/lib/models";
 import { getRoads } from "@/lib/services/dataService";
+import { useTheme } from "@/lib/theme";
+import { getMapPalette } from "@/lib/mapColors";
 
-// Four-tier severity ladder using the app's fixed semantic colors: subdued/normal ->
-// caution (congested) -> warning (closed) -> danger (actively blocked).
-const ROAD_STYLE: Record<RoadStatus, { color: string; weight: number; dashArray?: string; opacity: number; className?: string }> = {
-  open: { color: "var(--text-muted)", weight: 3, opacity: 0.55 },
-  congested: { color: "var(--caution)", weight: 4, opacity: 0.85 },
-  closed: { color: "var(--warning)", weight: 4, dashArray: "1 10", opacity: 0.75 },
-  blocked: { color: "var(--danger)", weight: 5, dashArray: "2 8", opacity: 0.95, className: "road-blocked" },
-};
+function toFeatureCollection(roads: Road[]): GeoJSON.FeatureCollection<GeoJSON.LineString, { status: string }> {
+  return {
+    type: "FeatureCollection",
+    features: roads.map((road) => ({
+      type: "Feature",
+      properties: { status: road.status },
+      geometry: { type: "LineString", coordinates: road.coordinates.map((p) => [p.longitude, p.latitude]) },
+    })),
+  };
+}
 
 export default function RoadLayer() {
   const [roads, setRoads] = useState<Road[]>([]);
+  const { theme } = useTheme();
+  const palette = getMapPalette(theme);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,31 +39,38 @@ export default function RoadLayer() {
     };
   }, []);
 
+  const data = useMemo(() => toFeatureCollection(roads), [roads]);
+
   return (
-    <>
-      {roads.map((road) => (
-        <Polyline
-          key={road.id}
-          positions={road.coordinates.map((p): [number, number] => [p.latitude, p.longitude])}
-          pathOptions={ROAD_STYLE[road.status]}
-        >
-          <Popup>
-            <div className="marker-popup">
-              <div className="marker-popup-title">{road.name}</div>
-              <div className="marker-popup-row">
-                <span>Status</span>
-                <span>{road.status}</span>
-              </div>
-              {road.closure_reason && (
-                <div className="marker-popup-row">
-                  <span>Reason</span>
-                  <span>{road.closure_reason}</span>
-                </div>
-              )}
-            </div>
-          </Popup>
-        </Polyline>
-      ))}
-    </>
+    <Source id="roads" type="geojson" data={data}>
+      {/* Real progressive road-hierarchy: thin/subdued when zoomed out (the "broad
+          transportation network" view), thicker and more opaque zoomed in (the
+          "individual streets" view) — driven by actual zoom, not a fabricated detail
+          layer. MapLibre only allows a "zoom" expression as the direct, top-level input to
+          an interpolate/step — it can't be nested inside a "match" — so closed/blocked
+          roads get a second always-visible overlay layer instead of a per-status opacity
+          branch on this one. */}
+      <Layer
+        id="roads-line"
+        type="line"
+        layout={{ "line-cap": "round", "line-join": "round" }}
+        paint={{
+          "line-color": ["match", ["get", "status"], "closed", palette.danger, "blocked", palette.danger, "congested", palette.caution, palette.textMuted],
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.6, 14, 1.6, 18, 4],
+          "line-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.35, 16, 0.65],
+        }}
+      />
+      <Layer
+        id="roads-closed-overlay"
+        type="line"
+        filter={["in", ["get", "status"], ["literal", ["closed", "blocked"]]]}
+        layout={{ "line-cap": "round", "line-join": "round" }}
+        paint={{
+          "line-color": palette.danger,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 18, 5],
+          "line-opacity": 0.95,
+        }}
+      />
+    </Source>
   );
 }

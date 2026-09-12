@@ -1,14 +1,22 @@
 "use client";
 
-// Real backend incidents, rendered as clickable map markers.
-//   map component -> this layer -> lib/services/dataService -> live FastAPI backend
-// Selection is lifted to the parent screen (same pattern as every other layer) so the
-// Active Incidents panel and the map stay in sync.
+// Real backend incidents, rendered as clickable map markers (MapLibre).
+//   map component -> this layer -> lib/services/dataService -> live backend
 import { useEffect, useState } from "react";
-import { Marker, Popup, useMap } from "react-leaflet";
-import type { Incident } from "@/lib/models";
+import { Marker, useMap } from "react-map-gl/maplibre";
+import type { Incident, IncidentSeverity } from "@/lib/models";
 import { getIncidents } from "@/lib/services/dataService";
-import { incidentIcon } from "./markerIcons";
+import { useTheme } from "@/lib/theme";
+import { getMapPalette, type MapPalette } from "@/lib/mapColors";
+import MarkerBadge from "./MarkerBadge";
+import { IncidentIcon } from "./icons";
+
+function severityColor(palette: MapPalette, severity: IncidentSeverity): string {
+  if (severity === "critical") return palette.danger;
+  if (severity === "high") return palette.warning;
+  if (severity === "medium") return palette.caution;
+  return palette.textMuted;
+}
 
 interface IncidentLayerProps {
   selectedIncidentId: string | null;
@@ -17,7 +25,9 @@ interface IncidentLayerProps {
 
 export default function IncidentLayer({ selectedIncidentId, onSelectIncident }: IncidentLayerProps) {
   const [incidents, setIncidents] = useState<Incident[]>([]);
-  const map = useMap();
+  const { current: map } = useMap();
+  const { theme } = useTheme();
+  const palette = getMapPalette(theme);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,10 +40,10 @@ export default function IncidentLayer({ selectedIncidentId, onSelectIncident }: 
   }, []);
 
   useEffect(() => {
-    if (!selectedIncidentId) return;
+    if (!selectedIncidentId || !map) return;
     const incident = incidents.find((i) => i.id === selectedIncidentId);
     if (!incident) return;
-    map.flyTo([incident.latitude, incident.longitude], Math.max(map.getZoom(), 14), { duration: 0.6 });
+    map.flyTo({ center: [incident.longitude, incident.latitude], zoom: Math.max(map.getZoom(), 16), pitch: 55, duration: 900 });
   }, [selectedIncidentId, incidents, map]);
 
   return (
@@ -43,24 +53,22 @@ export default function IncidentLayer({ selectedIncidentId, onSelectIncident }: 
         return (
           <Marker
             key={incident.id}
-            position={[incident.latitude, incident.longitude]}
-            icon={incidentIcon(incident.severity, selected)}
-            eventHandlers={{ click: () => onSelectIncident(incident.id) }}
+            longitude={incident.longitude}
+            latitude={incident.latitude}
+            anchor="center"
+            onClick={(e) => {
+              e.originalEvent.stopPropagation();
+              onSelectIncident(incident.id);
+            }}
           >
-            <Popup>
-              <div className="marker-popup">
-                <div className="marker-popup-title">{incident.type.replace(/_/g, " ")}</div>
-                <div className="marker-popup-sub">{incident.severity} severity</div>
-                <div className="marker-popup-row">
-                  <span>Status</span>
-                  <span>{incident.status}</span>
-                </div>
-                <div className="marker-popup-row">
-                  <span>Zone</span>
-                  <span>{incident.zone_id ?? "—"}</span>
-                </div>
-              </div>
-            </Popup>
+            <MarkerBadge
+              color={severityColor(palette, incident.severity)}
+              size={selected ? 38 : 28}
+              selected={selected}
+              pulse={incident.severity === "critical"}
+            >
+              <IncidentIcon size={selected ? 22 : 16} color="#fff" />
+            </MarkerBadge>
           </Marker>
         );
       })}

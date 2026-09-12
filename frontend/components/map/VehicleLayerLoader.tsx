@@ -1,7 +1,7 @@
 "use client";
 
-// VehicleLayer imports `leaflet`-backed react-leaflet primitives and marker icons that
-// touch `window` at module load — keep it out of the server bundle, same as the other layers.
+// VehicleLayer imports MapLibre-backed react-map-gl primitives that touch `window` at
+// module load — keep it out of the server bundle, same as the other layers.
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
 import type VehicleLayerType from "./VehicleLayer";

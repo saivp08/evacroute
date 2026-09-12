@@ -1,28 +1,45 @@
 "use client";
 
-// Evacuation zone polygons — real backend zone boundaries (population, geometry, and a
-// mandatory/advisory status derived from whether the zone currently has an active
-// incident against it; see getEvacuationZones in lib/services/dataService.ts).
-//   map component -> this layer -> lib/services/dataService -> live FastAPI backend
-// Selection is lifted to the parent screen (same pattern as VehicleLayer/RoadClosureLayer)
-// so the zone list panel and the map stay in sync.
+// Evacuation zone polygons (MapLibre) — real backend zone boundaries, population, and a
+// mandatory/advisory status derived from whether the zone currently has an active incident
+// against it (see getEvacuationZones in lib/services/dataService.ts).
 import { useEffect, useState } from "react";
-import { Polygon, Popup, useMap } from "react-leaflet";
+import { Source, Layer, useMap } from "react-map-gl/maplibre";
+import type { GeoJSON } from "geojson";
+import type { MapMouseEvent } from "maplibre-gl";
 import type { EvacuationZone, EvacuationZoneStatus, LatLng } from "@/lib/models";
 import { getEvacuationZones } from "@/lib/services/dataService";
+import { useTheme } from "@/lib/theme";
+import { getMapPalette, type MapPalette } from "@/lib/mapColors";
 
-const STATUS_COLOR: Record<EvacuationZoneStatus, string> = {
-  mandatory: "var(--danger)",
-  warning: "var(--warning)",
-  advisory: "var(--caution)",
-  clear: "var(--success)",
-};
+function statusColor(palette: MapPalette, status: EvacuationZoneStatus): string {
+  if (status === "mandatory") return palette.danger;
+  if (status === "warning") return palette.warning;
+  if (status === "advisory") return palette.caution;
+  return palette.success;
+}
 
 function centroidOf(boundary: LatLng[]): [number, number] | null {
   if (boundary.length === 0) return null;
   const lat = boundary.reduce((sum, p) => sum + p.latitude, 0) / boundary.length;
   const lng = boundary.reduce((sum, p) => sum + p.longitude, 0) / boundary.length;
-  return [lat, lng];
+  return [lng, lat];
+}
+
+function toFeatureCollection(
+  zones: EvacuationZone[],
+  palette: MapPalette
+): GeoJSON.FeatureCollection<GeoJSON.Polygon, { id: string; color: string }> {
+  return {
+    type: "FeatureCollection",
+    features: zones
+      .filter((zone) => zone.boundary.length > 2)
+      .map((zone) => ({
+        type: "Feature",
+        properties: { id: zone.id, color: statusColor(palette, zone.status) },
+        geometry: { type: "Polygon", coordinates: [[...zone.boundary.map((p): [number, number] => [p.longitude, p.latitude]), [zone.boundary[0].longitude, zone.boundary[0].latitude]]] },
+      })),
+  };
 }
 
 interface EvacuationZoneLayerProps {
@@ -32,7 +49,9 @@ interface EvacuationZoneLayerProps {
 
 export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone }: EvacuationZoneLayerProps) {
   const [zones, setZones] = useState<EvacuationZone[]>([]);
-  const map = useMap();
+  const { current: map } = useMap();
+  const { theme } = useTheme();
+  const palette = getMapPalette(theme);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,42 +67,44 @@ export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone }: Ev
     if (!selectedZoneId) return;
     const zone = zones.find((z) => z.id === selectedZoneId);
     const center = zone ? centroidOf(zone.boundary) : null;
-    if (!center) return;
-    map.flyTo(center, Math.max(map.getZoom(), 13), { duration: 0.6 });
+    if (!center || !map) return;
+    map.flyTo({ center, zoom: Math.max(map.getZoom(), 14), pitch: 45, duration: 900 });
   }, [selectedZoneId, zones, map]);
 
+  useEffect(() => {
+    if (!map) return;
+    const handleClick = (e: MapMouseEvent) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: ["evac-zones-fill"] });
+      const id = features[0]?.properties?.id;
+      if (typeof id === "string") onSelectZone(id);
+    };
+    map.on("click", "evac-zones-fill", handleClick);
+    return () => {
+      map.off("click", "evac-zones-fill", handleClick);
+    };
+  }, [map, onSelectZone]);
+
+  const data = toFeatureCollection(zones, palette);
+  const selectedZone = zones.find((z) => z.id === selectedZoneId);
+
   return (
-    <>
-      {zones
-        .filter((zone) => zone.boundary.length > 2)
-        .map((zone) => {
-          const selected = zone.id === selectedZoneId;
-          const color = STATUS_COLOR[zone.status];
-          return (
-            <Polygon
-              key={zone.id}
-              positions={zone.boundary.map((p): [number, number] => [p.latitude, p.longitude])}
-              pathOptions={{
-                color,
-                weight: selected ? 3 : 1.5,
-                fillColor: color,
-                fillOpacity: selected ? 0.32 : 0.16,
-              }}
-              eventHandlers={{ click: () => onSelectZone(zone.id) }}
-            >
-              <Popup>
-                <div className="marker-popup">
-                  <div className="marker-popup-title">{zone.name}</div>
-                  <div className="marker-popup-sub">{zone.status}</div>
-                  <div className="marker-popup-row">
-                    <span>Population</span>
-                    <span>{zone.population.toLocaleString()}</span>
-                  </div>
-                </div>
-              </Popup>
-            </Polygon>
-          );
-        })}
-    </>
+    <Source id="evac-zones" type="geojson" data={data}>
+      <Layer
+        id="evac-zones-fill"
+        type="fill"
+        paint={{
+          "fill-color": ["get", "color"],
+          "fill-opacity": ["case", ["==", ["get", "id"], selectedZone?.id ?? ""], 0.35, 0.16],
+        }}
+      />
+      <Layer
+        id="evac-zones-outline"
+        type="line"
+        paint={{
+          "line-color": ["get", "color"],
+          "line-width": ["case", ["==", ["get", "id"], selectedZone?.id ?? ""], 3, 1.5],
+        }}
+      />
+    </Source>
   );
 }

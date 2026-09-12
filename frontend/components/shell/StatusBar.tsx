@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { SystemStatus } from "@/lib/models";
 import { getSystemStatuses } from "@/lib/services/dataService";
+import ThemeToggle from "./ThemeToggle";
 
 export default function StatusBar() {
   const [now, setNow] = useState<Date | null>(null);
@@ -68,6 +69,7 @@ export default function StatusBar() {
           </span>
         )}
         <span className="status-bar-time">{now ? now.toLocaleTimeString() : "--:--:--"}</span>
+        <ThemeToggle />
       </div>
     </header>
   );

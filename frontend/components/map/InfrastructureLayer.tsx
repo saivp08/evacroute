@@ -1,18 +1,33 @@
 "use client";
 
-// Infrastructure marker layer: hospitals, shelters, fire stations, police stations.
-//   map component -> this layer -> lib/services/dataService -> mock data (today) / backend (later)
-// This layer owns its own fetch so it can be dropped into any map without the parent
-// screen needing to know about infrastructure data.
+// Fixed infrastructure marker layer: hospitals, shelters (MapLibre).
+//   map component -> this layer -> lib/services/dataService -> live backend (shelters) /
+//   empty (hospitals — no backend data source exists yet, see dataService.getHospitals)
 import { useEffect, useState } from "react";
-import { Marker, Popup, useMap } from "react-leaflet";
-import type { FireStation, Hospital, PoliceStation, Shelter } from "@/lib/models";
-import { getFireStations, getHospitals, getPoliceStations, getShelters } from "@/lib/services/dataService";
-import { fireStationIcon, hospitalIcon, policeStationIcon, shelterIcon } from "./markerIcons";
+import { Marker, useMap } from "react-map-gl/maplibre";
+import type { FacilityStatus, Hospital, Shelter, ShelterStatus } from "@/lib/models";
+import { getHospitals, getShelters } from "@/lib/services/dataService";
+import { useTheme } from "@/lib/theme";
+import { getMapPalette } from "@/lib/mapColors";
+import MarkerBadge from "./MarkerBadge";
+import { HospitalIcon, ShelterIcon } from "./icons";
+
+const FACILITY_STATUS_KEY: Record<FacilityStatus, "success" | "caution" | "danger"> = {
+  operational: "success",
+  limited: "caution",
+  offline: "danger",
+};
+
+const SHELTER_STATUS_KEY: Record<ShelterStatus, "success" | "warning" | "danger"> = {
+  open: "success",
+  full: "warning",
+  closed: "danger",
+};
 
 interface InfrastructureLayerProps {
-  // Fire/police stations have no layer-control toggle, so they stay unconditional; only
-  // Hospitals and Shelters are individually togglable (see LayerControlPanel).
+  // Fire/police stations have no layer-control toggle, so they stay unconditional (though
+  // both currently return no backend data — see dataService); only Hospitals and Shelters
+  // are individually togglable (see LayerControlPanel).
   showHospitals?: boolean;
   showShelters?: boolean;
   selectedShelterId?: string | null;
@@ -27,120 +42,60 @@ export default function InfrastructureLayer({
 }: InfrastructureLayerProps) {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [shelters, setShelters] = useState<Shelter[]>([]);
-  const [fireStations, setFireStations] = useState<FireStation[]>([]);
-  const [policeStations, setPoliceStations] = useState<PoliceStation[]>([]);
-  const map = useMap();
+  const { current: map } = useMap();
+  const { theme } = useTheme();
+  const palette = getMapPalette(theme);
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([getHospitals(), getShelters(), getFireStations(), getPoliceStations()]).then(
-      ([h, s, f, p]) => {
-        if (cancelled) return;
-        setHospitals(h);
-        setShelters(s);
-        setFireStations(f);
-        setPoliceStations(p);
-      }
-    );
+    Promise.all([getHospitals(), getShelters()]).then(([h, s]) => {
+      if (cancelled) return;
+      setHospitals(h);
+      setShelters(s);
+    });
     return () => {
       cancelled = true;
     };
   }, []);
 
   useEffect(() => {
-    if (!selectedShelterId) return;
+    if (!selectedShelterId || !map) return;
     const shelter = shelters.find((s) => s.id === selectedShelterId);
     if (!shelter) return;
-    map.flyTo([shelter.latitude, shelter.longitude], Math.max(map.getZoom(), 14), { duration: 0.6 });
+    map.flyTo({ center: [shelter.longitude, shelter.latitude], zoom: Math.max(map.getZoom(), 16), pitch: 50, duration: 900 });
   }, [selectedShelterId, shelters, map]);
 
   return (
     <>
-      {showHospitals && hospitals.map((hospital) => (
-        <Marker key={hospital.id} position={[hospital.latitude, hospital.longitude]} icon={hospitalIcon(hospital.status)}>
-          <Popup>
-            <div className="marker-popup">
-              <div className="marker-popup-title">{hospital.name}</div>
-              <div className="marker-popup-row">
-                <span>Status</span>
-                <span>{hospital.status}</span>
-              </div>
-              <div className="marker-popup-row">
-                <span>Trauma Level</span>
-                <span>{hospital.trauma_level ?? "—"}</span>
-              </div>
-              <div className="marker-popup-row">
-                <span>Beds Available</span>
-                <span>
-                  {hospital.beds_available} / {hospital.bed_capacity}
-                </span>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {showHospitals &&
+        hospitals.map((hospital) => (
+          <Marker key={hospital.id} longitude={hospital.longitude} latitude={hospital.latitude} anchor="center">
+            <MarkerBadge color={palette[FACILITY_STATUS_KEY[hospital.status]]} shape="square" size={28}>
+              <HospitalIcon size={17} color="#fff" />
+            </MarkerBadge>
+          </Marker>
+        ))}
 
-      {showShelters && shelters.map((shelter) => (
-        <Marker
-          key={shelter.id}
-          position={[shelter.latitude, shelter.longitude]}
-          icon={shelterIcon(shelter.status)}
-          eventHandlers={onSelectShelter ? { click: () => onSelectShelter(shelter.id) } : undefined}
-        >
-          <Popup>
-            <div className="marker-popup">
-              <div className="marker-popup-title">{shelter.name}</div>
-              <div className="marker-popup-sub">{shelter.address}</div>
-              <div className="marker-popup-row">
-                <span>Status</span>
-                <span>{shelter.status}</span>
-              </div>
-              <div className="marker-popup-row">
-                <span>Occupancy</span>
-                <span>
-                  {shelter.occupancy} / {shelter.capacity}
-                </span>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-
-      {fireStations.map((station) => (
-        <Marker key={station.id} position={[station.latitude, station.longitude]} icon={fireStationIcon(station.status)}>
-          <Popup>
-            <div className="marker-popup">
-              <div className="marker-popup-title">{station.name}</div>
-              <div className="marker-popup-row">
-                <span>Status</span>
-                <span>{station.status}</span>
-              </div>
-              <div className="marker-popup-row">
-                <span>Jurisdiction</span>
-                <span>{station.jurisdiction}</span>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-
-      {policeStations.map((station) => (
-        <Marker key={station.id} position={[station.latitude, station.longitude]} icon={policeStationIcon(station.status)}>
-          <Popup>
-            <div className="marker-popup">
-              <div className="marker-popup-title">{station.name}</div>
-              <div className="marker-popup-row">
-                <span>Status</span>
-                <span>{station.status}</span>
-              </div>
-              <div className="marker-popup-row">
-                <span>Jurisdiction</span>
-                <span>{station.jurisdiction}</span>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {showShelters &&
+        shelters.map((shelter) => {
+          const selected = shelter.id === selectedShelterId;
+          return (
+            <Marker
+              key={shelter.id}
+              longitude={shelter.longitude}
+              latitude={shelter.latitude}
+              anchor="center"
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                onSelectShelter?.(shelter.id);
+              }}
+            >
+              <MarkerBadge color={palette[SHELTER_STATUS_KEY[shelter.status]]} shape="square" size={selected ? 36 : 28} selected={selected}>
+                <ShelterIcon size={selected ? 21 : 17} color="#fff" />
+              </MarkerBadge>
+            </Marker>
+          );
+        })}
     </>
   );
 }

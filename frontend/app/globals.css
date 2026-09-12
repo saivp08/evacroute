@@ -1,76 +1,51 @@
+/* ---- Theme system ----
+   Two intentionally-designed themes (not "dark inverted to white"), switched via
+   [data-theme] on <html> — see components/shell/ThemeToggle.tsx and lib/theme.ts. Dark is
+   the default/base :root palette (matches the original EvacRoute navy spec); light
+   overrides it under :root[data-theme="light"]. Every other rule in this file reads only
+   the semantic tokens below, so the whole app (header, rails, cards, drawers, popups,
+   alerts, map overlays, controls, buttons) re-themes automatically. */
 :root {
-  /* ---- Editorial / civic-tech foundation ----
-     A warm, Lace-influenced off-white base rather than a flat dark navy — cards read as
-     paper-like surfaces, not glowing panels. See design-system.md-style rationale inline:
-     Peacock/Spruce carry ink and structure, Sapphire is the one recurring accent, and the
-     status colors below map 1:1 onto the fixed EvacRoute palette (no ad-hoc hex anywhere
-     else in the app). */
-  --peacock: #053229;
-  --spruce: #355e58;
-  --sapphire: #72b0ab;
-  --arctic: #bcdddc;
-  --lace: #ffedd1;
-  --bubblegum: #fdc1b4;
-  --ballet-slipper: #fe9179;
-  --sage: #cfb92e;
-  --pistachio: #b89d47;
+  --bg-primary: #07111f;
+  --surface-primary: #0d1b2a;
+  --surface-elevated: #13263a;
+  --surface-elevated-2: #183149;
+  --border: #29445c;
+  --border-soft: rgba(175, 192, 207, 0.14);
+  --surface-glass: rgba(19, 38, 58, 0.94);
+  --surface-glass-strong: rgba(13, 27, 42, 0.97);
 
-  --peacock-rgb: 5, 50, 41;
-  --spruce-rgb: 53, 94, 88;
-  --sapphire-rgb: 114, 176, 171;
-  --arctic-rgb: 188, 221, 220;
-  --lace-rgb: 255, 237, 209;
-
-  --bg-primary: #faf5ec;
-  --surface-primary: #fffdf8;
-  --surface-elevated: #ffffff;
-  --surface-elevated-2: #fff6e6;
-  --border: rgba(5, 50, 41, 0.16);
-  --border-soft: rgba(5, 50, 41, 0.1);
-
-  /* No longer literal "glass" (glassmorphism/blur is intentionally avoided) — solid cream
-     surfaces for panels that float over the map, kept as the same variable names so every
-     component that already reads them restyles automatically. */
-  --surface-glass: #fffdf8;
-  --surface-glass-strong: #ffffff;
-
-  /* ---- Typography colors ---- */
-  --text-primary: var(--peacock);
-  --text-secondary: var(--spruce);
-  --text-muted: #7c9490;
-  /* For text placed on a bright chip (accent/status fills) — every status fill below is
-     light-to-mid toned, so dark ink reads better on it than white would. */
-  --text-on-bright: var(--peacock);
+  --text-primary: #f4f7fa;
+  --text-secondary: #afc0cf;
+  --text-muted: #71869a;
+  /* Text placed on a bright/filled chip (status fills, the brand mark) rather than on the
+     surfaces above. */
+  --text-on-bright: #041016;
+  /* RGB of --text-primary, for neutral hover/tint washes (rgba(var(--ink-rgb), alpha))
+     instead of a hand-picked gray per component. */
+  --ink-rgb: 244, 247, 250;
 
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* ---- Operational colors ----
-     Each has a fixed meaning used consistently everywhere (never decoratively), mapped onto
-     the fixed EvacRoute palette: danger = active danger/blocked/critical/mandatory evac
-     (Ballet Slipper), warning = degraded/advisory (Bubblegum), caution = congestion (Sage),
-     success = safe/available/recommended (Sapphire), emergency = EMS/fire/police/shelters
-     (Spruce), active = selected/interactive accent (Sapphire). */
-  --danger: var(--ballet-slipper);
-  --warning: var(--bubblegum);
-  --caution: var(--sage);
-  --success: var(--sapphire);
-  --emergency: var(--spruce);
-  --active: var(--sapphire);
+     Fixed meaning everywhere, never decorative: danger = critical/blocked, warning =
+     degraded, caution = congestion, success = safe/recommended, emergency = EMS response,
+     active = selected/active route. */
+  --danger: #ff4d4d;
+  --warning: #ff9f43;
+  --caution: #f4d35e;
+  --success: #43d17a;
+  --emergency: #38a8ff;
+  --active: #54e0ff;
 
-  /* RGB triples for glow/pulse effects (rgba(var(--x-rgb), alpha)) — keeps every glow color
-     tied to the same token instead of a hand-picked rgba() per component. */
-  --danger-rgb: 254, 145, 121;
-  --warning-rgb: 253, 193, 180;
-  --caution-rgb: 207, 185, 46;
-  --success-rgb: 114, 176, 171;
-  --emergency-rgb: 53, 94, 88;
-  --active-rgb: 114, 176, 171;
+  --danger-rgb: 255, 77, 77;
+  --warning-rgb: 255, 159, 67;
+  --caution-rgb: 244, 211, 94;
+  --success-rgb: 67, 209, 122;
+  --emergency-rgb: 56, 168, 255;
+  --active-rgb: 84, 224, 255;
 
-  /* Type scale: a deliberate hierarchy, not one giant font-size bump.
-     display > critical-value > metric-value > panel-heading > body > meta > micro.
-     Section headers bumped to the 18-22px range and operational/secondary text to 15-17px
-     / 13-15px per the command-center readability spec — this previously read too small for
-     an operator glancing at the console during an active incident. */
+  /* Type scale: a deliberate hierarchy, not one giant font-size bump. Theme-independent. */
   --fs-display: 2rem;
   --fs-critical: 2.5rem;
   --fs-metric: 2.1rem;
@@ -79,14 +54,50 @@
   --fs-meta: 0.9rem;
   --fs-micro: 0.8rem;
 
-  /* Soft, warm-toned shadows (tinted with ink, not pure black) — a light UI needs far less
-     shadow than the old dark theme did to still read as "elevated." */
-  --elevation-1: 0 1px 2px rgba(5, 50, 41, 0.06);
-  --elevation-2: 0 4px 16px rgba(5, 50, 41, 0.08);
-  --elevation-3: 0 10px 30px rgba(5, 50, 41, 0.1);
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elevation-2: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --elevation-3: 0 12px 40px rgba(0, 0, 0, 0.55);
   --blur-panel: 0px;
 
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Light mode: white/off-white base, cool gray surfaces, dark navy ink, subtle blue-gray
+   borders, and semantic colors deepened just enough to hold contrast on white — not the
+   dark palette's colors dropped onto a white background. */
+:root[data-theme="light"] {
+  --bg-primary: #eef2f6;
+  --surface-primary: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-elevated-2: #f4f7fa;
+  --border: #cbd5e1;
+  --border-soft: rgba(15, 32, 51, 0.1);
+  --surface-glass: #ffffff;
+  --surface-glass-strong: #ffffff;
+
+  --text-primary: #0f2033;
+  --text-secondary: #45566b;
+  --text-muted: #7c8ba0;
+  --text-on-bright: #ffffff;
+  --ink-rgb: 15, 32, 51;
+
+  --danger: #d5352f;
+  --warning: #c4650a;
+  --caution: #97790a;
+  --success: #17875a;
+  --emergency: #1c68c9;
+  --active: #0891b2;
+
+  --danger-rgb: 213, 53, 47;
+  --warning-rgb: 196, 101, 10;
+  --caution-rgb: 151, 121, 10;
+  --success-rgb: 23, 135, 90;
+  --emergency-rgb: 28, 104, 201;
+  --active-rgb: 8, 145, 178;
+
+  --elevation-1: 0 1px 2px rgba(15, 32, 51, 0.07);
+  --elevation-2: 0 4px 16px rgba(15, 32, 51, 0.09);
+  --elevation-3: 0 10px 30px rgba(15, 32, 51, 0.12);
 }
 
 * {
@@ -241,8 +252,8 @@ main {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  background: var(--peacock);
-  color: var(--lace);
+  background: var(--active);
+  color: var(--text-on-bright);
   font-weight: 700;
   font-size: 0.9rem;
   font-family: var(--mono);
@@ -277,7 +288,7 @@ main {
   font-weight: 600;
   color: var(--text-secondary);
   border: 1px solid var(--border-soft);
-  background: rgba(var(--peacock-rgb), 0.05);
+  background: rgba(var(--ink-rgb), 0.05);
   border-radius: 6px;
   padding: 7px 14px;
 }
@@ -320,6 +331,32 @@ main {
   font-family: var(--mono);
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(var(--ink-rgb), 0.05);
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.theme-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--active);
+}
+
+.theme-toggle-icon {
+  color: var(--active);
+  flex-shrink: 0;
 }
 
 .app-content {
@@ -468,7 +505,7 @@ main {
 }
 
 .ov-row-button:hover {
-  background: rgba(var(--peacock-rgb), 0.08);
+  background: rgba(var(--ink-rgb), 0.08);
 }
 
 .ov-row-selected {
@@ -577,7 +614,7 @@ main {
 
 .ov-progress {
   height: 6px;
-  background: rgba(var(--peacock-rgb), 0.14);
+  background: rgba(var(--ink-rgb), 0.14);
   border-radius: 3px;
   margin-top: 7px;
   overflow: hidden;
@@ -627,7 +664,7 @@ main {
 
 .incident-hero-inactive {
   border-color: var(--border-soft);
-  background: rgba(var(--peacock-rgb), 0.04);
+  background: rgba(var(--ink-rgb), 0.04);
 }
 
 .incident-hero-button {
@@ -769,12 +806,11 @@ main {
 
 /* Operations-console action button: a bordered chip, not a filled rounded button — matches
    the existing status-pill/ov-panel-count language instead of looking like a generic
-   dashboard CTA. */
-/* Secondary action: Arctic-tinted, per the design system's "secondary: Arctic or
-   transparent background" rule. */
+   dashboard CTA. Secondary actions use a soft active-accent tint; destructive/emergency
+   actions are filled danger. */
 .op-button {
   flex: 1;
-  background: rgba(var(--arctic-rgb), 0.45);
+  background: rgba(var(--active-rgb), 0.12);
   border: 1px solid var(--border-soft);
   color: var(--text-primary);
   font: inherit;
@@ -789,14 +825,13 @@ main {
 }
 
 .op-button:hover {
-  background: rgba(var(--arctic-rgb), 0.75);
-  border-color: var(--sapphire);
+  background: rgba(var(--active-rgb), 0.22);
+  border-color: var(--active);
 }
 
-/* Destructive/emergency action: filled Ballet Slipper, per the design system's
-   "destructive/emergency: Ballet Slipper" rule. */
+/* Destructive/emergency action: filled danger. */
 .op-button-danger {
-  color: var(--peacock);
+  color: var(--text-on-bright);
   border-color: var(--danger);
   background: var(--danger);
 }
@@ -888,118 +923,69 @@ main {
   padding: 14px 14px 0;
 }
 
-/* Leaflet's own dark-mode-agnostic chrome (zoom buttons, attribution) redrawn to match
-   the operations-console theme instead of its default light styling. */
-.leaflet-container {
-  font: inherit;
-  background: var(--bg-primary);
-  color: var(--text-primary);
+/* MapLibre's own chrome (nav control, attribution) redrawn to match the operations-console
+   theme instead of its default styling. */
+.maplibregl-ctrl-group {
+  background: var(--surface-primary) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--elevation-2) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
 }
 
-.leaflet-bar,
-.leaflet-bar a {
-  background: var(--surface-primary);
-  border-color: var(--border) !important;
-  color: var(--text-primary);
+.maplibregl-ctrl-group button {
+  background: transparent !important;
 }
 
-.leaflet-bar a:hover {
-  background: var(--surface-elevated);
-  color: var(--active);
+.maplibregl-ctrl-group button:hover {
+  background: var(--surface-elevated) !important;
 }
 
-.leaflet-control-attribution {
-  background: rgba(13, 27, 42, 0.75);
-  color: var(--text-secondary);
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--border-soft) !important;
 }
 
-.leaflet-control-attribution a {
-  color: var(--text-secondary);
+.maplibregl-ctrl-attrib {
+  background: rgba(13, 27, 42, 0.65) !important;
+  color: var(--text-secondary) !important;
 }
 
-/* Infrastructure marker badges: shape/letter = type, ring color = status. Sized up from the
-   original 22px so they stay legible at a glance on a large monitor. */
-.marker-badge-icon {
-  background: transparent;
+.maplibregl-ctrl-attrib a {
+  color: var(--text-secondary) !important;
+}
+
+/* Generic map-marker badge — every point entity (vehicle/shelter/hospital/incident/
+   closure/hazard) wraps one of the real SVG icons in components/map/icons.tsx with this
+   same status-ring + selected-scale language, so the map reads consistently across types
+   while still being visually distinguishable by shape/icon. */
+.map-marker-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-}
-
-.marker-badge {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-primary);
-  border: 2px solid var(--text-muted);
-  border-radius: 4px;
-  color: var(--text-primary);
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 13px;
-  box-shadow: var(--elevation-1);
-}
-
-/* Vehicles: filled circular badge (vs. facilities' outlined square) so mobile units read
-   as a distinct category from fixed infrastructure at a glance. */
-.marker-vehicle-icon-root {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Rotates around the badge's own center to show travel direction, while the letter badge
-   itself (a separate layer) stays upright and readable. */
-.marker-vehicle-heading {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  transition: transform 0.4s linear;
-}
-
-.marker-vehicle-heading::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  margin-left: -4px;
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-bottom: 7px solid var(--text-primary);
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
-}
-
-.marker-vehicle-badge {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 2px solid var(--bg-primary);
-  color: var(--text-on-bright);
-  font-family: var(--mono);
-  font-weight: 700;
-  font-size: 13px;
-  box-shadow: var(--elevation-1);
-}
-
-.marker-vehicle-badge-active {
-  --pulse-rgb: var(--emergency-rgb);
-  animation: pulse-ring 1.8s ease-out infinite;
-}
-
-.marker-vehicle-badge-selected {
-  border-color: var(--active);
-  border-width: 3px;
-  font-size: 15px;
+  border-radius: 999px;
+  padding: 5px;
+  cursor: pointer;
   box-shadow: var(--elevation-2);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.map-marker-badge-square {
+  border-radius: 8px;
+}
+
+.map-marker-badge-selected {
+  box-shadow: 0 0 0 3px var(--active), var(--elevation-3);
+  transform: scale(1.08);
+  z-index: 5;
+}
+
+.map-marker-badge-pulse {
+  animation: road-glow 2s ease-in-out infinite;
 }
 
 /* Selected vehicle's route endpoints: a hollow ring at the start, a pin at the destination —
-   both in the route's --active color, clearly distinct from every other marker type. */
+   both in the route's --active color. */
 .route-origin-marker {
   width: 14px;
   height: 14px;
@@ -1033,89 +1019,25 @@ main {
   border-top: 8px solid var(--active);
 }
 
-/* Road closure marker: a diamond (distinct from infrastructure's square and vehicles'
-   circle) so a closure event reads as its own category at a glance. Reuses the same
-   danger-glow pulse as the blocked-road line (.road-blocked) — one motion language, not a
-   new animation invented per feature. */
-.road-closure-marker {
-  width: 100%;
-  height: 100%;
-  background: var(--danger);
-  border: 2px solid var(--bg-primary);
-  transform: rotate(45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 8px rgba(var(--danger-rgb), 0.7), var(--elevation-1);
-  animation: road-glow 2s ease-in-out infinite;
-}
-
-.road-closure-marker span {
-  display: inline-block;
-  transform: rotate(-45deg);
-  color: var(--text-on-bright);
-  font-weight: 800;
-  font-size: 12px;
-  font-family: var(--mono);
-}
-
-.road-closure-marker-selected {
-  border-color: var(--active);
-  border-width: 3px;
-  box-shadow: 0 0 12px rgba(var(--danger-rgb), 0.85), var(--elevation-2);
-}
-
-.incident-marker {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 2px solid var(--surface-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--elevation-2);
-}
-
-.incident-marker span {
-  color: var(--text-on-bright);
-  font-weight: 800;
-  font-size: 13px;
-  font-family: var(--mono);
-}
-
-.incident-marker-selected {
-  border-color: var(--active);
-  border-width: 3px;
-}
-
-.incident-marker-pulse {
-  animation: road-glow 2s ease-in-out infinite;
-}
-
-/* Leaflet popups, restyled to match the operations console instead of default white.
-   !important is needed because leaflet.css is injected client-side (dynamic import) and
-   can land after this stylesheet in the cascade, otherwise winning equal-specificity ties. */
-.leaflet-popup-content-wrapper {
+/* MapLibre popups, restyled to match the operations console instead of default white. */
+.maplibregl-popup-content {
   background: var(--surface-glass-strong) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-soft);
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   box-shadow: var(--elevation-3) !important;
+  padding: 14px 16px !important;
 }
 
-.leaflet-popup-content {
-  margin: 14px 16px;
+.maplibregl-popup-tip {
+  border-top-color: var(--surface-glass-strong) !important;
+  border-bottom-color: var(--surface-glass-strong) !important;
 }
 
-.leaflet-popup-tip {
-  background: var(--surface-glass-strong) !important;
-  border: 1px solid var(--border-soft);
-  box-shadow: none !important;
-}
-
-.leaflet-popup-close-button {
+.maplibregl-popup-close-button {
   color: var(--text-secondary) !important;
   font-size: 1.1rem !important;
+  padding: 4px 8px !important;
 }
 
 .marker-popup {

@@ -1,7 +1,7 @@
 "use client";
 
-// Leaflet touches `window`, so it can only render client-side. This wrapper is what
-// consumers of BaseMap should actually import.
+// MapLibre GL touches `window`/WebGL, so it can only render client-side. This wrapper is
+// what consumers of BaseMap should actually import.
 import dynamic from "next/dynamic";
 import type { BaseMapProps } from "./BaseMap";
 
