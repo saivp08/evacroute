@@ -1,0 +1,29 @@
+[
+  {
+    "name": "closure_and_medical",
+    "report": "Debris has completely blocked Bennett Valley Road. Twelve injuries are reported in Zone C; severity is high.",
+    "expected": {
+      "events": [
+        {"type": "ROAD_CLOSURE", "road_name": "Bennett Valley Road", "severity": "high", "certainty": "confirmed", "evidence": "Debris has completely blocked Bennett Valley Road.", "reason": "debris"},
+        {"type": "MEDICAL_INCIDENT", "zone": "Zone C", "injuries": 12, "severity": "high", "certainty": "confirmed", "evidence": "Twelve injuries are reported in Zone C; severity is high."}
+      ],
+      "notes": []
+    }
+  },
+  {
+    "name": "hazard_still_open",
+    "report": "Wildfire is moving toward Bennett Valley Road, but the road is still open.",
+    "expected": {
+      "events": [{"type": "HAZARD_UPDATE", "road_name": "Bennett Valley Road", "severity": null, "certainty": "confirmed", "evidence": "Wildfire is moving toward Bennett Valley Road, but the road is still open."}],
+      "notes": []
+    }
+  },
+  {
+    "name": "reopen",
+    "report": "The debris has been cleared and Bennett Valley Road is open again.",
+    "expected": {
+      "events": [{"type": "ROAD_REOPEN", "road_name": "Bennett Valley Road", "severity": null, "certainty": "confirmed", "evidence": "The debris has been cleared and Bennett Valley Road is open again."}],
+      "notes": []
+    }
+  }
+]
