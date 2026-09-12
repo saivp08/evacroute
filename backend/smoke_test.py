@@ -11,7 +11,7 @@ DEMO = json.loads(Path(__file__).with_name("demo_sequence.json").read_text(encod
 PLAN_FIELDS = {"evacuation_routes", "ambulances", "rescue_teams", "shelter_assignments", "incidents", "metrics", "dispatch_summary"}
 
 
-def run(client, live_grok=False):
+def run(client, live_openai=False):
     timings = []
     def call(method, path, body=None):
         start = perf_counter()
@@ -27,7 +27,7 @@ def run(client, live_grok=False):
     baseline = call("POST", "/optimize")
     assert call("POST", "/optimize") == baseline
     try:
-        if live_grok:
+        if live_openai:
             updated = call("POST", "/incident/parse", {"report": DEMO["report"]})
             assert {e["type"] for e in updated["parsed_events"]} == {"ROAD_CLOSURE", "MEDICAL_INCIDENT"}
         else:
@@ -52,7 +52,7 @@ def run(client, live_grok=False):
         assert repeat == {key: updated[key] for key in baseline}
         assert call("GET", "/scenario") == scenario
         assert call("GET", "/incidents")["incidents"] == updated["incidents"]
-        if live_grok:
+        if live_openai:
             reopened = call("POST", "/incident/parse", {"report": DEMO["reopen_report"]})
             assert [e["type"] for e in reopened["parsed_events"]] == ["ROAD_REOPEN"]
         else:
@@ -63,7 +63,7 @@ def run(client, live_grok=False):
         reset = call("POST", "/incidents/reset")
     assert reset == baseline
     assert call("GET", "/incidents") == {"incidents": []}
-    return {"mode": "live_grok" if live_grok else "structured", "timings": timings,
+    return {"mode": "live_openai" if live_openai else "structured", "timings": timings,
             "changed_route_ids": changed, "ambulance_ids": [r["id"] for r in updated["ambulances"]],
             "rescue_team_ids": [r["id"] for r in updated["rescue_teams"]],
             "baseline_routes": baseline["evacuation_routes"], "updated_routes": updated["evacuation_routes"]}
@@ -72,11 +72,11 @@ def run(client, live_grok=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
-    parser.add_argument("--live-grok", action="store_true", help="Call the real configured parser instead of structured incidents")
+    parser.add_argument("--live-openai", action="store_true", help="Call the real configured parser instead of structured incidents")
     parser.add_argument("--output", type=Path, help="Optional full validation JSON, e.g. cache/task7_smoke.json")
     args = parser.parse_args()
     with httpx.Client(base_url=args.base_url, timeout=120) as client:
-        result = run(client, args.live_grok)
+        result = run(client, args.live_openai)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")

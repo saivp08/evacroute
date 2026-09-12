@@ -2,17 +2,17 @@
 
 EvacRoute is a planned real-time disaster transportation coordination platform for first responders and emergency management teams.
 
-**Current status: initial project skeleton only.** The backend exposes `GET /health` returning `{"status":"ok"}` and the frontend displays a placeholder. Routing, optimization, Grok integration, data ingestion, and the map/dashboard are not implemented. No datasets are downloaded.
+**Current status:** The backend supports routing, optimization, structured incidents, cached public data, and OpenAI report parsing. See [backend setup](backend/README.md) and the [API contract](backend/API.md).
 
 ## Architecture
 
-- Backend: Python + FastAPI. Planned additions: NetworkX, OSMnx, Google OR-Tools, and Grok API.
+- Backend: Python + FastAPI. Planned additions: NetworkX, OSMnx, Google OR-Tools, and OpenAI API.
 - Frontend: Next.js App Router + React + TypeScript. Leaflet or Mapbox will be selected later.
 - Planned data: OpenStreetMap, FEMA National Shelter System, U.S. Census population data, and Kincade Wildfire Evacuation Traffic Dataset.
 
 ```text
 Emergency reports
-  -> Grok
+  -> OpenAI
   -> Structured incidents
   -> Dynamic transportation graph
   -> Optimization engine
@@ -30,7 +30,7 @@ EvacRoute/
 |   |-- app/
 |   |   |-- api/
 |   |   |-- data/
-|   |   |-- grok/
+|   |   |-- openai/
 |   |   |-- models/
 |   |   |-- optimization/
 |   |   |-- routing/
@@ -101,7 +101,7 @@ On macOS/Linux, use `python3`, `.venv/bin/python`, `cp`, and `npm` instead of `p
 
 ### Environment and local communication
 
-- `backend/.env`: `GROK_API_KEY=` is reserved and can remain empty. Uvicorn loads this file with `--env-file .env`; no Grok calls exist yet.
+- `backend/.env`: `OPEN_AI_API_KEY=` enables natural-language parsing. Uvicorn loads this file with `--env-file .env`; structured endpoints work without a key. Optional settings are `OPEN_AI_MODEL` (default `gpt-4.1-mini`), `OPEN_AI_BASE_URL`, and `OPEN_AI_TIMEOUT_SECONDS`.
 - `frontend/.env.local`: `NEXT_PUBLIC_API_URL=http://localhost:8000` is the URL future frontend requests should use via `process.env.NEXT_PUBLIC_API_URL`. The placeholder page does not make API requests.
 - FastAPI permits browser requests from `http://localhost:3000` and `http://127.0.0.1:3000` using CORS. If ports change, update the URL and allowed origins together.
 - Restart the frontend after changing its environment. Never put secrets in `NEXT_PUBLIC_` variables or commit real keys.
@@ -128,7 +128,7 @@ Initial setup verified on Windows with Python 3.14.6 and Node.js 22.19.0: backen
 ## Two-developer workflow
 
 - `main`: shared working skeleton and merged work.
-- `backend-dev`: Developer 1 owns backend, optimization, routing, ingestion, and Grok.
+- `backend-dev`: Developer 1 owns backend, optimization, routing, ingestion, and OpenAI.
 - `frontend-dev`: Developer 2 owns frontend, map, dashboard, routes, and incident visualization.
 
 Before starting work, switch to your branch and run `git pull --ff-only origin <your-branch>`. If the branch has not yet been published, create it from main with `git switch -c backend-dev main` or `git switch -c frontend-dev main`, then `git push -u origin <your-branch>`.

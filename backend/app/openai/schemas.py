@@ -55,7 +55,7 @@ class ParsedReport(BaseModel):
 
 class ParseResponse(IncidentPlan):
     original_report: str
-    parser: Literal["grok"] = "grok"
+    parser: Literal["openai"] = "openai"
     parsed_events: list[ParsedEvent]
     applied_events: list[IncidentRequest]
     notes: list[str]

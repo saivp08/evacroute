@@ -17,7 +17,7 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file .env
 ```
 
-Runtime-only installation uses `requirements.txt`. Only natural-language parsing requires `GROK_API_KEY`; all structured endpoints work without it. For macOS/Linux, substitute `python3`, `.venv/bin/python`, and `cp`.
+Runtime-only installation uses `requirements.txt`. Only natural-language parsing requires `OPEN_AI_API_KEY`; all structured endpoints work without it. For macOS/Linux, substitute `python3`, `.venv/bin/python`, and `cp`.
 
 Startup prefers `backend/cache/santa_rosa_drive_2500m_v1.graphml`. A missing or corrupt cache is restored offline from the committed `datasets/processed/santa_rosa_drive_2500m_v1.graphml.gz` snapshot. FEMA/Census data also loads from the committed processed snapshot. No external service is required for normal structured demo startup after dependencies are installed.
 
@@ -29,7 +29,7 @@ The graph never falls back to invented roads. If the bundled graph is corrupt, r
 - `GET /scenario` → the structure below. Loaded once at startup and reused between requests.
 - `POST /optimize` → a calculated evacuation plan for the built-in scenario; no request body required. See below.
 - `POST /incident` → apply a structured road incident and return the recalculated plan.
-- `POST /incident/parse` → interpret a natural-language report with Grok, validate it, and apply its incident batch. See [Task 5 setup and contract](app/grok/README.md).
+- `POST /incident/parse` → interpret a natural-language report with OpenAI, validate it, and apply its incident batch. See [Task 5 setup and contract](app/openai/README.md).
 - `GET /incidents` → current active incident effects.
 - `POST /incidents/reset` → clear effects and return the baseline plan.
 - Interactive schema: http://localhost:8000/docs.
@@ -100,7 +100,7 @@ Invoke-RestMethod http://localhost:8000/scenario
 
 Tests use a tiny offline graph for health, API contract, CORS, geometry, speed fallback, demand/capacity, and cache round trips. If the real GraphML cache exists, the integration test also verifies its endpoint and site-node membership/proximity while forbidding OSM downloads; otherwise that test is explicitly skipped. Start the backend once to populate it before running the full suite.
 
-Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; Task 3 adds structured road incidents; Task 4 adds simulated emergency dispatch; Task 5 adds Grok report extraction and rescue incidents. External population/dataset ingestion and frontend changes remain out of scope.
+Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; Task 3 adds structured road incidents; Task 4 adds simulated emergency dispatch; Task 5 adds OpenAI report extraction and rescue incidents. External population/dataset ingestion and frontend changes remain out of scope.
 
 Display the returned **© OpenStreetMap contributors** attribution with its link on the frontend map. Sources: [OSM attribution](https://www.openstreetmap.org/copyright), [OSMnx graph download and caching APIs](https://osmnx.readthedocs.io/en/stable/user-reference.html).
 
@@ -388,4 +388,4 @@ Invoke-RestMethod -Method Post http://localhost:8000/incidents/reset
 
 Task 4 validation: **45 tests passed**, including all prior tests plus fleet appearance, injury-to-capacity rounding, unavailable resources, severity priority, unique assignments, shortfalls, shared dynamic penalties, medical target validation/upsert, real responder coordinates, closure rerouting, unchanged resource positions, and exact baseline restoration. Live JSON snapshots are saved in ignored `backend/cache/task4_*.json`. `pip check` passed. Two existing upstream deprecation warnings remain.
 
-Task 5 validation: **69 tests passed**. See [Grok setup, schema, examples, failure behavior, and live-check instructions](app/grok/README.md). A real provider request remains unverified because no local Grok API key was configured.
+Task 5 validation: **69 tests passed**. See [OpenAI setup, schema, examples, failure behavior, and live-check instructions](app/openai/README.md). A live OpenAI request remains unverified during this migration.

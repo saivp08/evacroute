@@ -1,4 +1,4 @@
-"""Offline provider contract and parse-to-plan tests. Never contacts live Grok."""
+"""Offline provider contract and parse-to-plan tests. Never contacts live OpenAI."""
 
 import json
 from pathlib import Path
@@ -10,29 +10,29 @@ from fastapi.testclient import TestClient
 
 from app.data.incidents import derive_graph
 from app.data.road_network import GRAPH_PATH, load_graph
-from app.grok.client import GrokClient, GrokError
-from app.grok.schemas import ParsedReport
+from app.openai.client import OpenAIClient, OpenAIError
+from app.openai.schemas import ParsedReport
 from app.main import create_app
 from app.models.incidents import IncidentPlan
 from tests.test_optimization import small_case, assert_plan
 
-REPORTS = json.loads((Path(__file__).parents[1] / "app/grok/demo_reports.json").read_text(encoding="utf-8"))
+REPORTS = json.loads((Path(__file__).parents[1] / "app/openai/demo_reports.json").read_text(encoding="utf-8"))
 
 
 def fake_parser(payload):
-    parser = Mock(spec=GrokClient)
+    parser = Mock(spec=OpenAIClient)
     parser.parse.return_value = payload
     return parser
 
 
 def provider(monkeypatch, handler):
     # Only test-owned dummy credentials. MockTransport never opens a socket.
-    monkeypatch.setenv("GROK_API_KEY", "unit-test-placeholder")
-    monkeypatch.setenv("GROK_BASE_URL", "https://api.x.ai/v1")
-    monkeypatch.setenv("GROK_MODEL", "grok-4.6")
-    monkeypatch.setenv("GROK_TIMEOUT_SECONDS", "30")
+    monkeypatch.setenv("OPEN_AI_API_KEY", "unit-test-placeholder")
+    monkeypatch.setenv("OPEN_AI_BASE_URL", "https://api.openai.com/v1")
+    monkeypatch.setenv("OPEN_AI_MODEL", "gpt-4.1-mini")
+    monkeypatch.setenv("OPEN_AI_TIMEOUT_SECONDS", "30")
     real_client = httpx.Client
-    monkeypatch.setattr("app.grok.client.httpx.Client", lambda **kwargs: real_client(
+    monkeypatch.setattr("app.openai.client.httpx.Client", lambda **kwargs: real_client(
         transport=httpx.MockTransport(handler), **kwargs))
 
 
@@ -43,16 +43,26 @@ def envelope(content, finish_reason="stop"):
 def test_real_client_request_schema_and_typed_validation(monkeypatch):
     def handler(request):
         data = json.loads(request.content)
-        assert request.url == "https://api.x.ai/v1/chat/completions"
-        assert data["model"] == "grok-4.6"
+        assert request.url == "https://api.openai.com/v1/chat/completions"
+        assert data["model"] == "gpt-4.1-mini"
+        assert request.headers["Authorization"] == "Bearer unit-test-placeholder"
         assert data["response_format"]["json_schema"]["strict"] is True
         schema = data["response_format"]["json_schema"]["schema"]
         assert schema["additionalProperties"] is False
+        assert set(schema["required"]) == set(schema["properties"])
+        event_schema = schema["$defs"]["ParsedEvent"]
+        assert set(event_schema["required"]) == set(event_schema["properties"])
+        assert all("default" not in value for value in event_schema["properties"].values())
         assert "edge_id" not in schema["$defs"]["ParsedEvent"]["properties"]
         assert "Do not recommend actions" in data["messages"][0]["content"]
         return httpx.Response(200, json=envelope(json.dumps(REPORTS[0]["expected"])))
     provider(monkeypatch, handler)
-    result = GrokClient().parse(REPORTS[0]["report"], {})
+    # Exercise production defaults, even when stale provider settings remain.
+    monkeypatch.delenv("OPEN_AI_BASE_URL")
+    monkeypatch.delenv("OPEN_AI_MODEL")
+    monkeypatch.setenv("GROK_BASE_URL", "https://api.x.ai/v1")
+    monkeypatch.setenv("GROK_MODEL", "grok-4.6")
+    result = OpenAIClient().parse(REPORTS[0]["report"], {})
     assert isinstance(result, ParsedReport)
     assert result.events[1].injuries == 12
 
@@ -63,23 +73,24 @@ def test_real_client_request_schema_and_typed_validation(monkeypatch):
     '{"events":[{"type":"ROAD_CLOSURE","certainty":"confirmed","evidence":"x"}]}', "null"])
 def test_invalid_provider_json(monkeypatch, content):
     provider(monkeypatch, lambda request: httpx.Response(200, json=envelope(content)))
-    with pytest.raises(GrokError) as error:
-        GrokClient().parse("x", {})
-    assert error.value.code == "grok_invalid_response"
+    with pytest.raises(OpenAIError) as error:
+        OpenAIClient().parse("x", {})
+    assert error.value.code == "openai_invalid_response"
 
 
-@pytest.mark.parametrize("payload", [{}, {"choices": []}, envelope(None), envelope('{"events":[]}', "length")])
+@pytest.mark.parametrize("payload", [{}, {"choices": []}, envelope(None), envelope('{"events":[]}', "length"),
+    {"choices": [{"finish_reason": "stop", "message": {"content": '{"events":[]}', "refusal": "Declined"}}]}])
 def test_invalid_provider_envelope(monkeypatch, payload):
     provider(monkeypatch, lambda request: httpx.Response(200, json=payload))
-    with pytest.raises(GrokError, match="malformed"):
-        GrokClient().parse("x", {})
+    with pytest.raises(OpenAIError, match="malformed"):
+        OpenAIClient().parse("x", {})
 
 
 @pytest.mark.parametrize("http_status,status", [(401, 502), (429, 503), (500, 502)])
 def test_http_failures_do_not_echo_provider_body(monkeypatch, http_status, status):
     provider(monkeypatch, lambda request: httpx.Response(http_status, text="sensitive-provider-body"))
-    with pytest.raises(GrokError) as error:
-        GrokClient().parse("x", {})
+    with pytest.raises(OpenAIError) as error:
+        OpenAIClient().parse("x", {})
     assert error.value.status == status and "sensitive-provider-body" not in error.value.message
 
 
@@ -88,20 +99,20 @@ def test_timeout_network_failure(monkeypatch, exception, status):
     def handler(request):
         raise exception("test transport failure", request=request)
     provider(monkeypatch, handler)
-    with pytest.raises(GrokError) as error:
-        GrokClient().parse("x", {})
+    with pytest.raises(OpenAIError) as error:
+        OpenAIClient().parse("x", {})
     assert error.value.status == status
 
 
 def test_missing_key_and_existing_endpoints(monkeypatch, small_case):
-    monkeypatch.delenv("GROK_API_KEY", raising=False)
+    monkeypatch.delenv("OPEN_AI_API_KEY", raising=False)
     graph, scenario = small_case
     app = create_app(lambda: graph)
     with TestClient(app) as client:
         app.state.scenario = scenario
         response = client.post("/incident/parse", json={"report": "Something happened"})
         assert response.status_code == 503
-        assert response.json()["detail"]["code"] == "grok_not_configured"
+        assert response.json()["detail"]["code"] == "openai_not_configured"
         assert client.get("/health").json() == {"status": "ok"}
         assert client.get("/scenario").status_code == 200
         assert client.post("/optimize").status_code == 200
@@ -111,7 +122,7 @@ def test_missing_key_and_existing_endpoints(monkeypatch, small_case):
 def test_parser_failure_endpoint(small_case):
     graph, scenario = small_case
     parser = fake_parser(None)
-    parser.parse.side_effect = GrokError("grok_timeout", "Timed out", 504)
+    parser.parse.side_effect = OpenAIError("openai_timeout", "Timed out", 504)
     app = create_app(lambda: graph, parser)
     with TestClient(app) as client:
         app.state.scenario = scenario
@@ -182,7 +193,7 @@ def test_batch_late_resolution_and_infeasibility_are_atomic(small_case):
         assert client.post("/optimize").json() == baseline
 
 
-def test_real_graph_mocked_grok_reports_replan_and_reset():
+def test_real_graph_mocked_openai_reports_replan_and_reset():
     graph = load_graph()
     parser = fake_parser(REPORTS[0]["expected"])
     app = create_app(lambda: graph, parser)
@@ -191,6 +202,7 @@ def test_real_graph_mocked_grok_reports_replan_and_reset():
         data = client.post("/incident/parse", json={"report": REPORTS[0]["report"]})
         assert data.status_code == 200
         plan = data.json()
+        assert plan["parser"] == "openai"
         assert len(plan["ambulances"]) == 3 and len(plan["rescue_teams"]) == 1
         assert plan["applied_events"][1]["zone"] == "zone-c"
         blocked = set(plan["incidents"][0]["affected_edge_ids"])

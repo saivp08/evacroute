@@ -13,7 +13,7 @@ from app.data.ingest import ingest
 from app.data.public_data import PROCESSED_PATH, use_processed_data
 from app.data.road_network import GRAPH_PATH, load_graph
 from app.data.scenario import build_scenario, ZONE_SPECS
-from app.grok.client import GrokClient
+from app.openai.client import OpenAIClient
 from app.main import create_app
 
 pytestmark = pytest.mark.public_data
@@ -116,12 +116,12 @@ def test_ingestion_without_any_sources_uses_demo(graph, tmp_path):
 
 def test_committed_cached_scenario_and_full_pipeline(graph):
     assert PROCESSED_PATH.exists()
-    grok = Mock(spec=GrokClient)
+    openai = Mock(spec=OpenAIClient)
     report = "Twelve injuries are reported in Zone C."
-    grok.parse.return_value = {"events": [{"type": "MEDICAL_INCIDENT", "zone": "Zone C", "injuries": 12,
+    openai.parse.return_value = {"events": [{"type": "MEDICAL_INCIDENT", "zone": "Zone C", "injuries": 12,
                                           "severity": "high", "certainty": "confirmed", "evidence": report}]}
     with patch("requests.get", side_effect=AssertionError("No public network during startup")):
-        app = create_app(lambda: graph, grok)
+        app = create_app(lambda: graph, openai)
         with TestClient(app) as client:
             scenario = client.get("/scenario").json()
             assert scenario["scenario"]["data_mode"] == "public_cached"

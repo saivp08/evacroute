@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from app.data import road_network
 from app.data.public_data import PROCESSED_PATH, use_processed_data
 from app.data.scenario import build_scenario
-from app.grok.client import GrokClient
+from app.openai.client import OpenAIClient
 from app.main import create_app
 from smoke_test import DEMO, run
 
@@ -22,14 +22,14 @@ def graph():
 
 
 def test_canonical_parsed_demo(graph):
-    grok = Mock(spec=GrokClient)
-    grok.parse.side_effect = [
+    openai = Mock(spec=OpenAIClient)
+    openai.parse.side_effect = [
         {"events": DEMO["expected_events"]},
         {"events": [{"type": "ROAD_REOPEN", "road_name": "College Avenue", "certainty": "confirmed",
                      "evidence": DEMO["reopen_report"]}]}]
-    with TestClient(create_app(lambda: graph, grok)) as client:
-        result = run(client, live_grok=True)
-    assert grok.parse.call_count == 2
+    with TestClient(create_app(lambda: graph, openai)) as client:
+        result = run(client, live_openai=True)
+    assert openai.parse.call_count == 2
     assert set(result["ambulance_ids"]) == {"ambulance-1", "ambulance-2", "ambulance-3"}
     assert result["rescue_team_ids"] == ["rescue-team-1"]
 
@@ -56,7 +56,7 @@ def test_invalid_metadata_falls_back(graph, tmp_path):
 
 @pytest.mark.parametrize("origin", ["http://localhost:3000", "http://127.0.0.1:3000"])
 def test_cors_and_structured_errors(graph, origin, monkeypatch):
-    monkeypatch.delenv("GROK_API_KEY", raising=False)
+    monkeypatch.delenv("OPEN_AI_API_KEY", raising=False)
     with TestClient(create_app(lambda: graph)) as client:
         response = client.options("/incident/parse", headers={"Origin": origin,
             "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "content-type"})
@@ -66,7 +66,7 @@ def test_cors_and_structured_errors(graph, origin, monkeypatch):
             ("/incident", {"type": "ROAD_CLOSURE", "road_name": "No Such Road"}, 404, "road_target_not_found"),
             ("/incident", {"type": "MEDICAL_INCIDENT", "zone": "unknown", "injuries": 1}, 404, "incident_location_not_found"),
             ("/incident", {"type": "MEDICAL_INCIDENT", "zone": "zone-c", "injuries": -1}, 422, "validation_error"),
-            ("/incident/parse", {"report": DEMO["report"]}, 503, "grok_not_configured"),
+            ("/incident/parse", {"report": DEMO["report"]}, 503, "openai_not_configured"),
             ("/incident", {"type": "ROAD_CLOSURE", "road_name": "Eardley Avenue"}, 409, "unreachable_shelter_capacity"),
         ]:
             response = client.post(path, json=body, headers={"Origin": origin})

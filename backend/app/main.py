@@ -23,14 +23,14 @@ from app.data.incidents import IncidentState, TargetNotFound, derive_graph
 from app.models.incidents import IncidentList, IncidentPlan, IncidentRequest, IncidentResponse
 from app.optimization.dispatch import plan_transportation
 from app.optimization.planning import apply_incidents
-from app.grok.client import GrokClient, GrokError
-from app.grok.schemas import ParseResponse, ReportRequest
-from app.grok.service import parse_and_apply
+from app.openai.client import OpenAIClient, OpenAIError
+from app.openai.schemas import ParseResponse, ReportRequest
+from app.openai.service import parse_and_apply
 
 logger = logging.getLogger("uvicorn.error")
 
 def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
-               grok_client: GrokClient | None = None) -> FastAPI:
+               openai_client: OpenAIClient | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         app_logger = logging.getLogger("app")
@@ -43,7 +43,7 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
         application.state.graph = graph_loader()
         application.state.scenario = build_scenario(application.state.graph)
         application.state.incidents = IncidentState()
-        application.state.grok = grok_client if grok_client is not None else GrokClient()
+        application.state.openai = openai_client if openai_client is not None else OpenAIClient()
         info = application.state.scenario.scenario
         logger.info("Scenario loaded: mode=%s nodes=%d edges=%d zones=%d shelters=%d",
                     info.data_mode, info.node_count, info.edge_count,
@@ -138,8 +138,8 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
     def parse_incident(request: ReportRequest) -> ParseResponse:
         try:
             return parse_and_apply(request.report, application.state.graph, application.state.scenario,
-                                   application.state.incidents, application.state.grok)
-        except GrokError as error:
+                                   application.state.incidents, application.state.openai)
+        except OpenAIError as error:
             raise HTTPException(error.status, detail={"code": error.code, "message": error.message,
                                                      "incidents_applied": False}) from error
         except TargetNotFound as error:

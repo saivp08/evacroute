@@ -6,8 +6,8 @@ import re
 from pydantic import ValidationError
 
 from app.data.incidents import TargetNotFound
-from app.grok.client import GrokClient, GrokError
-from app.grok.schemas import ParseResponse, ParsedReport
+from app.openai.client import OpenAIClient, OpenAIError
+from app.openai.schemas import ParseResponse, ParsedReport
 from app.models.incidents import IncidentRequest
 from app.optimization.planning import apply_incidents
 
@@ -49,26 +49,26 @@ def resolve_road_name(value, scenario):
     return matches[0]
 
 
-def parse_and_apply(report, graph, scenario, state, client: GrokClient):
+def parse_and_apply(report, graph, scenario, state, client: OpenAIClient):
     logger.info("Emergency report received (%d characters)", len(report))
     try:
         result = client.parse(report, catalog_for(scenario))
         # Revalidate even injected/test clients; never accept raw model output.
         parsed = ParsedReport.model_validate(result.model_dump() if isinstance(result, ParsedReport) else result)
     except ValidationError:
-        logger.warning("Grok parsing failed: invalid schema")
-        raise GrokError("grok_invalid_response", "Grok returned malformed or unsupported incident data.") from None
-    except GrokError as error:
-        logger.warning("Grok parsing failed: %s", error.code)
+        logger.warning("OpenAI parsing failed: invalid schema")
+        raise OpenAIError("openai_invalid_response", "OpenAI returned malformed or unsupported incident data.") from None
+    except OpenAIError as error:
+        logger.warning("OpenAI parsing failed: %s", error.code)
         raise
-    logger.info("Grok parsing succeeded: %d events (%s)", len(parsed.events),
+    logger.info("OpenAI parsing succeeded: %d events (%s)", len(parsed.events),
                 ", ".join(event.type for event in parsed.events))
     requests = []
     notes = list(parsed.notes)
     try:
         for index, event in enumerate(parsed.events):
             if event.evidence not in report:
-                raise GrokError("grok_ungrounded_event", "An event's evidence was not present in the report; nothing was applied.")
+                raise OpenAIError("openai_ungrounded_event", "An event's evidence was not present in the report; nothing was applied.")
             if event.certainty == "uncertain":
                 notes.append(f"Event {index + 1} was not applied because it is uncertain.")
                 continue
@@ -91,8 +91,8 @@ def parse_and_apply(report, graph, scenario, state, client: GrokClient):
     except TargetNotFound:
         logger.warning("Parsed event location resolution failed; batch not applied")
         raise
-    except GrokError as error:
-        logger.warning("Grok event validation failed: %s", error.code)
+    except OpenAIError as error:
+        logger.warning("OpenAI event validation failed: %s", error.code)
         raise
     return ParseResponse(**plan.model_dump(), original_report=report,
                          parsed_events=parsed.events, applied_events=requests, notes=notes)

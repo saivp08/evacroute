@@ -1,23 +1,23 @@
-# Grok report parsing — Task 5
+# OpenAI report parsing — Task 5
 
-Grok extracts events only. It never calculates routes, shelter assignments, or dispatch. `/incident/parse` validates the extraction and invokes the same atomic incident-batch function used by structured `/incident`.
+OpenAI extracts events only. It never calculates routes, shelter assignments, or dispatch. `/incident/parse` validates the extraction and invokes the same atomic incident-batch function used by structured `/incident`.
 
 ## Configuration
 
 Set these in `backend/.env` (the Uvicorn command below loads it):
 
 ```dotenv
-GROK_API_KEY=your-key-here
-GROK_BASE_URL=https://api.x.ai/v1
-GROK_MODEL=grok-4.6
-GROK_TIMEOUT_SECONDS=30
+OPEN_AI_API_KEY=your-key-here
+OPEN_AI_BASE_URL=https://api.openai.com/v1
+OPEN_AI_MODEL=gpt-4.1-mini
+OPEN_AI_TIMEOUT_SECONDS=30
 ```
 
-Only the key is required; the other values shown are defaults. Never commit the real `.env`. The base URL must be HTTPS and point to a trusted provider; the client sends its authorization header there. Use the default for xAI. No key is needed for health, scenario, structured incidents, optimization, or reset.
+Only the key is required; the other values shown are defaults. Never commit the real `.env`. The base URL must be HTTPS and point to a trusted provider; the client sends its authorization header there. Use the default for OpenAI. No key is needed for health, scenario, structured incidents, optimization, or reset.
 
-The client uses xAI's supported **POST `/v1/chat/completions`** API with `response_format.type=json_schema`, a Pydantic-generated JSON Schema, and `strict=true`. It uses a 30-second HTTP operation timeout (5-second connection timeout), no retries, no redirects, no tools, and no agent framework. Chat Completions is documented as the legacy/stateless interface but remains supported. Model and endpoint availability are account/provider dependent; override `GROK_MODEL` when needed. HTTPX was already installed for tests and is now declared as a runtime dependency.
+The client uses OpenAI's supported **POST `/v1/chat/completions`** API with `response_format.type=json_schema`, a Pydantic-generated JSON Schema, and `strict=true`. It uses a 30-second HTTP operation timeout (5-second connection timeout), no retries, no redirects, no tools, and no agent framework. Optional extraction fields are required on the wire and allow null, as required by OpenAI strict schemas. Model and endpoint availability are account/provider dependent; override `OPEN_AI_MODEL` when needed. HTTPX was already installed for tests and is now declared as a runtime dependency.
 
-Official references checked during implementation: [structured outputs](https://docs.x.ai/developers/model-capabilities/text/structured-outputs), [Chat Completions](https://docs.x.ai/developers/model-capabilities/legacy/chat-completions). This implementation uses the documented `grok-4.6` model name; no live model call could be verified because the local key is absent.
+Official references: [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [GPT-4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini). Live OpenAI parsing has not been verified during this migration.
 
 ## Request
 
@@ -65,7 +65,7 @@ The system prompt in [prompt.py](prompt.py) treats reports as data, forbids foll
 ```text
 {
   "original_report": "...",
-  "parser": "grok",
+  "parser": "openai",
   "parsed_events": [/* validated model events with certainty/evidence */],
   "applied_events": [/* normalized structured requests actually applied */],
   "notes": [...],
@@ -85,17 +85,17 @@ Errors use `{"detail":{"code":"...","message":"...","incidents_applied":false}}`
 
 | Status | Code / condition |
 | --- | --- |
-| 503 | `grok_not_configured`, invalid configuration, connection failure, or upstream rate limit |
-| 504 | `grok_timeout` |
-| 502 | `grok_invalid_response`, `grok_ungrounded_event`, or upstream API rejection/failure |
+| 503 | `openai_not_configured`, invalid configuration, connection failure, or upstream rate limit |
+| 504 | `openai_timeout` |
+| 502 | `openai_invalid_response`, `openai_ungrounded_event`, or upstream API rejection/failure |
 | 422 | `unresolved_report_location` |
 | 409 | Existing evacuation infeasibility code; entire batch rejected |
 
-Invalid user request bodies use FastAPI's normal 422 validation envelope. No production mock parser or silent fallback exists. When Grok fails, use structured `/incident`. Logs include report length, extraction event counts/types, and sanitized failure codes; they do not include credentials, report text, raw provider responses, or evidence text.
+Invalid user request bodies use FastAPI's normal 422 validation envelope. No production mock parser or silent fallback exists. When OpenAI fails, use structured `/incident`. Logs include report length, extraction event counts/types, and sanitized failure codes; they do not include credentials, report text, raw provider responses, or evidence text.
 
 ## Deterministic test/demo reports
 
-[demo_reports.json](demo_reports.json) holds three fixed reports and **mocked expected fixtures**, not recorded/live Grok results:
+[demo_reports.json](demo_reports.json) holds three fixed reports and **mocked expected fixtures**, not recorded/live OpenAI results:
 
 1. “Debris has completely blocked Bennett Valley Road. Twelve injuries are reported in Zone C; severity is high.” → ROAD_CLOSURE + MEDICAL_INCIDENT.
 2. “Wildfire is moving toward Bennett Valley Road, but the road is still open.” → HAZARD_UPDATE, no closure.
@@ -121,9 +121,13 @@ Invoke-RestMethod -Method Post http://localhost:8000/incident/parse -ContentType
 Optional **real provider** check (one request, isolated scenario; does not mutate the running server):
 
 ```powershell
-.\.venv\Scripts\python.exe -m app.grok.manual
+.\.venv\Scripts\python.exe -m app.openai.manual
 ```
 
 It loads `backend/.env`, explicitly skips without a key, and never uses mock results. Test fixtures and `httpx.MockTransport` keep the normal suite offline even if a developer has an API key.
 
-Validation: **69 tests passed**, including all Task 1–4 tests and provider request/JSON/schema/error handling, parsed closure/medical/hazard/reopen/rescue, uncertainty, reference resolution, batch rollback, and reset on the cached real graph. Live HTTP checks verified missing-key 503 plus working health/scenario/structured dispatch/closure/optimization/reset. `pip check` passed. Two existing upstream deprecation warnings remain. **No live Grok request was performed because GROK_API_KEY was not configured.**
+Validation: **69 tests passed**, including all Task 1–4 tests and provider request/JSON/schema/error handling, parsed closure/medical/hazard/reopen/rescue, uncertainty, reference resolution, batch rollback, and reset on the cached real graph. Live HTTP checks verified missing-key 503 plus working health/scenario/structured dispatch/closure/optimization/reset. `pip check` passed. Two existing upstream deprecation warnings remain. **These are historical validation results; no live OpenAI request was performed during this migration.**
+
+## Migration from Grok
+
+Use `OPEN_AI_API_KEY` (exact spelling) and the `OPEN_AI_` settings above. Old `GROK_` settings are ignored. The parsing module is now `app.openai`; responses identify `parser: "openai"` and provider error codes use the `openai_` prefix. The optional smoke-test flag is now `--live-openai`.
