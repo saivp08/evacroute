@@ -27,6 +27,12 @@ class Shelter(Site):
     current_occupancy: int = Field(ge=0)
 
 
+class EmergencyResource(Site):
+    type: Literal["ambulance", "rescue_team"]
+    availability_status: Literal["available", "unavailable"] = "available"
+    response_capacity: int = Field(gt=0)
+
+
 class Road(BaseModel):
     id: str
     source: str
@@ -48,7 +54,7 @@ class ScenarioInfo(BaseModel):
     node_count: int
     edge_count: int
     coordinate_order: str = "latitude, longitude"
-    data_note: str = "Real OpenStreetMap roads; simulated zones, shelters, populations, capacities and occupancy."
+    data_note: str = "Real OpenStreetMap roads; simulated zones, shelters, populations, capacities, occupancy and emergency resources."
     attribution: str = "© OpenStreetMap contributors"
     attribution_url: str = "https://www.openstreetmap.org/copyright"
 
@@ -58,3 +64,4 @@ class ScenarioResponse(BaseModel):
     zones: list[Zone]
     shelters: list[Shelter]
     roads: list[Road]
+    emergency_resources: list[EmergencyResource] = Field(default_factory=list)

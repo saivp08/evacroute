@@ -1,0 +1,6 @@
+{
+  "type": "MEDICAL_INCIDENT",
+  "zone": "zone-c",
+  "injuries": 12,
+  "severity": "high"
+}

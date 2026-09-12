@@ -4,7 +4,14 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from app.models.scenario import Coordinate, Shelter, Zone
+from typing import Protocol, Sequence
+
+from app.models.scenario import Coordinate
+
+
+class RoutingLocation(Protocol):
+    id: str
+    graph_node: str
 
 
 @dataclass
@@ -18,7 +25,7 @@ class RoadPath:
 
 
 def compute_shortest_paths(
-    graph: nx.MultiDiGraph, zones: list[Zone], shelters: list[Shelter]
+    graph: nx.MultiDiGraph, zones: Sequence[RoutingLocation], shelters: Sequence[RoutingLocation]
 ) -> dict[tuple[str, str], RoadPath]:
     # Collapse parallel edges by minimum travel time, retaining the exact edge.
     # Sorted insertion and edge-key tie breaks make equal-cost paths repeatable.

@@ -3,7 +3,7 @@
 import networkx as nx
 import osmnx as ox
 
-from app.models.scenario import Road, ScenarioInfo, ScenarioResponse, Shelter, Zone
+from app.models.scenario import EmergencyResource, Road, ScenarioInfo, ScenarioResponse, Shelter, Zone
 
 ZONE_SPECS = [
     ("zone-a", "Zone A — Northwest demo", 38.4500, -122.7300, 600),
@@ -16,9 +16,19 @@ SHELTER_SPECS = [
     ("shelter-c", "Shelter C — East demo", 38.4430, -122.6930, 800, 100),
 ]
 
+# Illustrative staging points, not claims about real EMS bases or availability.
+RESOURCE_SPECS = [
+    ("ambulance-1", "ambulance", "Ambulance 1 — Central staging", 38.4380, -122.7160, 4),
+    ("ambulance-2", "ambulance", "Ambulance 2 — East staging", 38.4430, -122.6930, 4),
+    ("ambulance-3", "ambulance", "Ambulance 3 — Southwest staging", 38.4270, -122.7310, 4),
+    ("ambulance-4", "ambulance", "Ambulance 4 — Northwest staging", 38.4500, -122.7300, 4),
+    ("rescue-team-1", "rescue_team", "Rescue team 1 — Central staging", 38.4380, -122.7160, 1),
+    ("rescue-team-2", "rescue_team", "Rescue team 2 — East staging", 38.4430, -122.6930, 1),
+]
+
 
 def nearest_node(graph: nx.MultiDiGraph, latitude: float, longitude: float) -> int:
-    # Six points on a small graph: exhaustive great-circle lookup avoids adding
+    # A few points on a small graph: exhaustive great-circle lookup avoids adding
     # scikit-learn solely for an optional spatial index. Tie-break by OSM ID.
     return min(graph.nodes, key=lambda node: (
         float(ox.distance.great_circle(latitude, longitude,
@@ -58,4 +68,8 @@ def build_scenario(graph: nx.MultiDiGraph) -> ScenarioResponse:
     return ScenarioResponse(
         scenario=ScenarioInfo(node_count=len(graph), edge_count=graph.number_of_edges()),
         zones=zones, shelters=shelters, roads=roads,
+        emergency_resources=[EmergencyResource(
+            id=id_, type=kind, name=name, latitude=lat, longitude=lon,
+            graph_node=str(nearest_node(graph, lat, lon)), response_capacity=capacity,
+        ) for id_, kind, name, lat, lon, capacity in RESOURCE_SPECS],
     )

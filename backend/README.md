@@ -1,4 +1,4 @@
-# EvacRoute backend — Tasks 1–3
+# EvacRoute backend — Tasks 1–4
 
 Real OpenStreetMap driving roads for a roughly 5 × 5 km bounding box around downtown Santa Rosa, California (center `38.4404, -122.7141`). OSMnx keeps the largest weakly connected component and simplifies road geometry. This covers a bounded demo area, not all of Santa Rosa.
 
@@ -97,7 +97,7 @@ Invoke-RestMethod http://localhost:8000/scenario
 
 Tests use a tiny offline graph for health, API contract, CORS, geometry, speed fallback, demand/capacity, and cache round trips. If the real GraphML cache exists, the integration test also verifies its endpoint and site-node membership/proximity while forbidding OSM downloads; otherwise that test is explicitly skipped. Start the backend once to populate it before running the full suite.
 
-Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; Task 3 adds structured road incidents. Emergency resources, Grok, and frontend changes remain out of scope.
+Initial real download: **1,662 nodes / 4,358 directed edges**. Counts may change after an intentional refresh. Task 2 adds evacuation routing and shelter assignment; Task 3 adds structured road incidents; Task 4 adds simulated emergency dispatch. Grok, external incident/population sources, and frontend changes remain out of scope.
 
 Display the returned **© OpenStreetMap contributors** attribution with its link on the frontend map. Sources: [OSM attribution](https://www.openstreetmap.org/copyright), [OSMnx graph download and caching APIs](https://osmnx.readthedocs.io/en/stable/user-reference.html).
 
@@ -247,7 +247,7 @@ Successful HTTP 200 response has plan fields directly at the top level (not nest
 }
 ```
 
-GET `/incidents` returns `{"incidents":[...]}`. POST `/incidents/reset` takes no body and returns `evacuation_routes`, `shelter_assignments`, `metrics`, and `incidents: []`. POST `/optimize` always uses current incident effects while retaining its three top-level fields.
+GET `/incidents` returns `{"incidents":[...]}`. POST `/incidents/reset` takes no body and returns the baseline combined plan with `incidents: []`. POST `/optimize` always uses current incident effects while retaining its original evacuation fields and adding the Task 4 responder fields below.
 
 Invalid structure/type/severity returns HTTP 422. Unknown road names, edge IDs, or distant coordinates return HTTP 404:
 
@@ -278,4 +278,109 @@ Invoke-RestMethod -Method Post http://localhost:8000/incidents/reset
 Invoke-RestMethod -Method Post http://localhost:8000/optimize
 ```
 
-Validation: **29 tests passed**, including all Task 1/2 tests, targeting, penalty composition, duplicate updates, partial reopen, blocked-edge exclusion, atomic failure, unchanged base graph/cache, and real demo reset. Live baseline/closure/reset JSON is saved locally in ignored `backend/cache/task3_*.json`; the post-reset response matches baseline exactly. Two upstream deprecation warnings remain. No Task 4 functionality is included.
+Task 3 validation: **29 tests passed**, including all Task 1/2 tests, targeting, penalty composition, duplicate updates, partial reopen, blocked-edge exclusion, atomic failure, unchanged base graph/cache, and real demo reset. Live baseline/closure/reset JSON is saved locally in ignored `backend/cache/task3_*.json`; the post-reset response matches baseline exactly. Two upstream deprecation warnings remain.
+
+## Task 4: emergency resource dispatch
+
+No new dependencies. Four simulated ambulances and two simulated rescue teams are included in `GET /scenario.emergency_resources`. These illustrative staging points use the same road-node snapping as zones/shelters; they are not representations of actual emergency services or their availability.
+
+| Resource | Staging area | Latitude | Longitude | Graph node | Response capacity |
+| --- | --- | ---: | ---: | --- | --- |
+| ambulance-1 | Central | 38.4380 | -122.7160 | 56040728 | 4 injured people |
+| ambulance-2 | East | 38.4430 | -122.6930 | 56129478 | 4 injured people |
+| ambulance-3 | Southwest | 38.4270 | -122.7310 | 56101610 | 4 injured people |
+| ambulance-4 | Northwest | 38.4500 | -122.7300 | 56078315 | 4 injured people |
+| rescue-team-1 | Central | 38.4380 | -122.7160 | 56040728 | 1 incident |
+| rescue-team-2 | East | 38.4430 | -122.6930 | 56129478 | 1 incident |
+
+Every resource includes `id`, `type` (`ambulance` or `rescue_team`), `name`, `latitude`, `longitude`, `graph_node`, `availability_status`, `response_capacity`, and `simulated: true`. All six start `available`; resources configured as `unavailable` are excluded. Resource positions and availability never change when a plan is calculated. There is no fleet-editing API or vehicle movement simulation.
+
+### Medical report and dispatch rules
+
+POST `/incident` accepts either a zone ID or coordinates:
+
+```json
+{"type":"MEDICAL_INCIDENT","zone":"zone-c","injuries":12,"severity":"high"}
+```
+
+```json
+{"type":"MEDICAL_INCIDENT","latitude":38.43,"longitude":-122.699,"injuries":12,"severity":"high"}
+```
+
+`injuries` must be a positive integer; severity is `low`, `medium`, or `high` (default). Road selectors are not valid medical targets. A zone resolves to its existing graph node. Coordinates resolve to the nearest graph node within 500 meters; distant points or unknown zones return HTTP 404 with `incident_location_not_found`. Malformed requests return 422.
+
+The normalized medical incident adds `zone` (or null), `latitude`, `longitude`, `graph_node`, and `injuries`; `affected_edge_ids` is empty because a medical report does not directly change roads. Zone C's demo ID is `medical-2aad36df9187577a`. Repeating a report for the same zone or the same coordinates rounded to six decimals updates that medical incident's injuries/severity rather than creating duplicate demand. Zone targeting and coordinate targeting are distinct identities; use one format consistently. Reports at different targets remain active together. Road updates preserve medical incidents, and reset clears both kinds.
+
+Dispatch is deterministic greedy assignment, not a new OR-Tools model:
+
+1. Process medical incidents by high → medium → low severity, then incident ID for ties.
+2. For each incident, sort available, unused, reachable ambulances by effective route cost, then resource ID.
+3. Assign until response capacity covers injuries or the reachable fleet is exhausted.
+4. High-severity medical incidents additionally request one nearest available rescue team. Medium/low incidents do not request rescue support.
+
+**Demo assumption: one ambulance supports four injured people.** Thus 12 injuries request three ambulances. This models response support, not patient transport seats, repeat trips, or clinical triage. A rescue team covers one high-severity incident and does not substitute for ambulance injury capacity. Each resource serves at most one incident per plan. This greedy method honors severity first; it does not claim global fleet-assignment optimality.
+
+Both flows use the **same derived graph instance and shortest-path function**. One-way restrictions, parallel-edge selection, blocked roads, and hazard/damage/debris penalties apply identically. Dispatch starts at each resource's current fixed graph node and ends at the medical incident's graph node. Routes exclude off-road marker-to-node access. A co-located resource legitimately has zero travel time/distance.
+
+Insufficient or unreachable responders **do not reject an otherwise feasible evacuation plan**. The medical incident remains active and the HTTP 200 response reports shortfalls in `dispatch_summary` and metrics. Each summary has `status` (`covered`, `partial`, or `unserved`), injury coverage, ambulance count, rescue demand/count, and unfilled requests. Do not interpret a successful request as full incident coverage. The existing HTTP 409 rollback behavior still applies when evacuation itself becomes infeasible.
+
+### Combined API response additions
+
+POST `/optimize`, POST `/incident`, and POST `/incidents/reset` all return the combined plan. All existing evacuation fields remain. `/incident` additionally retains its normalized `incident` and `affected_edge_ids` response fields.
+
+```text
+{
+  "evacuation_routes": [...],
+  "shelter_assignments": [...],
+  "ambulances": [{
+    "id": "ambulance-2", "name": string, "type": "ambulance",
+    "destination": "medical-2aad36df9187577a",
+    "incident_id": "medical-2aad36df9187577a",
+    "travel_time_s": 182.439, "effective_travel_time_s": 182.439,
+    "distance_m": 1773.709,
+    "coordinates": [[latitude, longitude], ...],
+    "nodes": [string, ...], "edge_ids": [string, ...],
+    "response_capacity": 4, "simulated": true
+  }],
+  "rescue_teams": [/* same fields, type=\"rescue_team\" */],
+  "incidents": [/* road and medical incidents */],
+  "dispatch_summary": [{
+    "incident_id": "medical-2aad36df9187577a", "injuries": 12,
+    "supported_injuries": 12, "uncovered_injuries": 0,
+    "ambulances_dispatched": 3, "rescue_teams_required": 1,
+    "rescue_teams_dispatched": 1, "unfilled_rescue_requests": 0,
+    "status": "covered"
+  }],
+  "metrics": {/* existing evacuation metrics plus emergency metrics */}
+}
+```
+
+Emergency metrics are `active_medical_incidents`, `ambulances_dispatched`, `rescue_teams_dispatched`, `average_emergency_response_time_s`, `maximum_emergency_response_time_s`, `average_effective_emergency_response_time_s`, `uncovered_injuries`, and `unfilled_rescue_requests`. Response-time average is an unweighted average across all dispatched ambulance and rescue routes; maximum is the slowest dispatched resource. With no dispatch, both are zero; check coverage fields separately. Penalized effective time is a planning cost, not measured ETA.
+
+Without medical incidents, responder arrays and `dispatch_summary` are empty and emergency metrics are zero. Reset produces this baseline exactly. In-memory/single-worker behavior is unchanged.
+
+### Verified medical and responder-closure demo
+
+Use [demo_medical_incident.json](demo_medical_incident.json) for Zone C, 12 injuries, high severity:
+
+| Dispatched resource | Free-flow seconds | Distance (meters) |
+| --- | ---: | ---: |
+| ambulance-2 | 182.439 | 1773.709 |
+| ambulance-1 | 183.836 | 2220.535 |
+| ambulance-3 | 207.656 | 3501.952 |
+| rescue-team-2 | 182.439 | 1773.709 |
+
+Mean response time: **189.093 seconds**; maximum: **207.656 seconds**. All 12 injuries are supported, no rescue request is unfilled, and all 2,000 evacuees retain their Task 2 assignments.
+
+Then apply [demo_responder_closure.json](demo_responder_closure.json): **Bennett Valley Road, edge `300788174:56152123:0`**. Ambulance 1 reroutes to 197.773 seconds / 2151.869 meters; ambulance 3 reroutes to 308.810 seconds / 5895.289 meters. Ambulance 2 and rescue team 2 remain unchanged. No returned responder or evacuation route uses the blocked edge. Mean response time becomes 217.865 seconds; maximum becomes 308.810 seconds. Full injury coverage and evacuation capacity constraints remain satisfied.
+
+From `backend/`, with the server running:
+
+```powershell
+Invoke-RestMethod -Method Post http://localhost:8000/optimize
+Invoke-RestMethod -Method Post http://localhost:8000/incident -ContentType 'application/json' -InFile demo_medical_incident.json
+Invoke-RestMethod -Method Post http://localhost:8000/incident -ContentType 'application/json' -InFile demo_responder_closure.json
+Invoke-RestMethod -Method Post http://localhost:8000/incidents/reset
+```
+
+Validation: **45 tests passed**, including all prior tests plus fleet appearance, injury-to-capacity rounding, unavailable resources, severity priority, unique assignments, shortfalls, shared dynamic penalties, medical target validation/upsert, real responder coordinates, closure rerouting, unchanged resource positions, and exact baseline restoration. Live JSON snapshots are saved in ignored `backend/cache/task4_*.json`. `pip check` passed. Two existing upstream deprecation warnings remain. No Task 5 functionality is included.

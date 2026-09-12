@@ -9,6 +9,9 @@ from shapely.geometry import LineString, Point
 from shapely.ops import transform
 
 from app.models.incidents import ActiveIncident, IncidentRequest
+from app.models.scenario import ScenarioResponse
+from app.data.scenario import nearest_node
+import osmnx as ox
 
 
 class TargetNotFound(ValueError):
@@ -57,7 +60,29 @@ class IncidentState:
         self.lock = RLock()
         self.active: list[ActiveIncident] = []
 
-    def propose(self, graph: nx.MultiDiGraph, request: IncidentRequest):
+    def propose(self, graph: nx.MultiDiGraph, request: IncidentRequest,
+                scenario: ScenarioResponse | None = None):
+        if request.type == "MEDICAL_INCIDENT":
+            if request.zone is not None:
+                zone = next((z for z in scenario.zones if z.id == request.zone), None) if scenario else None
+                if zone is None:
+                    raise TargetNotFound(f"Unknown evacuation zone: {request.zone}")
+                lat, lon, node = zone.latitude, zone.longitude, zone.graph_node
+                location_key = request.zone
+            else:
+                lat, lon = request.latitude, request.longitude
+                node = str(nearest_node(graph, lat, lon))
+                data = graph.nodes[int(node)]
+                if ox.distance.great_circle(lat, lon, data["y"], data["x"]) > 500:
+                    raise TargetNotFound("No road node within 500 meters of the medical incident")
+                location_key = f"{lat:.6f},{lon:.6f}"
+            # One medical report per target: repeats are idempotent, changed
+            # severity/injuries update the report instead of duplicating demand.
+            id_ = "medical-" + sha256(location_key.encode()).hexdigest()[:16]
+            incident = ActiveIncident(id=id_, type=request.type, severity=request.severity,
+                                      affected_edge_ids=[], zone=request.zone, latitude=lat,
+                                      longitude=lon, graph_node=node, injuries=request.injuries)
+            return incident, sorted([i for i in self.active if i.id != id_] + [incident], key=lambda i: i.id)
         affected = resolve_target(graph, request)
         token = f"{request.type}|{request.severity}|{'|'.join(affected)}"
         incident = ActiveIncident(id="incident-" + sha256(token.encode()).hexdigest()[:16],
@@ -66,6 +91,9 @@ class IncidentState:
         affected_set = set(affected)
         updated = []
         for existing in self.active:
+            if existing.type == "MEDICAL_INCIDENT":
+                updated.append(existing)
+                continue
             # Last update wins per edge and incident type. Reopen clears closure
             # and blocking debris, preserving hazards, damage, and mild debris.
             replace = existing.type == request.type or (
