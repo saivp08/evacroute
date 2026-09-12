@@ -5,8 +5,6 @@ import Sidebar, { type NavKey } from "./Sidebar";
 import StatusBar from "./StatusBar";
 import PlaceholderSection from "./PlaceholderSection";
 import OverviewScreen from "@/components/overview/OverviewScreen";
-import EvacuationZonesScreen from "@/components/evacuation/EvacuationZonesScreen";
-import ShelterAllocationScreen from "@/components/shelters/ShelterAllocationScreen";
 
 const SECTION_LABEL: Record<NavKey, string> = {
   overview: "Overview",
@@ -21,6 +19,8 @@ const SECTION_LABEL: Record<NavKey, string> = {
 const PLACEHOLDER_COPY: Partial<Record<NavKey, string>> = {
   incidents: "A dedicated incident log and triage view will live here.",
   fleet: "Ambulance and rescue-team fleet status will live here.",
+  evacuation: "Zone-by-zone evacuation progress will live here.",
+  shelters: "Shelter capacity and intake management will live here.",
   hazards: "Active hazard and closure tracking will live here.",
   intelligence: "Situational reports and analysis will live here.",
 };
@@ -37,10 +37,6 @@ export default function AppShell() {
         <div className="app-content">
           {active === "overview" ? (
             <OverviewScreen />
-          ) : active === "evacuation" ? (
-            <EvacuationZonesScreen />
-          ) : active === "shelters" ? (
-            <ShelterAllocationScreen />
           ) : (
             <PlaceholderSection title={SECTION_LABEL[active]} description={PLACEHOLDER_COPY[active] ?? ""} />
           )}

@@ -245,44 +245,6 @@ export interface EvacuationZoneDetail {
   plan_eta_minutes: number;
 }
 
-export type ShelterAllocationStatus = "available" | "filling" | "near_capacity" | "full";
-export type ShelterCongestionLevel = "low" | "medium" | "high";
-export type ShelterHazardExposure = "low" | "medium" | "high";
-
-// Operational allocation record for the dedicated Shelter Allocation page (Phase 9) —
-// distinct from Shelter above (which only feeds the Overview's compact capacity list).
-// Fetched via getShelterAllocations(); deterministic mock only, since the live backend's
-// shelter data has no assigned-zones/congestion/hazard-exposure concept. assigned_zone_codes
-// are display labels only (e.g. "A-04"), not a live link to EvacuationZoneDetail ids.
-export interface ShelterAllocationDetail {
-  id: string;
-  name: string;
-  location: LatLng;
-  total_capacity: number;
-  current_occupancy: number;
-  available_capacity: number;
-  incoming: number;
-  status: ShelterAllocationStatus;
-  assigned_zone_codes: string[];
-  congestion_level: ShelterCongestionLevel;
-  hazard_exposure: ShelterHazardExposure;
-}
-
-// A single frontend-mock ranking result from getShelterRecommendations(zoneId) — a
-// composite of the shelter's own mock attributes and its straight-line distance from the
-// zone's centroid. This is a heuristic display ranking, not a real assignment/optimization
-// algorithm: no capacity-constrained solver runs anywhere in this app.
-export interface ShelterRecommendation {
-  shelter_id: string;
-  shelter_name: string;
-  rank: number;
-  score: number;
-  available_capacity: number;
-  distance_miles: number;
-  congestion_level: ShelterCongestionLevel;
-  hazard_exposure: ShelterHazardExposure;
-}
-
 // The following are operations-console concepts (platform health, analyst reports,
 // aggregate metrics) rather than physical entities — the backend may not model them the
 // same way, but they still flow through the service layer like everything else here.

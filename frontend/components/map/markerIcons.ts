@@ -2,7 +2,7 @@
 // the asset TYPE, and a colored ring identifying its STATUS — so every layer (this one and
 // future ones) reads consistently rather than inventing its own marker style.
 import L from "leaflet";
-import type { FacilityStatus, ShelterAllocationStatus, ShelterStatus, VehicleStatus, VehicleType } from "@/lib/models";
+import type { FacilityStatus, ShelterStatus, VehicleStatus, VehicleType } from "@/lib/models";
 
 const STATUS_COLOR: Record<FacilityStatus, string> = {
   operational: "var(--success)",
@@ -125,27 +125,6 @@ export function roadClosureIcon(selected: boolean) {
   return L.divIcon({
     className: "marker-badge-icon",
     html: `<div class="road-closure-marker${selected ? " road-closure-marker-selected" : ""}"><span>!</span></div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
-  });
-}
-
-const SHELTER_ALLOCATION_STATUS_COLOR: Record<ShelterAllocationStatus, string> = {
-  available: "var(--success)",
-  filling: "var(--caution)",
-  near_capacity: "var(--warning)",
-  full: "var(--danger)",
-};
-
-// Shelter Allocation page marker: same square-badge language as the infrastructure icons
-// above, but sized up (and ring-brightened) when selected, matching the road-closure and
-// vehicle icons' selected treatment.
-export function shelterAllocationIcon(status: ShelterAllocationStatus, selected: boolean) {
-  const size = selected ? 32 : 26;
-  return L.divIcon({
-    className: "marker-badge-icon",
-    html: `<div class="marker-badge${selected ? " marker-badge-selected" : ""}" style="border-color:${SHELTER_ALLOCATION_STATUS_COLOR[status]};width:${size}px;height:${size}px">S</div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2],
