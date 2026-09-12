@@ -14,7 +14,7 @@ import { getRerouteEvent, getVehicleRoute, getVehicles } from "@/lib/services/da
 import { useTickingEta } from "@/lib/useTickingEta";
 import { interpolateRoute, truncateRoute } from "@/lib/routeMotion";
 import type { RerouteState } from "@/lib/reroute";
-import { routeEndpointIcon, vehicleIcon } from "./markerIcons";
+import { roadClosureIcon, routeEndpointIcon, vehicleIcon } from "./markerIcons";
 
 const ACTIVE_STATUSES = new Set(["en_route", "on_scene"]);
 // One full pass down the route every 45s — a deliberately unhurried, readable pace.
@@ -140,6 +140,20 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
           positions={alternateCoordinates.map((p): [number, number] => [p.latitude, p.longitude])}
           pathOptions={{ color: "var(--active)", weight: 5, dashArray: "10 8", className: "route-flow" }}
         />
+      )}
+
+      {rerouteActive && rerouteEvent && (
+        <Marker
+          position={[rerouteEvent.closure_point.latitude, rerouteEvent.closure_point.longitude]}
+          icon={roadClosureIcon(false)}
+        >
+          <Popup>
+            <div className="marker-popup">
+              <div className="marker-popup-title">Bridge Road — Closed</div>
+              <div className="marker-popup-sub">Debris reported</div>
+            </div>
+          </Popup>
+        </Marker>
       )}
 
       {vehicles.map((vehicle) => {

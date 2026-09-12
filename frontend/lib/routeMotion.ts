@@ -56,3 +56,66 @@ export function truncateRoute(coordinates: LatLng[], fraction: number): LatLng[]
 
   return [...coordinates.slice(0, index + 1), partialPoint];
 }
+
+function haversineMeters(a: LatLng, b: LatLng): number {
+  const R = 6371000;
+  const dLat = ((b.latitude - a.latitude) * Math.PI) / 180;
+  const dLng = ((b.longitude - a.longitude) * Math.PI) / 180;
+  const lat1 = (a.latitude * Math.PI) / 180;
+  const lat2 = (b.latitude * Math.PI) / 180;
+  const sinLat = Math.sin(dLat / 2);
+  const sinLng = Math.sin(dLng / 2);
+  const h = sinLat * sinLat + Math.cos(lat1) * Math.cos(lat2) * sinLng * sinLng;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+export function routeLengthMiles(coordinates: LatLng[]): number {
+  let meters = 0;
+  for (let i = 1; i < coordinates.length; i++) {
+    meters += haversineMeters(coordinates[i - 1], coordinates[i]);
+  }
+  return meters / 1609.34;
+}
+
+export interface Detour {
+  closurePoint: LatLng;
+  coordinates: LatLng[];
+}
+
+// Builds a deterministic "detour around a closure" out of an existing route: the middle
+// third of the path is replaced with a single point offset to one side, so the drawn line
+// visibly jogs around an obstacle instead of just being a straight substitute. This is a
+// fixed geometric transform of the route's own waypoints — not pathfinding, and not random
+// (the same route always produces the same detour).
+export function buildDetour(coordinates: LatLng[]): Detour | null {
+  if (coordinates.length < 3) return null;
+
+  const last = coordinates.length - 1;
+  const startIndex = Math.max(1, Math.floor(last * 0.3));
+  const endIndex = Math.min(last - 1, Math.ceil(last * 0.7));
+  if (startIndex >= endIndex) return null;
+
+  const start = coordinates[startIndex];
+  const end = coordinates[endIndex];
+  const midIndex = Math.floor((startIndex + endIndex) / 2);
+  const mid = coordinates[midIndex];
+
+  // Perpendicular to the start->end direction, scaled to a fixed real-world offset so the
+  // bulge reads clearly regardless of the route's own scale.
+  const dx = end.longitude - start.longitude;
+  const dy = end.latitude - start.latitude;
+  const length = Math.hypot(dx, dy) || 1;
+  const OFFSET_DEG = 0.0035;
+  const perpLat = -(dx / length) * OFFSET_DEG;
+  const perpLng = (dy / length) * OFFSET_DEG;
+
+  const detourPoint: LatLng = {
+    latitude: mid.latitude + perpLat,
+    longitude: mid.longitude + perpLng,
+  };
+
+  return {
+    closurePoint: start,
+    coordinates: [...coordinates.slice(0, startIndex + 1), detourPoint, ...coordinates.slice(endIndex)],
+  };
+}

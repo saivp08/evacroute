@@ -142,13 +142,17 @@ export interface VehicleRoute {
 }
 
 // A predetermined mock alternate route: what a vehicle's route becomes if the referenced
-// closure is simulated. Fetched via getRerouteEvent(vehicle_id) — a vehicle with no entry
-// here simply has no reroute scenario defined, which is a normal state, not an error.
-// This is a fixed, hand-authored detour, not computed pathfinding.
+// closure is simulated. Fetched via getRerouteEvent(vehicle_id) — a vehicle with no active
+// route simply has no reroute scenario defined, which is a normal state, not an error.
+// This is a deterministic geometric detour derived from the vehicle's own route, not
+// computed pathfinding — see buildRerouteEvent in lib/services/dataService.ts.
 export interface RouteUpdateEvent {
   vehicle_id: string;
   closure_id: string;
   message: string;
+  // Where the mock closure marker is drawn on the map — the point on the ORIGINAL route
+  // where the detour begins.
+  closure_point: LatLng;
   alternate_coordinates: LatLng[];
   alternate_distance_miles: number;
   alternate_eta_minutes: number;

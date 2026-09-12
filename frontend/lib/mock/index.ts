@@ -13,7 +13,6 @@ import type {
   Road,
   RoadClosure,
   Route,
-  RouteUpdateEvent,
   Shelter,
   SystemStatus,
   Vehicle,
@@ -364,29 +363,6 @@ export const mockRoadClosures: RoadClosure[] = [
       { latitude: 40.453, longitude: -79.947 },
     ],
     status: "closed",
-  },
-];
-
-// Predetermined detour scenarios for the "SIMULATE CLOSURE" demo. Currently only AMB-12
-// has one defined — its alternate path loops south and west around the Bridge Road closure
-// before approaching UPMC Presbyterian from the other side, rather than a straight
-// replacement line. A vehicle with no entry here has no reroute scenario, which is expected.
-export const mockRouteUpdateEvents: RouteUpdateEvent[] = [
-  {
-    vehicle_id: "AMB-12",
-    closure_id: "CLOSURE-1",
-    message: "Route updated — Bridge Road closed due to debris.",
-    alternate_coordinates: [
-      { latitude: 40.44, longitude: -79.95 },
-      { latitude: 40.4375, longitude: -79.952 },
-      { latitude: 40.435, longitude: -79.9565 },
-      { latitude: 40.437, longitude: -79.9605 },
-      { latitude: 40.4405, longitude: -79.9615 },
-      { latitude: 40.4415, longitude: -79.958 },
-      { latitude: 40.441, longitude: -79.955 },
-    ],
-    alternate_distance_miles: 4.6,
-    alternate_eta_minutes: 9,
   },
 ];
 

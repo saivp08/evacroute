@@ -36,6 +36,7 @@ import {
   type BackendResponderRoute,
   type BackendShelter,
 } from "./backendClient";
+import { buildDetour, routeLengthMiles } from "../routeMotion";
 
 function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
   return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
@@ -251,9 +252,25 @@ export async function getRoadClosures(): Promise<RoadClosure[]> {
     });
 }
 
-// The live backend has no predetermined reroute-demo equivalent, so every vehicle
-// legitimately has none — this is the Phase 7 mock-only feature and stays retired now that
-// the app runs on real backend data.
-export async function getRerouteEvent(_vehicleId: string): Promise<RouteUpdateEvent | null> {
-  return null;
+// Frontend-only "SIMULATE CLOSURE" demo: the live backend has no road-closure/reroute
+// concept for a dispatched vehicle, so this is a deterministic mock layered on top of
+// whichever route the vehicle actually has right now (real or otherwise). Same vehicle +
+// same route always produces the same detour — see buildDetour in lib/routeMotion.ts.
+// A vehicle with no active route has no reroute scenario, which is a normal state.
+export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEvent | null> {
+  const route = await getVehicleRoute(vehicleId);
+  if (!route) return null;
+
+  const detour = buildDetour(route.coordinates);
+  if (!detour) return null;
+
+  return {
+    vehicle_id: vehicleId,
+    closure_id: `${vehicleId}-mock-closure`,
+    message: "Route updated — Bridge Road closed due to debris.",
+    closure_point: detour.closurePoint,
+    alternate_coordinates: detour.coordinates,
+    alternate_distance_miles: routeLengthMiles(detour.coordinates),
+    alternate_eta_minutes: Math.max(1, Math.round(route.eta_minutes * 1.3)),
+  };
 }
