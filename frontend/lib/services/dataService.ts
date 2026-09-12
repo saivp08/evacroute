@@ -11,6 +11,7 @@
 // invented data.
 import type {
   EvacuationZone,
+  EvacuationZoneDetail,
   FireStation,
   Hazard,
   Hospital,
@@ -37,6 +38,7 @@ import {
   type BackendShelter,
 } from "./backendClient";
 import { buildDetour, routeLengthMiles } from "../routeMotion";
+import { mockEvacuationZoneDetails } from "../mock";
 
 function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
   return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
@@ -273,4 +275,11 @@ export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEve
     alternate_distance_miles: routeLengthMiles(detour.coordinates),
     alternate_eta_minutes: Math.max(1, Math.round(route.eta_minutes * 1.3)),
   };
+}
+
+// Phase 8 — dedicated Evacuation Zones page. Deterministic mock data: the live backend's
+// zones (see getEvacuationZones above) carry no status/hazard/priority/plan fields, so this
+// intentionally does not go through backendClient.
+export async function getEvacuationZoneDetails(): Promise<EvacuationZoneDetail[]> {
+  return mockEvacuationZoneDetails;
 }

@@ -196,6 +196,31 @@ export interface EvacuationZone {
   boundary: LatLng[];
 }
 
+export type ZoneEvacuationStatus = "evacuate_now" | "evacuation_in_progress" | "monitored" | "clear";
+export type ZoneHazardLevel = "extreme" | "high" | "moderate" | "low";
+export type ZonePriority = "critical" | "high" | "medium" | "low";
+
+// Richer operational record for the dedicated Evacuation Zones page (Phase 8) — distinct
+// from EvacuationZone above, which only feeds the Overview's compact status list. Fetched
+// via getEvacuationZoneDetails(): deterministic mock only, since neither the live backend
+// nor EvacuationZone models this granularity (status/hazard/priority/evacuation plan).
+export interface EvacuationZoneDetail {
+  id: string;
+  name: string;
+  status: ZoneEvacuationStatus;
+  priority: ZonePriority;
+  hazard_level: ZoneHazardLevel;
+  population: number;
+  evacuated_percent: number;
+  recommended_shelter_id: string;
+  recommended_shelter_name: string;
+  shelter_location: LatLng;
+  boundary: LatLng[];
+  centroid: LatLng;
+  plan_distance_miles: number;
+  plan_eta_minutes: number;
+}
+
 // The following are operations-console concepts (platform health, analyst reports,
 // aggregate metrics) rather than physical entities — the backend may not model them the
 // same way, but they still flow through the service layer like everything else here.
