@@ -582,6 +582,31 @@ main {
   color: var(--status-safe);
 }
 
+.status-pill-critical {
+  color: var(--status-critical);
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+  font-weight: 700;
+}
+
+.status-dot-critical {
+  background: var(--status-critical);
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  animation: pulse-ring-critical 1.4s ease-out infinite;
+}
+
+@keyframes pulse-ring-critical {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
 .status-bar-time {
   font-size: var(--fs-meta);
   font-family: var(--mono);
@@ -1012,10 +1037,17 @@ main {
   text-transform: none;
 }
 
+/* NOTE: content that spatially overlaps Leaflet's tile layer (position:absolute placed on
+   top of the map, at any z-index, DOM location, or layer-promotion hint) reliably failed to
+   composite in this environment's headless screenshot pipeline, even though layout/DOM/CSSOM
+   were all verified correct. To sidestep that entirely, the KPI strip lives in normal flow
+   ABOVE the map canvas (never overlapping its pixels) rather than as a floating overlay. */
 .map-frame {
   position: relative;
   flex: 1;
   min-height: 320px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--panel-border-soft);
   border-radius: 10px;
   overflow: hidden;
@@ -1030,14 +1062,25 @@ main {
   animation: dash-flow 0.8s linear infinite;
 }
 
-/* Subtle vignette so the map reads as an immersive scene rather than a flat rectangle. */
-.map-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.55);
+/* Blocked roads: a slow glow pulse so a closure reads as an active alert on the map. */
+.road-blocked {
+  animation: road-glow 2s ease-in-out infinite;
+}
+
+@keyframes road-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 7px rgba(239, 68, 68, 0.95));
+  }
+}
+
+.map-frame-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
 .base-map {
@@ -1046,19 +1089,11 @@ main {
   background: #0d1626;
 }
 
-/* Headline KPIs float directly on the map instead of living in a separate dashboard row —
-   this is the biggest single move toward "the map is the hero, panels are overlays." */
+/* Headline KPIs sit directly above the map inside the same dark frame — still reads as one
+   unified "map card" rather than a separate dashboard row, without overlapping the map. */
 .map-metrics-overlay {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.map-metrics-overlay .metrics-strip-tile {
-  pointer-events: auto;
+  flex-shrink: 0;
+  padding: 14px 14px 0;
 }
 
 /* Leaflet's own dark-mode-agnostic chrome (zoom buttons, attribution) redrawn to match
@@ -1114,6 +1149,35 @@ main {
 
 /* Vehicles: filled circular badge (vs. facilities' outlined square) so mobile units read
    as a distinct category from fixed infrastructure at a glance. */
+.marker-vehicle-icon-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Rotates around the badge's own center to show travel direction, while the letter badge
+   itself (a separate layer) stays upright and readable. */
+.marker-vehicle-heading {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform 0.4s linear;
+}
+
+.marker-vehicle-heading::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid var(--text);
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
+}
+
 .marker-vehicle-badge {
   width: 100%;
   height: 100%;
@@ -1270,11 +1334,6 @@ main {
   .overview-main-row {
     grid-template-columns: 1fr;
     grid-auto-rows: min-content;
-  }
-
-  .map-metrics-overlay {
-    position: static;
-    padding: 12px 12px 0;
   }
 
   .overview-col {

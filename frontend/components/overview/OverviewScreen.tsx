@@ -20,6 +20,7 @@ import {
   getVehicles,
 } from "@/lib/services/dataService";
 import BaseMapLoader from "@/components/map/BaseMapLoader";
+import RoadLayerLoader from "@/components/map/RoadLayerLoader";
 import InfrastructureLayerLoader from "@/components/map/InfrastructureLayerLoader";
 import VehicleLayerLoader from "@/components/map/VehicleLayerLoader";
 import ActiveIncidentsPanel from "./ActiveIncidentsPanel";
@@ -78,12 +79,15 @@ export default function OverviewScreen() {
 
         <main className="overview-map-area">
           <div className="map-frame">
-            <BaseMapLoader>
-              <InfrastructureLayerLoader />
-              <VehicleLayerLoader selectedVehicleId={selectedVehicleId} onSelectVehicle={setSelectedVehicleId} />
-            </BaseMapLoader>
             <div className="map-metrics-overlay">
               <MetricsStrip metrics={data.metrics} />
+            </div>
+            <div className="map-frame-canvas">
+              <BaseMapLoader>
+                <RoadLayerLoader />
+                <InfrastructureLayerLoader />
+                <VehicleLayerLoader selectedVehicleId={selectedVehicleId} onSelectVehicle={setSelectedVehicleId} />
+              </BaseMapLoader>
             </div>
           </div>
         </main>

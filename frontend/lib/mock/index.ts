@@ -223,6 +223,37 @@ export const mockRoads: Road[] = [
     ],
     closure_reason: null,
   },
+  {
+    id: "ROAD-2",
+    name: "Placeholder River Parkway",
+    status: "congested",
+    coordinates: [
+      { latitude: 40.472, longitude: -79.99 },
+      { latitude: 40.45, longitude: -79.955 },
+      { latitude: 40.44, longitude: -79.93 },
+    ],
+    closure_reason: null,
+  },
+  {
+    id: "ROAD-3",
+    name: "Placeholder Bridge Street",
+    status: "blocked",
+    coordinates: [
+      { latitude: 40.452, longitude: -79.965 },
+      { latitude: 40.44, longitude: -79.955 },
+    ],
+    closure_reason: "Debris blocking both lanes",
+  },
+  {
+    id: "ROAD-4",
+    name: "Placeholder Overlook Drive",
+    status: "closed",
+    coordinates: [
+      { latitude: 40.41, longitude: -79.955 },
+      { latitude: 40.423, longitude: -79.968 },
+    ],
+    closure_reason: "Closed for evacuation staging",
+  },
 ];
 
 export const mockRoutes: Route[] = [

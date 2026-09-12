@@ -45,7 +45,9 @@ const VEHICLE_STATUS_COLOR: Record<VehicleStatus, string> = {
 // distinct category from fixed infrastructure at a glance even though both use letters.
 // Actively moving vehicles (en route / on scene) get a subtle pulse so the map reads as
 // live rather than a static snapshot; the selected vehicle is enlarged with an accent ring.
-function vehicleBadgeIcon(letter: string, fillColor: string, selected: boolean, active: boolean) {
+// A heading pointer rotates around the badge to show travel direction while the letter
+// itself stays upright and readable.
+function vehicleBadgeIcon(letter: string, fillColor: string, selected: boolean, active: boolean, headingDeg: number | null) {
   const size = selected ? 34 : 26;
   const classes = [
     "marker-vehicle-badge",
@@ -54,9 +56,13 @@ function vehicleBadgeIcon(letter: string, fillColor: string, selected: boolean, 
   ]
     .filter(Boolean)
     .join(" ");
+  const heading =
+    headingDeg !== null
+      ? `<div class="marker-vehicle-heading" style="transform:rotate(${headingDeg}deg)"></div>`
+      : "";
   return L.divIcon({
     className: "marker-badge-icon",
-    html: `<div class="${classes}" style="background:${fillColor}">${letter}</div>`,
+    html: `<div class="marker-vehicle-icon-root">${heading}<div class="${classes}" style="background:${fillColor}">${letter}</div></div>`,
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
     popupAnchor: [0, -size / 2],
@@ -79,7 +85,12 @@ export function policeStationIcon(status: FacilityStatus) {
   return badgeIcon("P", STATUS_COLOR[status]);
 }
 
-export function vehicleIcon(type: VehicleType, status: VehicleStatus, selected = false) {
+export function vehicleIcon(
+  type: VehicleType,
+  status: VehicleStatus,
+  selected = false,
+  headingDeg: number | null = null
+) {
   const active = status === "en_route" || status === "on_scene";
-  return vehicleBadgeIcon(VEHICLE_LETTER[type], VEHICLE_STATUS_COLOR[status], selected, active);
+  return vehicleBadgeIcon(VEHICLE_LETTER[type], VEHICLE_STATUS_COLOR[status], selected, active, active ? headingDeg : null);
 }

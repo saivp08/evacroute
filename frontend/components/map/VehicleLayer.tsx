@@ -12,7 +12,13 @@ import type L from "leaflet";
 import type { Vehicle } from "@/lib/models";
 import { getVehicles } from "@/lib/services/dataService";
 import { useTickingEta } from "@/lib/useTickingEta";
+import { interpolateRoute } from "@/lib/routeMotion";
 import { vehicleIcon } from "./markerIcons";
+
+const ACTIVE_STATUSES = new Set(["en_route", "on_scene"]);
+// One full pass down the route every 45s — a deliberately unhurried, readable pace.
+const CYCLE_MS = 45000;
+const TICK_MS = 250;
 
 interface VehicleLayerProps {
   selectedVehicleId: string | null;
@@ -25,6 +31,11 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle }: Veh
   const markerRefs = useRef(new Map<string, L.Marker>());
   const map = useMap();
 
+  // Drives the along-route animation for every actively-moving vehicle at once. A single
+  // shared clock (rather than one timer per vehicle) is enough since each vehicle's own
+  // route shape still makes their movement look independent.
+  const [progress, setProgress] = useState(0);
+
   useEffect(() => {
     let cancelled = false;
     getVehicles().then((data) => {
@@ -33,6 +44,14 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle }: Veh
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    const start = Date.now();
+    const id = setInterval(() => {
+      setProgress(((Date.now() - start) % CYCLE_MS) / CYCLE_MS);
+    }, TICK_MS);
+    return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
@@ -56,11 +75,15 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle }: Veh
 
       {vehicles.map((vehicle) => {
         const selected = vehicle.id === selectedVehicleId;
+        const moving = ACTIVE_STATUSES.has(vehicle.status) && vehicle.route.length > 1;
+        const display = moving
+          ? interpolateRoute(vehicle.route, progress)
+          : { latitude: vehicle.latitude, longitude: vehicle.longitude, headingDeg: null };
         return (
           <Marker
             key={vehicle.id}
-            position={[vehicle.latitude, vehicle.longitude]}
-            icon={vehicleIcon(vehicle.type, vehicle.status, selected)}
+            position={[display.latitude, display.longitude]}
+            icon={vehicleIcon(vehicle.type, vehicle.status, selected, moving ? display.headingDeg : null)}
             ref={(instance) => {
               if (instance) markerRefs.current.set(vehicle.id, instance);
               else markerRefs.current.delete(vehicle.id);
