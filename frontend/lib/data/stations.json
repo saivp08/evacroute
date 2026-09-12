@@ -1,0 +1,74 @@
+[
+  {
+    "id": "station-7773679383",
+    "name": "CAL FIRE Sonoma Lake Napa Unit - Santa Rosa",
+    "location": [
+      38.4449819,
+      -122.7565427
+    ]
+  },
+  {
+    "id": "station-655496225",
+    "name": "Santa Rosa Fire Station 6",
+    "location": [
+      38.4673475,
+      -122.6540103
+    ]
+  },
+  {
+    "id": "station-691924058",
+    "name": "Santa Rosa Fire Station #10",
+    "location": [
+      38.4188666,
+      -122.7541159
+    ]
+  },
+  {
+    "id": "station-719451352",
+    "name": "Santa Rosa Fire Department Fire Station #11",
+    "location": [
+      38.4607682,
+      -122.7156918
+    ]
+  },
+  {
+    "id": "station-1019239809",
+    "name": "Santa Rosa Fire Department Station 3",
+    "location": [
+      38.4695131,
+      -122.7454925
+    ]
+  },
+  {
+    "id": "station-1492264464",
+    "name": "Sonoma County Fire District - County Station 2",
+    "location": [
+      38.5000503,
+      -122.7520966
+    ]
+  },
+  {
+    "id": "station-1492271215",
+    "name": "Sonoma County Fire District - County Station 5",
+    "location": [
+      38.4655289,
+      -122.6662532
+    ]
+  },
+  {
+    "id": "station-1492273465",
+    "name": "Alpine Station",
+    "location": [
+      38.5150529,
+      -122.655739
+    ]
+  },
+  {
+    "id": "station-1549801414",
+    "name": "Fire Station 5",
+    "location": [
+      38.4857242,
+      -122.7106945
+    ]
+  }
+]

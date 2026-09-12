@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "EvacRoute",
-  description: "Disaster transportation coordination project skeleton",
+  description: "Disaster transportation coordination command center",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -1,0 +1,502 @@
+[
+  {
+    "id": "shelter-0-st.-eugene-catholic-becker",
+    "name": "St. Eugene Catholic Becker",
+    "address": "2323 MONTGOMERY DR",
+    "location": [
+      38.44659485,
+      -122.68781996
+    ],
+    "capacity": 143
+  },
+  {
+    "id": "shelter-1-new-vintage-church",
+    "name": "New Vintage Church",
+    "address": "3300 SONOMA AVE",
+    "location": [
+      38.45468875,
+      -122.68049948
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-2-santa-rosa-high-school",
+    "name": "Santa Rosa High School",
+    "address": "1235 MENDOCINO AVE",
+    "location": [
+      38.45187387,
+      -122.71747061
+    ],
+    "capacity": 1481
+  },
+  {
+    "id": "shelter-3-redwood-empire-ice-arena",
+    "name": "Redwood Empire Ice Arena",
+    "address": "1667 WEST STEELE LANE",
+    "location": [
+      38.45998576,
+      -122.73477357
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-4-rincon-valley-middle-school",
+    "name": "Rincon Valley Middle School",
+    "address": "4650 BADGER RD",
+    "location": [
+      38.48218102,
+      -122.67299014
+    ],
+    "capacity": 135
+  },
+  {
+    "id": "shelter-5-piner-high-school",
+    "name": "Piner High School",
+    "address": "1700 FULTON ST",
+    "location": [
+      38.4604534,
+      -122.76965827
+    ],
+    "capacity": 167
+  },
+  {
+    "id": "shelter-6-cook-middle-school",
+    "name": "Cook Middle School",
+    "address": "2480 SEBASTOPOL ROAD",
+    "location": [
+      38.42651299,
+      -122.74597912
+    ],
+    "capacity": 583
+  },
+  {
+    "id": "shelter-7-first-presbyterian-church",
+    "name": "First Presbyterian Church",
+    "address": "1550 PACIFIC AVENUE",
+    "location": [
+      38.45298004,
+      -122.70314441
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-8-maria-carrillo-high-school",
+    "name": "Maria Carrillo High School",
+    "address": "6975 MONTECITO BLVD",
+    "location": [
+      38.47870065,
+      -122.66049856
+    ],
+    "capacity": 1833
+  },
+  {
+    "id": "shelter-9-santa-rosa-bible-church",
+    "name": "Santa Rosa Bible Church",
+    "address": "4575 BADGER RD",
+    "location": [
+      38.48217203,
+      -122.67372759
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-10-luther-burbank-school",
+    "name": "LUTHER BURBANK SCHOOL",
+    "address": "203 SOUTH A STREET",
+    "location": [
+      38.43584795,
+      -122.71547412
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-11-santa-rosa-christian-church",
+    "name": "Santa Rosa Christian Church",
+    "address": "1315 PACIFIC AVE",
+    "location": [
+      38.45306997,
+      -122.70599526
+    ],
+    "capacity": 24
+  },
+  {
+    "id": "shelter-12-lawrence-cook-middle-school",
+    "name": "LAWRENCE COOK MIDDLE SCHOOL",
+    "address": "2480 SEBASTOPEL RD",
+    "location": [
+      38.42651299,
+      -122.74597912
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-13-odd-fellows-hall-of-santa-rosa",
+    "name": "Odd Fellows Hall of Santa Rosa",
+    "address": "545 Pacific Avenue",
+    "location": [
+      38.45334876,
+      -122.7166882
+    ],
+    "capacity": 75
+  },
+  {
+    "id": "shelter-14-comstock-middle-school",
+    "name": "Comstock Middle School",
+    "address": "2750 W STEELE LANE",
+    "location": [
+      38.45974294,
+      -122.74592516
+    ],
+    "capacity": 650
+  },
+  {
+    "id": "shelter-15-montgomery-high-school",
+    "name": "Montgomery High School",
+    "address": "1250 HAHMAN DRIVE",
+    "location": [
+      38.44037154,
+      -122.68532884
+    ],
+    "capacity": 717
+  },
+  {
+    "id": "shelter-16-cardinal-newman-high-school",
+    "name": "Cardinal Newman High School",
+    "address": "50 URSULINE RD",
+    "location": [
+      38.49344053,
+      -122.7420221
+    ],
+    "capacity": 367
+  },
+  {
+    "id": "shelter-17-nova's-abode",
+    "name": "Nova's Abode",
+    "address": "1685 Centurion Dr",
+    "location": [
+      38.45169401,
+      -122.76215792
+    ],
+    "capacity": 200
+  },
+  {
+    "id": "shelter-18-herbert-slater-middle-school",
+    "name": "Herbert Slater Middle School",
+    "address": "3500 SONOMA AVE",
+    "location": [
+      38.44850141,
+      -122.67320598
+    ],
+    "capacity": 583
+  },
+  {
+    "id": "shelter-19-santa-rosa-veterans-building",
+    "name": "SANTA ROSA VETERANS BUILDING",
+    "address": "1351 MAPLE AVENUE",
+    "location": [
+      38.43353669,
+      -122.70082416
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-20-santa-rosa-junior-college",
+    "name": "Santa Rosa Junior College",
+    "address": "1501 MENDOCINO AVENUE",
+    "location": [
+      38.45477868,
+      -122.71737169
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-21-finley-community-center",
+    "name": "Finley Community Center",
+    "address": "2060 W COLLEGE AVENUE",
+    "location": [
+      38.44523687,
+      -122.74994513
+    ],
+    "capacity": 154
+  },
+  {
+    "id": "shelter-22-church-of-christ",
+    "name": "Church of Christ",
+    "address": "2200 SONOMA AVE",
+    "location": [
+      38.44404078,
+      -122.68937579
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-23-steele-lane-community-center",
+    "name": "Steele Lane Community Center",
+    "address": "415 STEELE LN",
+    "location": [
+      38.46043542,
+      -122.72063622
+    ],
+    "capacity": 243
+  },
+  {
+    "id": "shelter-24-st.-mark-lutheran-church",
+    "name": "St. Mark Lutheran Church",
+    "address": "4325 MAYETTE AVENUE",
+    "location": [
+      38.44278172,
+      -122.66961769
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-25-santa-rosa-veterans-memorial-building",
+    "name": "Santa Rosa Veterans Memorial Building",
+    "address": "1351 Maple Ave",
+    "location": [
+      38.43353669,
+      -122.70082416
+    ],
+    "capacity": 534
+  },
+  {
+    "id": "shelter-26-st.-eugene-cathedral-school",
+    "name": "St. Eugene Cathedral School",
+    "address": "300 FARMERS LN",
+    "location": [
+      38.44671582,
+      -122.68802454
+    ],
+    "capacity": 30
+  },
+  {
+    "id": "shelter-27-santa-rosa-luther-burbank-masonic-lodge",
+    "name": "Santa Rosa Luther Burbank Masonic Lodge",
+    "address": "855 7TH STREET",
+    "location": [
+      38.44371692,
+      -122.71269066
+    ],
+    "capacity": 16
+  },
+  {
+    "id": "shelter-28-santa-rosa-middle-school",
+    "name": "Santa Rosa Middle School",
+    "address": "500 EAST ST",
+    "location": [
+      38.46280509,
+      -122.64985244
+    ],
+    "capacity": 480
+  },
+  {
+    "id": "shelter-29-west-recreation-center",
+    "name": "West Recreation Center",
+    "address": "6470 Meadow Ridge Rd",
+    "location": [
+      38.4668525,
+      -122.593828
+    ],
+    "capacity": 77
+  },
+  {
+    "id": "shelter-30-east-recreation-facility",
+    "name": "East Recreation Facility",
+    "address": "7902 Oakmont Dr",
+    "location": [
+      38.4668525,
+      -122.593828
+    ],
+    "capacity": 117
+  },
+  {
+    "id": "shelter-31-st.-luke-evangelist-lutheran-church",
+    "name": "St. Luke Evangelist Lutheran Church",
+    "address": "905 Mendocino Ave.",
+    "location": [
+      38.449053,
+      -122.718451
+    ],
+    "capacity": 60
+  },
+  {
+    "id": "shelter-32-american-red-cross-santa-rosa",
+    "name": "American Red Cross Santa Rosa",
+    "address": "5297 Aero Drive",
+    "location": [
+      38.5110371,
+      -122.7652738
+    ],
+    "capacity": 15
+  },
+  {
+    "id": "shelter-33-community-of-christ",
+    "name": "Community of Christ",
+    "address": "1495 W. Steele Ln.",
+    "location": [
+      38.4601099,
+      -122.7327681
+    ],
+    "capacity": 120
+  },
+  {
+    "id": "shelter-34-berger-center",
+    "name": "Berger Center",
+    "address": "6633 Oakmont Dr",
+    "location": [
+      38.4668525,
+      -122.593828
+    ],
+    "capacity": 310
+  },
+  {
+    "id": "shelter-35-star-of-the-valley-catholic-church",
+    "name": "Star Of the Valley Catholic Church",
+    "address": "495 White Oak Dr",
+    "location": [
+      38.4402703,
+      -122.6072753
+    ],
+    "capacity": 185
+  },
+  {
+    "id": "shelter-36-central-activity-center",
+    "name": "Central Activity Center",
+    "address": "310 White Oak Dr",
+    "location": [
+      38.4668525,
+      -122.593828
+    ],
+    "capacity": 1
+  },
+  {
+    "id": "shelter-37-west-recreation-center",
+    "name": "West Recreation Center",
+    "address": "6470 Meadowridge Drive",
+    "location": [
+      38.4461398,
+      -122.6126872
+    ],
+    "capacity": 143
+  },
+  {
+    "id": "shelter-38-santa-rosa-seventh-day-adventist-church",
+    "name": "Santa Rosa Seventh-Day Adventist Church",
+    "address": "840 Sonoma Avenue",
+    "location": [
+      38.43846,
+      -122.70672
+    ],
+    "capacity": 343
+  },
+  {
+    "id": "shelter-39-ridgeway-high-school",
+    "name": "Ridgeway High School",
+    "address": "325 Ridgeway Avenue",
+    "location": [
+      38.4498305,
+      -122.722349
+    ],
+    "capacity": 50
+  },
+  {
+    "id": "shelter-40-elsie-allen-high-school",
+    "name": "Elsie Allen High School",
+    "address": "599 BELLEVUE AVENUE",
+    "location": [
+      38.40183559,
+      -122.73462968
+    ],
+    "capacity": 683
+  },
+  {
+    "id": "shelter-41-santa-rosa-luther-burbank-masonic-lodge-#57",
+    "name": "Santa Rosa Luther Burbank Masonic Lodge #57",
+    "address": "855 Seventh Street",
+    "location": [
+      38.4439285,
+      -122.7126957
+    ],
+    "capacity": 101
+  },
+  {
+    "id": "shelter-42-tep---schopflin-fields",
+    "name": "TEP - Schopflin Fields",
+    "address": "4351 Old Redwood Highway",
+    "location": [
+      38.491597,
+      -122.74312
+    ],
+    "capacity": 1
+  },
+  {
+    "id": "shelter-43-tep---santa-rosa-place-to-play",
+    "name": "TEP - Santa Rosa Place to Play",
+    "address": "2375 W 3rd St.",
+    "location": [
+      38.439768,
+      -122.763128
+    ],
+    "capacity": 1
+  },
+  {
+    "id": "shelter-44-tep---spring-lake-park",
+    "name": "TEP - Spring Lake Park",
+    "address": "5585 Newanga Ave",
+    "location": [
+      38.44831333,
+      -122.653225
+    ],
+    "capacity": 1
+  },
+  {
+    "id": "shelter-45-victory-outreach-church",
+    "name": "Victory Outreach Church",
+    "address": "4042 Sebastopol Rd",
+    "location": [
+      38.4239196,
+      -122.767695
+    ],
+    "capacity": 10
+  },
+  {
+    "id": "shelter-46-first-united-methodist-church",
+    "name": "First United Methodist Church",
+    "address": "1551 Montgomery Drive",
+    "location": [
+      38.44443,
+      -122.6965634
+    ],
+    "capacity": 150
+  },
+  {
+    "id": "shelter-47-st.-eugene's-cathedral-school",
+    "name": "St. Eugene's Cathedral School",
+    "address": "300 Farmers Lane",
+    "location": [
+      38.4484097,
+      -122.6876851
+    ],
+    "capacity": 55
+  },
+  {
+    "id": "shelter-48-congregation-shomrei-torah",
+    "name": "Congregation Shomrei Torah",
+    "address": "2600 Bennett  Valley Road",
+    "location": [
+      38.4327288,
+      -122.6908499
+    ],
+    "capacity": 480
+  },
+  {
+    "id": "shelter-49-sonoma-county-fair-&-expo-inc.",
+    "name": "Sonoma County Fair & Expo Inc.",
+    "address": "1350 Bennett Valley Rd",
+    "location": [
+      38.43261,
+      -122.70236
+    ],
+    "capacity": 600
+  }
+]

@@ -1,0 +1,4330 @@
+{
+  "corridor": "US-101, Sonoma County (Kincade Fire evacuation corridor)",
+  "source": "Caltrans PeMS via Zenodo record 7410114 (data_routine_evacuation.xlsx)",
+  "detectorCount": 24,
+  "intervalMinutes": 5,
+  "evacuation": [
+    {
+      "time": "2019-10-26T04:00:00.000Z",
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 219
+    },
+    {
+      "time": "2019-10-26T04:04:59.999Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 213
+    },
+    {
+      "time": "2019-10-26T04:10:00.000Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 230
+    },
+    {
+      "time": "2019-10-26T04:14:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 233
+    },
+    {
+      "time": "2019-10-26T04:20:00.000Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 197
+    },
+    {
+      "time": "2019-10-26T04:24:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 193
+    },
+    {
+      "time": "2019-10-26T04:30:00.000Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 186
+    },
+    {
+      "time": "2019-10-26T04:34:59.999Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 177
+    },
+    {
+      "time": "2019-10-26T04:40:00.000Z",
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 165
+    },
+    {
+      "time": "2019-10-26T04:45:00.000Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 160
+    },
+    {
+      "time": "2019-10-26T04:49:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 160
+    },
+    {
+      "time": "2019-10-26T04:55:00.000Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 148
+    },
+    {
+      "time": "2019-10-26T04:59:59.999Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 134
+    },
+    {
+      "time": "2019-10-26T05:05:00.000Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 137
+    },
+    {
+      "time": "2019-10-26T05:09:59.999Z",
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 120
+    },
+    {
+      "time": "2019-10-26T05:15:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 124
+    },
+    {
+      "time": "2019-10-26T05:19:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 99
+    },
+    {
+      "time": "2019-10-26T05:25:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 105
+    },
+    {
+      "time": "2019-10-26T05:30:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 99
+    },
+    {
+      "time": "2019-10-26T05:34:59.999Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 112
+    },
+    {
+      "time": "2019-10-26T05:40:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 104
+    },
+    {
+      "time": "2019-10-26T05:44:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 102
+    },
+    {
+      "time": "2019-10-26T05:50:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 92
+    },
+    {
+      "time": "2019-10-26T05:54:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 87
+    },
+    {
+      "time": "2019-10-26T06:00:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 98
+    },
+    {
+      "time": "2019-10-26T06:04:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 98
+    },
+    {
+      "time": "2019-10-26T06:10:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 101
+    },
+    {
+      "time": "2019-10-26T06:15:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 104
+    },
+    {
+      "time": "2019-10-26T06:19:59.999Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 93
+    },
+    {
+      "time": "2019-10-26T06:25:00.000Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 91
+    },
+    {
+      "time": "2019-10-26T06:29:59.999Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 76
+    },
+    {
+      "time": "2019-10-26T06:35:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 76
+    },
+    {
+      "time": "2019-10-26T06:39:59.999Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 84
+    },
+    {
+      "time": "2019-10-26T06:45:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 81
+    },
+    {
+      "time": "2019-10-26T06:49:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 83
+    },
+    {
+      "time": "2019-10-26T06:55:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 74
+    },
+    {
+      "time": "2019-10-26T07:00:00.000Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 71
+    },
+    {
+      "time": "2019-10-26T07:04:59.999Z",
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 78
+    },
+    {
+      "time": "2019-10-26T07:10:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 68
+    },
+    {
+      "time": "2019-10-26T07:14:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 63
+    },
+    {
+      "time": "2019-10-26T07:20:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 75
+    },
+    {
+      "time": "2019-10-26T07:24:59.999Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 68
+    },
+    {
+      "time": "2019-10-26T07:30:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 65
+    },
+    {
+      "time": "2019-10-26T07:34:59.999Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 71
+    },
+    {
+      "time": "2019-10-26T07:40:00.000Z",
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 75
+    },
+    {
+      "time": "2019-10-26T07:45:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 76
+    },
+    {
+      "time": "2019-10-26T07:49:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 74
+    },
+    {
+      "time": "2019-10-26T07:55:00.000Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "time": "2019-10-26T07:59:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 80
+    },
+    {
+      "time": "2019-10-26T08:05:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 71
+    },
+    {
+      "time": "2019-10-26T08:09:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 73
+    },
+    {
+      "time": "2019-10-26T08:15:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 83
+    },
+    {
+      "time": "2019-10-26T08:19:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 87
+    },
+    {
+      "time": "2019-10-26T08:25:00.000Z",
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 82
+    },
+    {
+      "time": "2019-10-26T08:30:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 84
+    },
+    {
+      "time": "2019-10-26T08:34:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 91
+    },
+    {
+      "time": "2019-10-26T08:40:00.000Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 97
+    },
+    {
+      "time": "2019-10-26T08:44:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 127
+    },
+    {
+      "time": "2019-10-26T08:50:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 148
+    },
+    {
+      "time": "2019-10-26T08:54:59.999Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 135
+    },
+    {
+      "time": "2019-10-26T09:00:00.000Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 115
+    },
+    {
+      "time": "2019-10-26T09:04:59.999Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 142
+    },
+    {
+      "time": "2019-10-26T09:10:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 136
+    },
+    {
+      "time": "2019-10-26T09:15:00.000Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 153
+    },
+    {
+      "time": "2019-10-26T09:19:59.999Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 162
+    },
+    {
+      "time": "2019-10-26T09:25:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 146
+    },
+    {
+      "time": "2019-10-26T09:29:59.999Z",
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 189
+    },
+    {
+      "time": "2019-10-26T09:35:00.000Z",
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 234
+    },
+    {
+      "time": "2019-10-26T09:39:59.999Z",
+      "avgSpeedKmh": 109.2,
+      "avgFlowVehPerHr": 252
+    },
+    {
+      "time": "2019-10-26T09:45:00.000Z",
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 268
+    },
+    {
+      "time": "2019-10-26T09:49:59.999Z",
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 246
+    },
+    {
+      "time": "2019-10-26T09:55:00.000Z",
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 229
+    },
+    {
+      "time": "2019-10-26T10:00:00.000Z",
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 221
+    },
+    {
+      "time": "2019-10-26T10:04:59.999Z",
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 246
+    },
+    {
+      "time": "2019-10-26T10:10:00.000Z",
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 290
+    },
+    {
+      "time": "2019-10-26T10:14:59.999Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-26T10:20:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 322
+    },
+    {
+      "time": "2019-10-26T10:24:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 345
+    },
+    {
+      "time": "2019-10-26T10:30:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 356
+    },
+    {
+      "time": "2019-10-26T10:34:59.999Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 392
+    },
+    {
+      "time": "2019-10-26T10:40:00.000Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 417
+    },
+    {
+      "time": "2019-10-26T10:45:00.000Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 435
+    },
+    {
+      "time": "2019-10-26T10:49:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 410
+    },
+    {
+      "time": "2019-10-26T10:55:00.000Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 398
+    },
+    {
+      "time": "2019-10-26T10:59:59.999Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 399
+    },
+    {
+      "time": "2019-10-26T11:05:00.000Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 395
+    },
+    {
+      "time": "2019-10-26T11:09:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 441
+    },
+    {
+      "time": "2019-10-26T11:15:00.000Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 478
+    },
+    {
+      "time": "2019-10-26T11:19:59.999Z",
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 501
+    },
+    {
+      "time": "2019-10-26T11:25:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 499
+    },
+    {
+      "time": "2019-10-26T11:30:00.000Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 506
+    },
+    {
+      "time": "2019-10-26T11:34:59.999Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 544
+    },
+    {
+      "time": "2019-10-26T11:40:00.000Z",
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 526
+    },
+    {
+      "time": "2019-10-26T11:44:59.999Z",
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 659
+    },
+    {
+      "time": "2019-10-26T11:50:00.000Z",
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 651
+    },
+    {
+      "time": "2019-10-26T11:54:59.999Z",
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 635
+    },
+    {
+      "time": "2019-10-26T12:00:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 605
+    },
+    {
+      "time": "2019-10-26T12:04:59.999Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 604
+    },
+    {
+      "time": "2019-10-26T12:10:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 632
+    },
+    {
+      "time": "2019-10-26T12:15:00.000Z",
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 626
+    },
+    {
+      "time": "2019-10-26T12:19:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 626
+    },
+    {
+      "time": "2019-10-26T12:25:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 632
+    },
+    {
+      "time": "2019-10-26T12:29:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 627
+    },
+    {
+      "time": "2019-10-26T12:35:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 659
+    },
+    {
+      "time": "2019-10-26T12:39:59.999Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 656
+    },
+    {
+      "time": "2019-10-26T12:45:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 696
+    },
+    {
+      "time": "2019-10-26T12:49:59.999Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 745
+    },
+    {
+      "time": "2019-10-26T12:55:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 722
+    },
+    {
+      "time": "2019-10-26T13:00:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 667
+    },
+    {
+      "time": "2019-10-26T13:04:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 678
+    },
+    {
+      "time": "2019-10-26T13:10:00.000Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 722
+    },
+    {
+      "time": "2019-10-26T13:14:59.999Z",
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 778
+    },
+    {
+      "time": "2019-10-26T13:20:00.000Z",
+      "avgSpeedKmh": 104.9,
+      "avgFlowVehPerHr": 771
+    },
+    {
+      "time": "2019-10-26T13:24:59.999Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 756
+    },
+    {
+      "time": "2019-10-26T13:30:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 760
+    },
+    {
+      "time": "2019-10-26T13:34:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 763
+    },
+    {
+      "time": "2019-10-26T13:40:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 807
+    },
+    {
+      "time": "2019-10-26T13:45:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 850
+    },
+    {
+      "time": "2019-10-26T13:49:59.999Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 857
+    },
+    {
+      "time": "2019-10-26T13:55:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 823
+    },
+    {
+      "time": "2019-10-26T13:59:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 855
+    },
+    {
+      "time": "2019-10-26T14:05:00.000Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 815
+    },
+    {
+      "time": "2019-10-26T14:09:59.999Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 861
+    },
+    {
+      "time": "2019-10-26T14:15:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 891
+    },
+    {
+      "time": "2019-10-26T14:19:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 842
+    },
+    {
+      "time": "2019-10-26T14:25:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 871
+    },
+    {
+      "time": "2019-10-26T14:30:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 865
+    },
+    {
+      "time": "2019-10-26T14:34:59.999Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 900
+    },
+    {
+      "time": "2019-10-26T14:40:00.000Z",
+      "avgSpeedKmh": 105.1,
+      "avgFlowVehPerHr": 950
+    },
+    {
+      "time": "2019-10-26T14:44:59.999Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 1041
+    },
+    {
+      "time": "2019-10-26T14:50:00.000Z",
+      "avgSpeedKmh": 103.8,
+      "avgFlowVehPerHr": 1110
+    },
+    {
+      "time": "2019-10-26T14:54:59.999Z",
+      "avgSpeedKmh": 102.9,
+      "avgFlowVehPerHr": 1141
+    },
+    {
+      "time": "2019-10-26T15:00:00.000Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 1133
+    },
+    {
+      "time": "2019-10-26T15:04:59.999Z",
+      "avgSpeedKmh": 100.7,
+      "avgFlowVehPerHr": 1187
+    },
+    {
+      "time": "2019-10-26T15:10:00.000Z",
+      "avgSpeedKmh": 97.9,
+      "avgFlowVehPerHr": 1148
+    },
+    {
+      "time": "2019-10-26T15:15:00.000Z",
+      "avgSpeedKmh": 95.9,
+      "avgFlowVehPerHr": 1056
+    },
+    {
+      "time": "2019-10-26T15:19:59.999Z",
+      "avgSpeedKmh": 93.5,
+      "avgFlowVehPerHr": 1121
+    },
+    {
+      "time": "2019-10-26T15:25:00.000Z",
+      "avgSpeedKmh": 92.3,
+      "avgFlowVehPerHr": 1144
+    },
+    {
+      "time": "2019-10-26T15:29:59.999Z",
+      "avgSpeedKmh": 91.3,
+      "avgFlowVehPerHr": 1103
+    },
+    {
+      "time": "2019-10-26T15:35:00.000Z",
+      "avgSpeedKmh": 91.6,
+      "avgFlowVehPerHr": 1120
+    },
+    {
+      "time": "2019-10-26T15:39:59.999Z",
+      "avgSpeedKmh": 88.9,
+      "avgFlowVehPerHr": 1097
+    },
+    {
+      "time": "2019-10-26T15:45:00.000Z",
+      "avgSpeedKmh": 86.4,
+      "avgFlowVehPerHr": 1102
+    },
+    {
+      "time": "2019-10-26T15:49:59.999Z",
+      "avgSpeedKmh": 84.8,
+      "avgFlowVehPerHr": 1090
+    },
+    {
+      "time": "2019-10-26T15:55:00.000Z",
+      "avgSpeedKmh": 83.5,
+      "avgFlowVehPerHr": 1053
+    },
+    {
+      "time": "2019-10-26T16:00:00.000Z",
+      "avgSpeedKmh": 81.7,
+      "avgFlowVehPerHr": 1095
+    },
+    {
+      "time": "2019-10-26T16:04:59.999Z",
+      "avgSpeedKmh": 81,
+      "avgFlowVehPerHr": 1023
+    },
+    {
+      "time": "2019-10-26T16:10:00.000Z",
+      "avgSpeedKmh": 79.6,
+      "avgFlowVehPerHr": 1055
+    },
+    {
+      "time": "2019-10-26T16:14:59.999Z",
+      "avgSpeedKmh": 79.1,
+      "avgFlowVehPerHr": 976
+    },
+    {
+      "time": "2019-10-26T16:20:00.000Z",
+      "avgSpeedKmh": 79.7,
+      "avgFlowVehPerHr": 1042
+    },
+    {
+      "time": "2019-10-26T16:24:59.999Z",
+      "avgSpeedKmh": 79.5,
+      "avgFlowVehPerHr": 960
+    },
+    {
+      "time": "2019-10-26T16:30:00.000Z",
+      "avgSpeedKmh": 78.3,
+      "avgFlowVehPerHr": 990
+    },
+    {
+      "time": "2019-10-26T16:34:59.999Z",
+      "avgSpeedKmh": 77.5,
+      "avgFlowVehPerHr": 947
+    },
+    {
+      "time": "2019-10-26T16:40:00.000Z",
+      "avgSpeedKmh": 76.7,
+      "avgFlowVehPerHr": 971
+    },
+    {
+      "time": "2019-10-26T16:45:00.000Z",
+      "avgSpeedKmh": 76.4,
+      "avgFlowVehPerHr": 981
+    },
+    {
+      "time": "2019-10-26T16:49:59.999Z",
+      "avgSpeedKmh": 76.6,
+      "avgFlowVehPerHr": 923
+    },
+    {
+      "time": "2019-10-26T16:55:00.000Z",
+      "avgSpeedKmh": 76,
+      "avgFlowVehPerHr": 936
+    },
+    {
+      "time": "2019-10-26T16:59:59.999Z",
+      "avgSpeedKmh": 76.1,
+      "avgFlowVehPerHr": 888
+    },
+    {
+      "time": "2019-10-26T17:05:00.000Z",
+      "avgSpeedKmh": 75.9,
+      "avgFlowVehPerHr": 962
+    },
+    {
+      "time": "2019-10-26T17:09:59.999Z",
+      "avgSpeedKmh": 75.8,
+      "avgFlowVehPerHr": 924
+    },
+    {
+      "time": "2019-10-26T17:15:00.000Z",
+      "avgSpeedKmh": 74.8,
+      "avgFlowVehPerHr": 890
+    },
+    {
+      "time": "2019-10-26T17:19:59.999Z",
+      "avgSpeedKmh": 75.5,
+      "avgFlowVehPerHr": 927
+    },
+    {
+      "time": "2019-10-26T17:25:00.000Z",
+      "avgSpeedKmh": 75.3,
+      "avgFlowVehPerHr": 954
+    },
+    {
+      "time": "2019-10-26T17:30:00.000Z",
+      "avgSpeedKmh": 75.5,
+      "avgFlowVehPerHr": 897
+    },
+    {
+      "time": "2019-10-26T17:34:59.999Z",
+      "avgSpeedKmh": 75.2,
+      "avgFlowVehPerHr": 931
+    },
+    {
+      "time": "2019-10-26T17:40:00.000Z",
+      "avgSpeedKmh": 75.1,
+      "avgFlowVehPerHr": 922
+    },
+    {
+      "time": "2019-10-26T17:44:59.999Z",
+      "avgSpeedKmh": 75,
+      "avgFlowVehPerHr": 935
+    },
+    {
+      "time": "2019-10-26T17:50:00.000Z",
+      "avgSpeedKmh": 75.3,
+      "avgFlowVehPerHr": 887
+    },
+    {
+      "time": "2019-10-26T17:54:59.999Z",
+      "avgSpeedKmh": 74.6,
+      "avgFlowVehPerHr": 937
+    },
+    {
+      "time": "2019-10-26T18:00:00.000Z",
+      "avgSpeedKmh": 75.6,
+      "avgFlowVehPerHr": 874
+    },
+    {
+      "time": "2019-10-26T18:04:59.999Z",
+      "avgSpeedKmh": 75.8,
+      "avgFlowVehPerHr": 894
+    },
+    {
+      "time": "2019-10-26T18:10:00.000Z",
+      "avgSpeedKmh": 75.4,
+      "avgFlowVehPerHr": 861
+    },
+    {
+      "time": "2019-10-26T18:15:00.000Z",
+      "avgSpeedKmh": 75.3,
+      "avgFlowVehPerHr": 860
+    },
+    {
+      "time": "2019-10-26T18:19:59.999Z",
+      "avgSpeedKmh": 75.1,
+      "avgFlowVehPerHr": 884
+    },
+    {
+      "time": "2019-10-26T18:25:00.000Z",
+      "avgSpeedKmh": 74.6,
+      "avgFlowVehPerHr": 866
+    },
+    {
+      "time": "2019-10-26T18:29:59.999Z",
+      "avgSpeedKmh": 74.7,
+      "avgFlowVehPerHr": 888
+    },
+    {
+      "time": "2019-10-26T18:35:00.000Z",
+      "avgSpeedKmh": 74,
+      "avgFlowVehPerHr": 871
+    },
+    {
+      "time": "2019-10-26T18:39:59.999Z",
+      "avgSpeedKmh": 74,
+      "avgFlowVehPerHr": 850
+    },
+    {
+      "time": "2019-10-26T18:45:00.000Z",
+      "avgSpeedKmh": 75.3,
+      "avgFlowVehPerHr": 828
+    },
+    {
+      "time": "2019-10-26T18:49:59.999Z",
+      "avgSpeedKmh": 76.3,
+      "avgFlowVehPerHr": 843
+    },
+    {
+      "time": "2019-10-26T18:55:00.000Z",
+      "avgSpeedKmh": 77.1,
+      "avgFlowVehPerHr": 838
+    },
+    {
+      "time": "2019-10-26T19:00:00.000Z",
+      "avgSpeedKmh": 78,
+      "avgFlowVehPerHr": 863
+    },
+    {
+      "time": "2019-10-26T19:04:59.999Z",
+      "avgSpeedKmh": 78.2,
+      "avgFlowVehPerHr": 836
+    },
+    {
+      "time": "2019-10-26T19:10:00.000Z",
+      "avgSpeedKmh": 78.6,
+      "avgFlowVehPerHr": 842
+    },
+    {
+      "time": "2019-10-26T19:14:59.999Z",
+      "avgSpeedKmh": 78.1,
+      "avgFlowVehPerHr": 815
+    },
+    {
+      "time": "2019-10-26T19:20:00.000Z",
+      "avgSpeedKmh": 79,
+      "avgFlowVehPerHr": 886
+    },
+    {
+      "time": "2019-10-26T19:24:59.999Z",
+      "avgSpeedKmh": 78.5,
+      "avgFlowVehPerHr": 822
+    },
+    {
+      "time": "2019-10-26T19:30:00.000Z",
+      "avgSpeedKmh": 78.4,
+      "avgFlowVehPerHr": 837
+    },
+    {
+      "time": "2019-10-26T19:34:59.999Z",
+      "avgSpeedKmh": 79.4,
+      "avgFlowVehPerHr": 833
+    },
+    {
+      "time": "2019-10-26T19:40:00.000Z",
+      "avgSpeedKmh": 82,
+      "avgFlowVehPerHr": 798
+    },
+    {
+      "time": "2019-10-26T19:45:00.000Z",
+      "avgSpeedKmh": 84.1,
+      "avgFlowVehPerHr": 761
+    },
+    {
+      "time": "2019-10-26T19:49:59.999Z",
+      "avgSpeedKmh": 85.6,
+      "avgFlowVehPerHr": 744
+    },
+    {
+      "time": "2019-10-26T19:55:00.000Z",
+      "avgSpeedKmh": 88.7,
+      "avgFlowVehPerHr": 751
+    },
+    {
+      "time": "2019-10-26T19:59:59.999Z",
+      "avgSpeedKmh": 91,
+      "avgFlowVehPerHr": 711
+    },
+    {
+      "time": "2019-10-26T20:05:00.000Z",
+      "avgSpeedKmh": 92.6,
+      "avgFlowVehPerHr": 734
+    },
+    {
+      "time": "2019-10-26T20:09:59.999Z",
+      "avgSpeedKmh": 94.3,
+      "avgFlowVehPerHr": 701
+    },
+    {
+      "time": "2019-10-26T20:15:00.000Z",
+      "avgSpeedKmh": 95,
+      "avgFlowVehPerHr": 659
+    },
+    {
+      "time": "2019-10-26T20:19:59.999Z",
+      "avgSpeedKmh": 95.8,
+      "avgFlowVehPerHr": 684
+    },
+    {
+      "time": "2019-10-26T20:25:00.000Z",
+      "avgSpeedKmh": 97.2,
+      "avgFlowVehPerHr": 661
+    },
+    {
+      "time": "2019-10-26T20:30:00.000Z",
+      "avgSpeedKmh": 96.8,
+      "avgFlowVehPerHr": 634
+    },
+    {
+      "time": "2019-10-26T20:34:59.999Z",
+      "avgSpeedKmh": 96.9,
+      "avgFlowVehPerHr": 685
+    },
+    {
+      "time": "2019-10-26T20:40:00.000Z",
+      "avgSpeedKmh": 96.7,
+      "avgFlowVehPerHr": 660
+    },
+    {
+      "time": "2019-10-26T20:44:59.999Z",
+      "avgSpeedKmh": 97,
+      "avgFlowVehPerHr": 652
+    },
+    {
+      "time": "2019-10-26T20:50:00.000Z",
+      "avgSpeedKmh": 99,
+      "avgFlowVehPerHr": 617
+    },
+    {
+      "time": "2019-10-26T20:54:59.999Z",
+      "avgSpeedKmh": 100.4,
+      "avgFlowVehPerHr": 625
+    },
+    {
+      "time": "2019-10-26T21:00:00.000Z",
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 609
+    },
+    {
+      "time": "2019-10-26T21:04:59.999Z",
+      "avgSpeedKmh": 101.1,
+      "avgFlowVehPerHr": 583
+    },
+    {
+      "time": "2019-10-26T21:10:00.000Z",
+      "avgSpeedKmh": 101.1,
+      "avgFlowVehPerHr": 592
+    },
+    {
+      "time": "2019-10-26T21:15:00.000Z",
+      "avgSpeedKmh": 102.5,
+      "avgFlowVehPerHr": 562
+    },
+    {
+      "time": "2019-10-26T21:19:59.999Z",
+      "avgSpeedKmh": 103.6,
+      "avgFlowVehPerHr": 594
+    },
+    {
+      "time": "2019-10-26T21:25:00.000Z",
+      "avgSpeedKmh": 103.1,
+      "avgFlowVehPerHr": 577
+    },
+    {
+      "time": "2019-10-26T21:29:59.999Z",
+      "avgSpeedKmh": 103.4,
+      "avgFlowVehPerHr": 547
+    },
+    {
+      "time": "2019-10-26T21:35:00.000Z",
+      "avgSpeedKmh": 103,
+      "avgFlowVehPerHr": 563
+    },
+    {
+      "time": "2019-10-26T21:39:59.999Z",
+      "avgSpeedKmh": 104.2,
+      "avgFlowVehPerHr": 559
+    },
+    {
+      "time": "2019-10-26T21:45:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 551
+    },
+    {
+      "time": "2019-10-26T21:49:59.999Z",
+      "avgSpeedKmh": 104.4,
+      "avgFlowVehPerHr": 573
+    },
+    {
+      "time": "2019-10-26T21:55:00.000Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 521
+    },
+    {
+      "time": "2019-10-26T22:00:00.000Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 518
+    },
+    {
+      "time": "2019-10-26T22:04:59.999Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 567
+    },
+    {
+      "time": "2019-10-26T22:10:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 587
+    },
+    {
+      "time": "2019-10-26T22:14:59.999Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 582
+    },
+    {
+      "time": "2019-10-26T22:20:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 568
+    },
+    {
+      "time": "2019-10-26T22:24:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 585
+    },
+    {
+      "time": "2019-10-26T22:30:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 558
+    },
+    {
+      "time": "2019-10-26T22:34:59.999Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 581
+    },
+    {
+      "time": "2019-10-26T22:40:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 585
+    },
+    {
+      "time": "2019-10-26T22:45:00.000Z",
+      "avgSpeedKmh": 104.1,
+      "avgFlowVehPerHr": 621
+    },
+    {
+      "time": "2019-10-26T22:49:59.999Z",
+      "avgSpeedKmh": 103.2,
+      "avgFlowVehPerHr": 603
+    },
+    {
+      "time": "2019-10-26T22:55:00.000Z",
+      "avgSpeedKmh": 102.8,
+      "avgFlowVehPerHr": 603
+    },
+    {
+      "time": "2019-10-26T22:59:59.999Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 616
+    },
+    {
+      "time": "2019-10-26T23:05:00.000Z",
+      "avgSpeedKmh": 102.3,
+      "avgFlowVehPerHr": 630
+    },
+    {
+      "time": "2019-10-26T23:09:59.999Z",
+      "avgSpeedKmh": 102,
+      "avgFlowVehPerHr": 635
+    },
+    {
+      "time": "2019-10-26T23:15:00.000Z",
+      "avgSpeedKmh": 101.8,
+      "avgFlowVehPerHr": 652
+    },
+    {
+      "time": "2019-10-26T23:19:59.999Z",
+      "avgSpeedKmh": 102.7,
+      "avgFlowVehPerHr": 613
+    },
+    {
+      "time": "2019-10-26T23:25:00.000Z",
+      "avgSpeedKmh": 102.8,
+      "avgFlowVehPerHr": 659
+    },
+    {
+      "time": "2019-10-26T23:30:00.000Z",
+      "avgSpeedKmh": 102.6,
+      "avgFlowVehPerHr": 605
+    },
+    {
+      "time": "2019-10-26T23:34:59.999Z",
+      "avgSpeedKmh": 102.2,
+      "avgFlowVehPerHr": 624
+    },
+    {
+      "time": "2019-10-26T23:40:00.000Z",
+      "avgSpeedKmh": 101.3,
+      "avgFlowVehPerHr": 619
+    },
+    {
+      "time": "2019-10-26T23:44:59.999Z",
+      "avgSpeedKmh": 100.5,
+      "avgFlowVehPerHr": 613
+    },
+    {
+      "time": "2019-10-26T23:50:00.000Z",
+      "avgSpeedKmh": 100.7,
+      "avgFlowVehPerHr": 473
+    },
+    {
+      "time": "2019-10-26T23:54:59.999Z",
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 446
+    },
+    {
+      "time": "2019-10-27T00:00:00.000Z",
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 458
+    },
+    {
+      "time": "2019-10-27T00:04:59.999Z",
+      "avgSpeedKmh": 99.8,
+      "avgFlowVehPerHr": 446
+    },
+    {
+      "time": "2019-10-27T00:10:00.000Z",
+      "avgSpeedKmh": 99.9,
+      "avgFlowVehPerHr": 436
+    },
+    {
+      "time": "2019-10-27T00:15:00.000Z",
+      "avgSpeedKmh": 99.8,
+      "avgFlowVehPerHr": 459
+    },
+    {
+      "time": "2019-10-27T00:19:59.999Z",
+      "avgSpeedKmh": 99.6,
+      "avgFlowVehPerHr": 453
+    },
+    {
+      "time": "2019-10-27T00:25:00.000Z",
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 442
+    },
+    {
+      "time": "2019-10-27T00:29:59.999Z",
+      "avgSpeedKmh": 99.8,
+      "avgFlowVehPerHr": 436
+    },
+    {
+      "time": "2019-10-27T00:35:00.000Z",
+      "avgSpeedKmh": 99.4,
+      "avgFlowVehPerHr": 416
+    },
+    {
+      "time": "2019-10-27T00:39:59.999Z",
+      "avgSpeedKmh": 99.9,
+      "avgFlowVehPerHr": 409
+    },
+    {
+      "time": "2019-10-27T00:45:00.000Z",
+      "avgSpeedKmh": 100.3,
+      "avgFlowVehPerHr": 390
+    },
+    {
+      "time": "2019-10-27T00:49:59.999Z",
+      "avgSpeedKmh": 100,
+      "avgFlowVehPerHr": 424
+    },
+    {
+      "time": "2019-10-27T00:55:00.000Z",
+      "avgSpeedKmh": 99.9,
+      "avgFlowVehPerHr": 401
+    },
+    {
+      "time": "2019-10-27T01:00:00.000Z",
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 386
+    },
+    {
+      "time": "2019-10-27T01:04:59.999Z",
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 379
+    },
+    {
+      "time": "2019-10-27T01:10:00.000Z",
+      "avgSpeedKmh": 99.9,
+      "avgFlowVehPerHr": 375
+    },
+    {
+      "time": "2019-10-27T01:14:59.999Z",
+      "avgSpeedKmh": 99.4,
+      "avgFlowVehPerHr": 380
+    },
+    {
+      "time": "2019-10-27T01:20:00.000Z",
+      "avgSpeedKmh": 100.3,
+      "avgFlowVehPerHr": 383
+    },
+    {
+      "time": "2019-10-27T01:24:59.999Z",
+      "avgSpeedKmh": 100.6,
+      "avgFlowVehPerHr": 348
+    },
+    {
+      "time": "2019-10-27T01:30:00.000Z",
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 350
+    },
+    {
+      "time": "2019-10-27T01:34:59.999Z",
+      "avgSpeedKmh": 101.6,
+      "avgFlowVehPerHr": 283
+    },
+    {
+      "time": "2019-10-27T01:40:00.000Z",
+      "avgSpeedKmh": 103.3,
+      "avgFlowVehPerHr": 314
+    },
+    {
+      "time": "2019-10-27T01:45:00.000Z",
+      "avgSpeedKmh": 104.1,
+      "avgFlowVehPerHr": 318
+    },
+    {
+      "time": "2019-10-27T01:49:59.999Z",
+      "avgSpeedKmh": 103.9,
+      "avgFlowVehPerHr": 300
+    },
+    {
+      "time": "2019-10-27T01:55:00.000Z",
+      "avgSpeedKmh": 104.4,
+      "avgFlowVehPerHr": 280
+    },
+    {
+      "time": "2019-10-27T01:59:59.999Z",
+      "avgSpeedKmh": 104.5,
+      "avgFlowVehPerHr": 293
+    },
+    {
+      "time": "2019-10-27T02:05:00.000Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 284
+    },
+    {
+      "time": "2019-10-27T02:09:59.999Z",
+      "avgSpeedKmh": 103.9,
+      "avgFlowVehPerHr": 291
+    },
+    {
+      "time": "2019-10-27T02:15:00.000Z",
+      "avgSpeedKmh": 103.8,
+      "avgFlowVehPerHr": 277
+    },
+    {
+      "time": "2019-10-27T02:19:59.999Z",
+      "avgSpeedKmh": 103.4,
+      "avgFlowVehPerHr": 296
+    },
+    {
+      "time": "2019-10-27T02:25:00.000Z",
+      "avgSpeedKmh": 103.9,
+      "avgFlowVehPerHr": 287
+    },
+    {
+      "time": "2019-10-27T02:30:00.000Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 259
+    },
+    {
+      "time": "2019-10-27T02:34:59.999Z",
+      "avgSpeedKmh": 105.3,
+      "avgFlowVehPerHr": 251
+    },
+    {
+      "time": "2019-10-27T02:40:00.000Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 266
+    },
+    {
+      "time": "2019-10-27T02:44:59.999Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 267
+    },
+    {
+      "time": "2019-10-27T02:50:00.000Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 254
+    },
+    {
+      "time": "2019-10-27T02:54:59.999Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 225
+    },
+    {
+      "time": "2019-10-27T03:00:00.000Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 222
+    },
+    {
+      "time": "2019-10-27T03:04:59.999Z",
+      "avgSpeedKmh": 104.9,
+      "avgFlowVehPerHr": 221
+    },
+    {
+      "time": "2019-10-27T03:10:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 213
+    },
+    {
+      "time": "2019-10-27T03:15:00.000Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 228
+    },
+    {
+      "time": "2019-10-27T03:19:59.999Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 211
+    },
+    {
+      "time": "2019-10-27T03:25:00.000Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 201
+    },
+    {
+      "time": "2019-10-27T03:29:59.999Z",
+      "avgSpeedKmh": 105.3,
+      "avgFlowVehPerHr": 200
+    },
+    {
+      "time": "2019-10-27T03:35:00.000Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 198
+    },
+    {
+      "time": "2019-10-27T03:39:59.999Z",
+      "avgSpeedKmh": 105.3,
+      "avgFlowVehPerHr": 207
+    },
+    {
+      "time": "2019-10-27T03:45:00.000Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 210
+    },
+    {
+      "time": "2019-10-27T03:49:59.999Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 205
+    },
+    {
+      "time": "2019-10-27T03:55:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 199
+    },
+    {
+      "time": "2019-10-27T04:00:00.000Z",
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 189
+    },
+    {
+      "time": "2019-10-27T04:04:59.999Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 194
+    },
+    {
+      "time": "2019-10-27T04:10:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 191
+    },
+    {
+      "time": "2019-10-27T04:14:59.999Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 183
+    },
+    {
+      "time": "2019-10-27T04:20:00.000Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 182
+    },
+    {
+      "time": "2019-10-27T04:24:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 192
+    },
+    {
+      "time": "2019-10-27T04:30:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 184
+    },
+    {
+      "time": "2019-10-27T04:34:59.999Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 170
+    },
+    {
+      "time": "2019-10-27T04:40:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 159
+    },
+    {
+      "time": "2019-10-27T04:45:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 142
+    },
+    {
+      "time": "2019-10-27T04:49:59.999Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 138
+    },
+    {
+      "time": "2019-10-27T04:55:00.000Z",
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 137
+    },
+    {
+      "time": "2019-10-27T04:59:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 123
+    },
+    {
+      "time": "2019-10-27T05:05:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 128
+    },
+    {
+      "time": "2019-10-27T05:09:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 130
+    },
+    {
+      "time": "2019-10-27T05:15:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 133
+    },
+    {
+      "time": "2019-10-27T05:19:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 132
+    },
+    {
+      "time": "2019-10-27T05:25:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 121
+    },
+    {
+      "time": "2019-10-27T05:30:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 118
+    },
+    {
+      "time": "2019-10-27T05:34:59.999Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 120
+    },
+    {
+      "time": "2019-10-27T05:40:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 111
+    },
+    {
+      "time": "2019-10-27T05:44:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 109
+    },
+    {
+      "time": "2019-10-27T05:50:00.000Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 98
+    },
+    {
+      "time": "2019-10-27T05:54:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 92
+    },
+    {
+      "time": "2019-10-27T06:00:00.000Z",
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 82
+    },
+    {
+      "time": "2019-10-27T06:04:59.999Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 85
+    },
+    {
+      "time": "2019-10-27T06:10:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 93
+    },
+    {
+      "time": "2019-10-27T06:15:00.000Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 101
+    },
+    {
+      "time": "2019-10-27T06:19:59.999Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 104
+    },
+    {
+      "time": "2019-10-27T06:25:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 94
+    },
+    {
+      "time": "2019-10-27T06:29:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 97
+    },
+    {
+      "time": "2019-10-27T06:35:00.000Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 79
+    },
+    {
+      "time": "2019-10-27T06:39:59.999Z",
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 81
+    },
+    {
+      "time": "2019-10-27T06:45:00.000Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 81
+    },
+    {
+      "time": "2019-10-27T06:49:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 76
+    },
+    {
+      "time": "2019-10-27T06:55:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "time": "2019-10-27T07:00:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 65
+    },
+    {
+      "time": "2019-10-27T07:04:59.999Z",
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 63
+    },
+    {
+      "time": "2019-10-27T07:10:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 69
+    },
+    {
+      "time": "2019-10-27T07:14:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "time": "2019-10-27T07:20:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 77
+    },
+    {
+      "time": "2019-10-27T07:24:59.999Z",
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 91
+    },
+    {
+      "time": "2019-10-27T07:30:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 87
+    },
+    {
+      "time": "2019-10-27T07:34:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 95
+    },
+    {
+      "time": "2019-10-27T07:40:00.000Z",
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 98
+    },
+    {
+      "time": "2019-10-27T07:45:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 122
+    },
+    {
+      "time": "2019-10-27T07:49:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 110
+    },
+    {
+      "time": "2019-10-27T07:55:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 125
+    },
+    {
+      "time": "2019-10-27T07:59:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 155
+    },
+    {
+      "time": "2019-10-27T08:05:00.000Z",
+      "avgSpeedKmh": 104.4,
+      "avgFlowVehPerHr": 167
+    },
+    {
+      "time": "2019-10-27T08:09:59.999Z",
+      "avgSpeedKmh": 103.7,
+      "avgFlowVehPerHr": 168
+    },
+    {
+      "time": "2019-10-27T08:15:00.000Z",
+      "avgSpeedKmh": 103.8,
+      "avgFlowVehPerHr": 230
+    },
+    {
+      "time": "2019-10-27T08:19:59.999Z",
+      "avgSpeedKmh": 102.7,
+      "avgFlowVehPerHr": 264
+    },
+    {
+      "time": "2019-10-27T08:25:00.000Z",
+      "avgSpeedKmh": 102.1,
+      "avgFlowVehPerHr": 285
+    },
+    {
+      "time": "2019-10-27T08:30:00.000Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 311
+    },
+    {
+      "time": "2019-10-27T08:34:59.999Z",
+      "avgSpeedKmh": 100.4,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T08:40:00.000Z",
+      "avgSpeedKmh": 100.7,
+      "avgFlowVehPerHr": 313
+    },
+    {
+      "time": "2019-10-27T08:44:59.999Z",
+      "avgSpeedKmh": 99.8,
+      "avgFlowVehPerHr": 316
+    },
+    {
+      "time": "2019-10-27T08:50:00.000Z",
+      "avgSpeedKmh": 98.1,
+      "avgFlowVehPerHr": 318
+    },
+    {
+      "time": "2019-10-27T08:54:59.999Z",
+      "avgSpeedKmh": 96.1,
+      "avgFlowVehPerHr": 334
+    },
+    {
+      "time": "2019-10-27T09:00:00.000Z",
+      "avgSpeedKmh": 95.6,
+      "avgFlowVehPerHr": 337
+    },
+    {
+      "time": "2019-10-27T09:04:59.999Z",
+      "avgSpeedKmh": 95.9,
+      "avgFlowVehPerHr": 298
+    },
+    {
+      "time": "2019-10-27T09:10:00.000Z",
+      "avgSpeedKmh": 94.6,
+      "avgFlowVehPerHr": 316
+    },
+    {
+      "time": "2019-10-27T09:15:00.000Z",
+      "avgSpeedKmh": 93.3,
+      "avgFlowVehPerHr": 334
+    },
+    {
+      "time": "2019-10-27T09:19:59.999Z",
+      "avgSpeedKmh": 92.9,
+      "avgFlowVehPerHr": 330
+    },
+    {
+      "time": "2019-10-27T09:25:00.000Z",
+      "avgSpeedKmh": 92,
+      "avgFlowVehPerHr": 311
+    },
+    {
+      "time": "2019-10-27T09:29:59.999Z",
+      "avgSpeedKmh": 91.4,
+      "avgFlowVehPerHr": 301
+    },
+    {
+      "time": "2019-10-27T09:35:00.000Z",
+      "avgSpeedKmh": 91.5,
+      "avgFlowVehPerHr": 304
+    },
+    {
+      "time": "2019-10-27T09:39:59.999Z",
+      "avgSpeedKmh": 91.2,
+      "avgFlowVehPerHr": 275
+    },
+    {
+      "time": "2019-10-27T09:45:00.000Z",
+      "avgSpeedKmh": 89.8,
+      "avgFlowVehPerHr": 299
+    },
+    {
+      "time": "2019-10-27T09:49:59.999Z",
+      "avgSpeedKmh": 88.1,
+      "avgFlowVehPerHr": 272
+    },
+    {
+      "time": "2019-10-27T09:55:00.000Z",
+      "avgSpeedKmh": 85.8,
+      "avgFlowVehPerHr": 271
+    },
+    {
+      "time": "2019-10-27T10:00:00.000Z",
+      "avgSpeedKmh": 86,
+      "avgFlowVehPerHr": 263
+    },
+    {
+      "time": "2019-10-27T10:04:59.999Z",
+      "avgSpeedKmh": 85.9,
+      "avgFlowVehPerHr": 262
+    },
+    {
+      "time": "2019-10-27T10:10:00.000Z",
+      "avgSpeedKmh": 85.6,
+      "avgFlowVehPerHr": 261
+    },
+    {
+      "time": "2019-10-27T10:14:59.999Z",
+      "avgSpeedKmh": 86,
+      "avgFlowVehPerHr": 270
+    },
+    {
+      "time": "2019-10-27T10:20:00.000Z",
+      "avgSpeedKmh": 86.6,
+      "avgFlowVehPerHr": 292
+    },
+    {
+      "time": "2019-10-27T10:24:59.999Z",
+      "avgSpeedKmh": 86.4,
+      "avgFlowVehPerHr": 267
+    },
+    {
+      "time": "2019-10-27T10:30:00.000Z",
+      "avgSpeedKmh": 85.9,
+      "avgFlowVehPerHr": 245
+    },
+    {
+      "time": "2019-10-27T10:34:59.999Z",
+      "avgSpeedKmh": 86.5,
+      "avgFlowVehPerHr": 218
+    },
+    {
+      "time": "2019-10-27T10:40:00.000Z",
+      "avgSpeedKmh": 85.7,
+      "avgFlowVehPerHr": 216
+    },
+    {
+      "time": "2019-10-27T10:45:00.000Z",
+      "avgSpeedKmh": 87.5,
+      "avgFlowVehPerHr": 230
+    },
+    {
+      "time": "2019-10-27T10:49:59.999Z",
+      "avgSpeedKmh": 87.4,
+      "avgFlowVehPerHr": 235
+    },
+    {
+      "time": "2019-10-27T10:55:00.000Z",
+      "avgSpeedKmh": 87.3,
+      "avgFlowVehPerHr": 214
+    },
+    {
+      "time": "2019-10-27T10:59:59.999Z",
+      "avgSpeedKmh": 87.8,
+      "avgFlowVehPerHr": 203
+    },
+    {
+      "time": "2019-10-27T11:05:00.000Z",
+      "avgSpeedKmh": 88.4,
+      "avgFlowVehPerHr": 231
+    },
+    {
+      "time": "2019-10-27T11:09:59.999Z",
+      "avgSpeedKmh": 88.9,
+      "avgFlowVehPerHr": 254
+    },
+    {
+      "time": "2019-10-27T11:15:00.000Z",
+      "avgSpeedKmh": 89.6,
+      "avgFlowVehPerHr": 239
+    },
+    {
+      "time": "2019-10-27T11:19:59.999Z",
+      "avgSpeedKmh": 88.9,
+      "avgFlowVehPerHr": 219
+    },
+    {
+      "time": "2019-10-27T11:25:00.000Z",
+      "avgSpeedKmh": 88,
+      "avgFlowVehPerHr": 214
+    },
+    {
+      "time": "2019-10-27T11:30:00.000Z",
+      "avgSpeedKmh": 88.7,
+      "avgFlowVehPerHr": 241
+    },
+    {
+      "time": "2019-10-27T11:34:59.999Z",
+      "avgSpeedKmh": 87.8,
+      "avgFlowVehPerHr": 233
+    },
+    {
+      "time": "2019-10-27T11:40:00.000Z",
+      "avgSpeedKmh": 88.8,
+      "avgFlowVehPerHr": 259
+    },
+    {
+      "time": "2019-10-27T11:44:59.999Z",
+      "avgSpeedKmh": 88.8,
+      "avgFlowVehPerHr": 268
+    },
+    {
+      "time": "2019-10-27T11:50:00.000Z",
+      "avgSpeedKmh": 89,
+      "avgFlowVehPerHr": 277
+    },
+    {
+      "time": "2019-10-27T11:54:59.999Z",
+      "avgSpeedKmh": 89.4,
+      "avgFlowVehPerHr": 298
+    },
+    {
+      "time": "2019-10-27T12:00:00.000Z",
+      "avgSpeedKmh": 89.5,
+      "avgFlowVehPerHr": 281
+    },
+    {
+      "time": "2019-10-27T12:04:59.999Z",
+      "avgSpeedKmh": 89.5,
+      "avgFlowVehPerHr": 248
+    },
+    {
+      "time": "2019-10-27T12:10:00.000Z",
+      "avgSpeedKmh": 90.5,
+      "avgFlowVehPerHr": 278
+    },
+    {
+      "time": "2019-10-27T12:15:00.000Z",
+      "avgSpeedKmh": 91.6,
+      "avgFlowVehPerHr": 315
+    },
+    {
+      "time": "2019-10-27T12:19:59.999Z",
+      "avgSpeedKmh": 91.5,
+      "avgFlowVehPerHr": 281
+    },
+    {
+      "time": "2019-10-27T12:25:00.000Z",
+      "avgSpeedKmh": 91.9,
+      "avgFlowVehPerHr": 266
+    },
+    {
+      "time": "2019-10-27T12:29:59.999Z",
+      "avgSpeedKmh": 91.6,
+      "avgFlowVehPerHr": 298
+    },
+    {
+      "time": "2019-10-27T12:35:00.000Z",
+      "avgSpeedKmh": 93.8,
+      "avgFlowVehPerHr": 290
+    },
+    {
+      "time": "2019-10-27T12:39:59.999Z",
+      "avgSpeedKmh": 94.7,
+      "avgFlowVehPerHr": 283
+    },
+    {
+      "time": "2019-10-27T12:45:00.000Z",
+      "avgSpeedKmh": 94.5,
+      "avgFlowVehPerHr": 280
+    },
+    {
+      "time": "2019-10-27T12:49:59.999Z",
+      "avgSpeedKmh": 96,
+      "avgFlowVehPerHr": 279
+    },
+    {
+      "time": "2019-10-27T12:55:00.000Z",
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 277
+    },
+    {
+      "time": "2019-10-27T13:00:00.000Z",
+      "avgSpeedKmh": 101.7,
+      "avgFlowVehPerHr": 269
+    },
+    {
+      "time": "2019-10-27T13:04:59.999Z",
+      "avgSpeedKmh": 101.9,
+      "avgFlowVehPerHr": 267
+    },
+    {
+      "time": "2019-10-27T13:10:00.000Z",
+      "avgSpeedKmh": 102.5,
+      "avgFlowVehPerHr": 257
+    },
+    {
+      "time": "2019-10-27T13:14:59.999Z",
+      "avgSpeedKmh": 102.5,
+      "avgFlowVehPerHr": 271
+    },
+    {
+      "time": "2019-10-27T13:20:00.000Z",
+      "avgSpeedKmh": 102.3,
+      "avgFlowVehPerHr": 254
+    },
+    {
+      "time": "2019-10-27T13:24:59.999Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 282
+    },
+    {
+      "time": "2019-10-27T13:30:00.000Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 284
+    },
+    {
+      "time": "2019-10-27T13:34:59.999Z",
+      "avgSpeedKmh": 102.2,
+      "avgFlowVehPerHr": 285
+    },
+    {
+      "time": "2019-10-27T13:40:00.000Z",
+      "avgSpeedKmh": 101.7,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-27T13:45:00.000Z",
+      "avgSpeedKmh": 101.4,
+      "avgFlowVehPerHr": 311
+    },
+    {
+      "time": "2019-10-27T13:49:59.999Z",
+      "avgSpeedKmh": 101.5,
+      "avgFlowVehPerHr": 310
+    },
+    {
+      "time": "2019-10-27T13:55:00.000Z",
+      "avgSpeedKmh": 101.6,
+      "avgFlowVehPerHr": 312
+    },
+    {
+      "time": "2019-10-27T13:59:59.999Z",
+      "avgSpeedKmh": 101.7,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T14:05:00.000Z",
+      "avgSpeedKmh": 102.4,
+      "avgFlowVehPerHr": 308
+    },
+    {
+      "time": "2019-10-27T14:09:59.999Z",
+      "avgSpeedKmh": 103.1,
+      "avgFlowVehPerHr": 328
+    },
+    {
+      "time": "2019-10-27T14:15:00.000Z",
+      "avgSpeedKmh": 103.8,
+      "avgFlowVehPerHr": 333
+    },
+    {
+      "time": "2019-10-27T14:19:59.999Z",
+      "avgSpeedKmh": 104.5,
+      "avgFlowVehPerHr": 303
+    },
+    {
+      "time": "2019-10-27T14:25:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 328
+    },
+    {
+      "time": "2019-10-27T14:30:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T14:34:59.999Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 323
+    },
+    {
+      "time": "2019-10-27T14:40:00.000Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 313
+    },
+    {
+      "time": "2019-10-27T14:44:59.999Z",
+      "avgSpeedKmh": 104.9,
+      "avgFlowVehPerHr": 304
+    },
+    {
+      "time": "2019-10-27T14:50:00.000Z",
+      "avgSpeedKmh": 105.1,
+      "avgFlowVehPerHr": 320
+    },
+    {
+      "time": "2019-10-27T14:54:59.999Z",
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 321
+    },
+    {
+      "time": "2019-10-27T15:00:00.000Z",
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 312
+    },
+    {
+      "time": "2019-10-27T15:04:59.999Z",
+      "avgSpeedKmh": 104.5,
+      "avgFlowVehPerHr": 314
+    },
+    {
+      "time": "2019-10-27T15:10:00.000Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 338
+    },
+    {
+      "time": "2019-10-27T15:15:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 341
+    },
+    {
+      "time": "2019-10-27T15:19:59.999Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 358
+    },
+    {
+      "time": "2019-10-27T15:25:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 355
+    },
+    {
+      "time": "2019-10-27T15:29:59.999Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 342
+    },
+    {
+      "time": "2019-10-27T15:35:00.000Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 343
+    },
+    {
+      "time": "2019-10-27T15:39:59.999Z",
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 349
+    },
+    {
+      "time": "2019-10-27T15:45:00.000Z",
+      "avgSpeedKmh": 104.2,
+      "avgFlowVehPerHr": 371
+    },
+    {
+      "time": "2019-10-27T15:49:59.999Z",
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 340
+    },
+    {
+      "time": "2019-10-27T15:55:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 347
+    },
+    {
+      "time": "2019-10-27T16:00:00.000Z",
+      "avgSpeedKmh": 105.1,
+      "avgFlowVehPerHr": 349
+    },
+    {
+      "time": "2019-10-27T16:04:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 347
+    },
+    {
+      "time": "2019-10-27T16:10:00.000Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 331
+    },
+    {
+      "time": "2019-10-27T16:14:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 330
+    },
+    {
+      "time": "2019-10-27T16:20:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 358
+    },
+    {
+      "time": "2019-10-27T16:24:59.999Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 346
+    },
+    {
+      "time": "2019-10-27T16:30:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 330
+    },
+    {
+      "time": "2019-10-27T16:34:59.999Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 339
+    },
+    {
+      "time": "2019-10-27T16:40:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 319
+    },
+    {
+      "time": "2019-10-27T16:45:00.000Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 333
+    },
+    {
+      "time": "2019-10-27T16:49:59.999Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 330
+    },
+    {
+      "time": "2019-10-27T16:55:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 326
+    },
+    {
+      "time": "2019-10-27T16:59:59.999Z",
+      "avgSpeedKmh": 105.3,
+      "avgFlowVehPerHr": 328
+    },
+    {
+      "time": "2019-10-27T17:05:00.000Z",
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 327
+    },
+    {
+      "time": "2019-10-27T17:09:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 319
+    },
+    {
+      "time": "2019-10-27T17:15:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 327
+    },
+    {
+      "time": "2019-10-27T17:19:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 315
+    },
+    {
+      "time": "2019-10-27T17:25:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 322
+    },
+    {
+      "time": "2019-10-27T17:30:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 329
+    },
+    {
+      "time": "2019-10-27T17:34:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 321
+    },
+    {
+      "time": "2019-10-27T17:40:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 335
+    },
+    {
+      "time": "2019-10-27T17:44:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 336
+    },
+    {
+      "time": "2019-10-27T17:50:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T17:54:59.999Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 311
+    },
+    {
+      "time": "2019-10-27T18:00:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T18:04:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 319
+    },
+    {
+      "time": "2019-10-27T18:10:00.000Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 308
+    },
+    {
+      "time": "2019-10-27T18:15:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 315
+    },
+    {
+      "time": "2019-10-27T18:19:59.999Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T18:25:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 291
+    },
+    {
+      "time": "2019-10-27T18:29:59.999Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T18:35:00.000Z",
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 306
+    },
+    {
+      "time": "2019-10-27T18:39:59.999Z",
+      "avgSpeedKmh": 104.2,
+      "avgFlowVehPerHr": 310
+    },
+    {
+      "time": "2019-10-27T18:45:00.000Z",
+      "avgSpeedKmh": 105,
+      "avgFlowVehPerHr": 303
+    },
+    {
+      "time": "2019-10-27T18:49:59.999Z",
+      "avgSpeedKmh": 105.3,
+      "avgFlowVehPerHr": 281
+    },
+    {
+      "time": "2019-10-27T18:55:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 298
+    },
+    {
+      "time": "2019-10-27T19:00:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 301
+    },
+    {
+      "time": "2019-10-27T19:04:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 299
+    },
+    {
+      "time": "2019-10-27T19:10:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 289
+    },
+    {
+      "time": "2019-10-27T19:14:59.999Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 304
+    },
+    {
+      "time": "2019-10-27T19:20:00.000Z",
+      "avgSpeedKmh": 106.4,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-27T19:24:59.999Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 257
+    },
+    {
+      "time": "2019-10-27T19:30:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 284
+    },
+    {
+      "time": "2019-10-27T19:34:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 262
+    },
+    {
+      "time": "2019-10-27T19:40:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 300
+    },
+    {
+      "time": "2019-10-27T19:45:00.000Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 311
+    },
+    {
+      "time": "2019-10-27T19:49:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 285
+    },
+    {
+      "time": "2019-10-27T19:55:00.000Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-27T19:59:59.999Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 301
+    },
+    {
+      "time": "2019-10-27T20:05:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T20:09:59.999Z",
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 319
+    },
+    {
+      "time": "2019-10-27T20:15:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 327
+    },
+    {
+      "time": "2019-10-27T20:19:59.999Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "time": "2019-10-27T20:25:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 308
+    },
+    {
+      "time": "2019-10-27T20:30:00.000Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 296
+    },
+    {
+      "time": "2019-10-27T20:34:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 321
+    },
+    {
+      "time": "2019-10-27T20:40:00.000Z",
+      "avgSpeedKmh": 106.4,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T20:44:59.999Z",
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 299
+    },
+    {
+      "time": "2019-10-27T20:50:00.000Z",
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 313
+    },
+    {
+      "time": "2019-10-27T20:54:59.999Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 322
+    },
+    {
+      "time": "2019-10-27T21:00:00.000Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 285
+    },
+    {
+      "time": "2019-10-27T21:04:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 300
+    },
+    {
+      "time": "2019-10-27T21:10:00.000Z",
+      "avgSpeedKmh": 106.1,
+      "avgFlowVehPerHr": 313
+    },
+    {
+      "time": "2019-10-27T21:15:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 309
+    },
+    {
+      "time": "2019-10-27T21:19:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 280
+    },
+    {
+      "time": "2019-10-27T21:25:00.000Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-27T21:29:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 284
+    },
+    {
+      "time": "2019-10-27T21:35:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 293
+    },
+    {
+      "time": "2019-10-27T21:39:59.999Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 303
+    },
+    {
+      "time": "2019-10-27T21:45:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T21:49:59.999Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T21:55:00.000Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 283
+    },
+    {
+      "time": "2019-10-27T22:00:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 294
+    },
+    {
+      "time": "2019-10-27T22:04:59.999Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 306
+    },
+    {
+      "time": "2019-10-27T22:10:00.000Z",
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 297
+    },
+    {
+      "time": "2019-10-27T22:14:59.999Z",
+      "avgSpeedKmh": 106.4,
+      "avgFlowVehPerHr": 306
+    },
+    {
+      "time": "2019-10-27T22:20:00.000Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "time": "2019-10-27T22:24:59.999Z",
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 295
+    },
+    {
+      "time": "2019-10-27T22:30:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 302
+    },
+    {
+      "time": "2019-10-27T22:34:59.999Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 294
+    },
+    {
+      "time": "2019-10-27T22:40:00.000Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 295
+    },
+    {
+      "time": "2019-10-27T22:45:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 310
+    },
+    {
+      "time": "2019-10-27T22:49:59.999Z",
+      "avgSpeedKmh": 105.2,
+      "avgFlowVehPerHr": 313
+    },
+    {
+      "time": "2019-10-27T22:55:00.000Z",
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 285
+    },
+    {
+      "time": "2019-10-27T22:59:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 306
+    },
+    {
+      "time": "2019-10-27T23:05:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 264
+    },
+    {
+      "time": "2019-10-27T23:09:59.999Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 280
+    },
+    {
+      "time": "2019-10-27T23:15:00.000Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 281
+    },
+    {
+      "time": "2019-10-27T23:19:59.999Z",
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 278
+    },
+    {
+      "time": "2019-10-27T23:25:00.000Z",
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 268
+    },
+    {
+      "time": "2019-10-27T23:30:00.000Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 262
+    },
+    {
+      "time": "2019-10-27T23:34:59.999Z",
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 255
+    },
+    {
+      "time": "2019-10-27T23:40:00.000Z",
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 268
+    },
+    {
+      "time": "2019-10-27T23:44:59.999Z",
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 272
+    },
+    {
+      "time": "2019-10-27T23:50:00.000Z",
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 246
+    },
+    {
+      "time": "2019-10-27T23:54:59.999Z",
+      "avgSpeedKmh": 105.5,
+      "avgFlowVehPerHr": 239
+    },
+    {
+      "time": "2019-10-28T00:00:00.000Z",
+      "avgSpeedKmh": 105.8,
+      "avgFlowVehPerHr": 263
+    },
+    {
+      "time": "2019-10-28T00:04:59.999Z",
+      "avgSpeedKmh": 106.4,
+      "avgFlowVehPerHr": 249
+    },
+    {
+      "time": "2019-10-28T00:10:00.000Z",
+      "avgSpeedKmh": 105.6,
+      "avgFlowVehPerHr": 238
+    },
+    {
+      "time": "2019-10-28T00:15:00.000Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 226
+    },
+    {
+      "time": "2019-10-28T00:19:59.999Z",
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 211
+    },
+    {
+      "time": "2019-10-28T00:25:00.000Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 225
+    },
+    {
+      "time": "2019-10-28T00:29:59.999Z",
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 228
+    },
+    {
+      "time": "2019-10-28T00:35:00.000Z",
+      "avgSpeedKmh": 106.3,
+      "avgFlowVehPerHr": 231
+    },
+    {
+      "time": "2019-10-28T00:39:59.999Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 236
+    },
+    {
+      "time": "2019-10-28T00:45:00.000Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 219
+    },
+    {
+      "time": "2019-10-28T00:49:59.999Z",
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 221
+    },
+    {
+      "time": "2019-10-28T00:55:00.000Z",
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 206
+    },
+    {
+      "time": "2019-10-28T01:00:00.000Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 204
+    },
+    {
+      "time": "2019-10-28T01:04:59.999Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 192
+    },
+    {
+      "time": "2019-10-28T01:10:00.000Z",
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 196
+    },
+    {
+      "time": "2019-10-28T01:14:59.999Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 192
+    },
+    {
+      "time": "2019-10-28T01:20:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 180
+    },
+    {
+      "time": "2019-10-28T01:24:59.999Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 183
+    },
+    {
+      "time": "2019-10-28T01:30:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 154
+    },
+    {
+      "time": "2019-10-28T01:34:59.999Z",
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 163
+    },
+    {
+      "time": "2019-10-28T01:40:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 164
+    },
+    {
+      "time": "2019-10-28T01:45:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 157
+    },
+    {
+      "time": "2019-10-28T01:49:59.999Z",
+      "avgSpeedKmh": 107.1,
+      "avgFlowVehPerHr": 151
+    },
+    {
+      "time": "2019-10-28T01:55:00.000Z",
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 123
+    },
+    {
+      "time": "2019-10-28T01:59:59.999Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 110
+    },
+    {
+      "time": "2019-10-28T02:05:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 140
+    },
+    {
+      "time": "2019-10-28T02:09:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 144
+    },
+    {
+      "time": "2019-10-28T02:15:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 141
+    },
+    {
+      "time": "2019-10-28T02:19:59.999Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 122
+    },
+    {
+      "time": "2019-10-28T02:25:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 117
+    },
+    {
+      "time": "2019-10-28T02:30:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 127
+    },
+    {
+      "time": "2019-10-28T02:34:59.999Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 133
+    },
+    {
+      "time": "2019-10-28T02:40:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 131
+    },
+    {
+      "time": "2019-10-28T02:44:59.999Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 123
+    },
+    {
+      "time": "2019-10-28T02:50:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 113
+    },
+    {
+      "time": "2019-10-28T02:54:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 97
+    },
+    {
+      "time": "2019-10-28T03:00:00.000Z",
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 94
+    },
+    {
+      "time": "2019-10-28T03:04:59.999Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 80
+    },
+    {
+      "time": "2019-10-28T03:10:00.000Z",
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 93
+    },
+    {
+      "time": "2019-10-28T03:15:00.000Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 84
+    },
+    {
+      "time": "2019-10-28T03:19:59.999Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 83
+    },
+    {
+      "time": "2019-10-28T03:25:00.000Z",
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 89
+    },
+    {
+      "time": "2019-10-28T03:29:59.999Z",
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 77
+    },
+    {
+      "time": "2019-10-28T03:35:00.000Z",
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 82
+    },
+    {
+      "time": "2019-10-28T03:39:59.999Z",
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 75
+    },
+    {
+      "time": "2019-10-28T03:45:00.000Z",
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 78
+    },
+    {
+      "time": "2019-10-28T03:49:59.999Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 74
+    },
+    {
+      "time": "2019-10-28T03:55:00.000Z",
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 78
+    }
+  ],
+  "routineByTimeOfDay": [
+    {
+      "minuteOfDay": 0,
+      "avgSpeedKmh": 109.1,
+      "avgFlowVehPerHr": 255
+    },
+    {
+      "minuteOfDay": 4,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 243
+    },
+    {
+      "minuteOfDay": 10,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 235
+    },
+    {
+      "minuteOfDay": 14,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 232
+    },
+    {
+      "minuteOfDay": 20,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 229
+    },
+    {
+      "minuteOfDay": 24,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 213
+    },
+    {
+      "minuteOfDay": 30,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 204
+    },
+    {
+      "minuteOfDay": 34,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 187
+    },
+    {
+      "minuteOfDay": 40,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 181
+    },
+    {
+      "minuteOfDay": 45,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 169
+    },
+    {
+      "minuteOfDay": 49,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 163
+    },
+    {
+      "minuteOfDay": 55,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 153
+    },
+    {
+      "minuteOfDay": 59,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 150
+    },
+    {
+      "minuteOfDay": 65,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 143
+    },
+    {
+      "minuteOfDay": 69,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 142
+    },
+    {
+      "minuteOfDay": 75,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 140
+    },
+    {
+      "minuteOfDay": 79,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 139
+    },
+    {
+      "minuteOfDay": 85,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 125
+    },
+    {
+      "minuteOfDay": 90,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 117
+    },
+    {
+      "minuteOfDay": 94,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 116
+    },
+    {
+      "minuteOfDay": 100,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 120
+    },
+    {
+      "minuteOfDay": 104,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 117
+    },
+    {
+      "minuteOfDay": 110,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 110
+    },
+    {
+      "minuteOfDay": 114,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 110
+    },
+    {
+      "minuteOfDay": 120,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 103
+    },
+    {
+      "minuteOfDay": 124,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 101
+    },
+    {
+      "minuteOfDay": 130,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 101
+    },
+    {
+      "minuteOfDay": 135,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 95
+    },
+    {
+      "minuteOfDay": 139,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 93
+    },
+    {
+      "minuteOfDay": 145,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 88
+    },
+    {
+      "minuteOfDay": 149,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 84
+    },
+    {
+      "minuteOfDay": 155,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 88
+    },
+    {
+      "minuteOfDay": 159,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 89
+    },
+    {
+      "minuteOfDay": 165,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 85
+    },
+    {
+      "minuteOfDay": 169,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 80
+    },
+    {
+      "minuteOfDay": 175,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 77
+    },
+    {
+      "minuteOfDay": 180,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "minuteOfDay": 184,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "minuteOfDay": 190,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "minuteOfDay": 194,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "minuteOfDay": 200,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 71
+    },
+    {
+      "minuteOfDay": 204,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "minuteOfDay": 210,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "minuteOfDay": 214,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "minuteOfDay": 220,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 74
+    },
+    {
+      "minuteOfDay": 225,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 72
+    },
+    {
+      "minuteOfDay": 229,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 69
+    },
+    {
+      "minuteOfDay": 235,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 69
+    },
+    {
+      "minuteOfDay": 239,
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 66
+    },
+    {
+      "minuteOfDay": 245,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 68
+    },
+    {
+      "minuteOfDay": 249,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 74
+    },
+    {
+      "minuteOfDay": 255,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 70
+    },
+    {
+      "minuteOfDay": 259,
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 71
+    },
+    {
+      "minuteOfDay": 265,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 76
+    },
+    {
+      "minuteOfDay": 270,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 77
+    },
+    {
+      "minuteOfDay": 274,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 90
+    },
+    {
+      "minuteOfDay": 280,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 103
+    },
+    {
+      "minuteOfDay": 284,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 104
+    },
+    {
+      "minuteOfDay": 290,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 104
+    },
+    {
+      "minuteOfDay": 294,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 100
+    },
+    {
+      "minuteOfDay": 300,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 92
+    },
+    {
+      "minuteOfDay": 304,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 96
+    },
+    {
+      "minuteOfDay": 310,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 105
+    },
+    {
+      "minuteOfDay": 315,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 115
+    },
+    {
+      "minuteOfDay": 319,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 130
+    },
+    {
+      "minuteOfDay": 325,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 139
+    },
+    {
+      "minuteOfDay": 329,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 147
+    },
+    {
+      "minuteOfDay": 335,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 161
+    },
+    {
+      "minuteOfDay": 339,
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 186
+    },
+    {
+      "minuteOfDay": 345,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 199
+    },
+    {
+      "minuteOfDay": 349,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 207
+    },
+    {
+      "minuteOfDay": 355,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 198
+    },
+    {
+      "minuteOfDay": 360,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 184
+    },
+    {
+      "minuteOfDay": 364,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 199
+    },
+    {
+      "minuteOfDay": 370,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 225
+    },
+    {
+      "minuteOfDay": 374,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 246
+    },
+    {
+      "minuteOfDay": 380,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 267
+    },
+    {
+      "minuteOfDay": 384,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 282
+    },
+    {
+      "minuteOfDay": 390,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 298
+    },
+    {
+      "minuteOfDay": 394,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 318
+    },
+    {
+      "minuteOfDay": 400,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 339
+    },
+    {
+      "minuteOfDay": 405,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 361
+    },
+    {
+      "minuteOfDay": 409,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 362
+    },
+    {
+      "minuteOfDay": 415,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 357
+    },
+    {
+      "minuteOfDay": 419,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 341
+    },
+    {
+      "minuteOfDay": 425,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 350
+    },
+    {
+      "minuteOfDay": 429,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 380
+    },
+    {
+      "minuteOfDay": 435,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 417
+    },
+    {
+      "minuteOfDay": 439,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 441
+    },
+    {
+      "minuteOfDay": 445,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 454
+    },
+    {
+      "minuteOfDay": 450,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 461
+    },
+    {
+      "minuteOfDay": 454,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 485
+    },
+    {
+      "minuteOfDay": 460,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 520
+    },
+    {
+      "minuteOfDay": 464,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 545
+    },
+    {
+      "minuteOfDay": 470,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 553
+    },
+    {
+      "minuteOfDay": 474,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 531
+    },
+    {
+      "minuteOfDay": 480,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 510
+    },
+    {
+      "minuteOfDay": 484,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 519
+    },
+    {
+      "minuteOfDay": 490,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 545
+    },
+    {
+      "minuteOfDay": 495,
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 560
+    },
+    {
+      "minuteOfDay": 499,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 587
+    },
+    {
+      "minuteOfDay": 505,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 602
+    },
+    {
+      "minuteOfDay": 509,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 617
+    },
+    {
+      "minuteOfDay": 515,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 652
+    },
+    {
+      "minuteOfDay": 519,
+      "avgSpeedKmh": 109.1,
+      "avgFlowVehPerHr": 667
+    },
+    {
+      "minuteOfDay": 525,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 697
+    },
+    {
+      "minuteOfDay": 529,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 715
+    },
+    {
+      "minuteOfDay": 535,
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 698
+    },
+    {
+      "minuteOfDay": 540,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 685
+    },
+    {
+      "minuteOfDay": 544,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 684
+    },
+    {
+      "minuteOfDay": 550,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 714
+    },
+    {
+      "minuteOfDay": 554,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 731
+    },
+    {
+      "minuteOfDay": 560,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 761
+    },
+    {
+      "minuteOfDay": 564,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 791
+    },
+    {
+      "minuteOfDay": 570,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 799
+    },
+    {
+      "minuteOfDay": 574,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 832
+    },
+    {
+      "minuteOfDay": 580,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 866
+    },
+    {
+      "minuteOfDay": 585,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 875
+    },
+    {
+      "minuteOfDay": 589,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 888
+    },
+    {
+      "minuteOfDay": 595,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 862
+    },
+    {
+      "minuteOfDay": 599,
+      "avgSpeedKmh": 106.6,
+      "avgFlowVehPerHr": 855
+    },
+    {
+      "minuteOfDay": 605,
+      "avgSpeedKmh": 106,
+      "avgFlowVehPerHr": 878
+    },
+    {
+      "minuteOfDay": 609,
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 867
+    },
+    {
+      "minuteOfDay": 615,
+      "avgSpeedKmh": 105.1,
+      "avgFlowVehPerHr": 925
+    },
+    {
+      "minuteOfDay": 619,
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 924
+    },
+    {
+      "minuteOfDay": 625,
+      "avgSpeedKmh": 104.3,
+      "avgFlowVehPerHr": 919
+    },
+    {
+      "minuteOfDay": 630,
+      "avgSpeedKmh": 104.1,
+      "avgFlowVehPerHr": 930
+    },
+    {
+      "minuteOfDay": 634,
+      "avgSpeedKmh": 104.1,
+      "avgFlowVehPerHr": 937
+    },
+    {
+      "minuteOfDay": 640,
+      "avgSpeedKmh": 103.7,
+      "avgFlowVehPerHr": 967
+    },
+    {
+      "minuteOfDay": 644,
+      "avgSpeedKmh": 103.3,
+      "avgFlowVehPerHr": 955
+    },
+    {
+      "minuteOfDay": 650,
+      "avgSpeedKmh": 102.9,
+      "avgFlowVehPerHr": 959
+    },
+    {
+      "minuteOfDay": 654,
+      "avgSpeedKmh": 102.7,
+      "avgFlowVehPerHr": 952
+    },
+    {
+      "minuteOfDay": 660,
+      "avgSpeedKmh": 101.9,
+      "avgFlowVehPerHr": 958
+    },
+    {
+      "minuteOfDay": 664,
+      "avgSpeedKmh": 101.5,
+      "avgFlowVehPerHr": 926
+    },
+    {
+      "minuteOfDay": 670,
+      "avgSpeedKmh": 101.3,
+      "avgFlowVehPerHr": 944
+    },
+    {
+      "minuteOfDay": 675,
+      "avgSpeedKmh": 101.3,
+      "avgFlowVehPerHr": 984
+    },
+    {
+      "minuteOfDay": 679,
+      "avgSpeedKmh": 101.1,
+      "avgFlowVehPerHr": 1000
+    },
+    {
+      "minuteOfDay": 685,
+      "avgSpeedKmh": 101.1,
+      "avgFlowVehPerHr": 984
+    },
+    {
+      "minuteOfDay": 689,
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 969
+    },
+    {
+      "minuteOfDay": 695,
+      "avgSpeedKmh": 101.2,
+      "avgFlowVehPerHr": 988
+    },
+    {
+      "minuteOfDay": 699,
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 992
+    },
+    {
+      "minuteOfDay": 705,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 1001
+    },
+    {
+      "minuteOfDay": 709,
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 1009
+    },
+    {
+      "minuteOfDay": 715,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 979
+    },
+    {
+      "minuteOfDay": 720,
+      "avgSpeedKmh": 101.1,
+      "avgFlowVehPerHr": 967
+    },
+    {
+      "minuteOfDay": 724,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 969
+    },
+    {
+      "minuteOfDay": 730,
+      "avgSpeedKmh": 100.6,
+      "avgFlowVehPerHr": 979
+    },
+    {
+      "minuteOfDay": 734,
+      "avgSpeedKmh": 100.4,
+      "avgFlowVehPerHr": 990
+    },
+    {
+      "minuteOfDay": 740,
+      "avgSpeedKmh": 99.9,
+      "avgFlowVehPerHr": 986
+    },
+    {
+      "minuteOfDay": 744,
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 982
+    },
+    {
+      "minuteOfDay": 750,
+      "avgSpeedKmh": 99.7,
+      "avgFlowVehPerHr": 1012
+    },
+    {
+      "minuteOfDay": 754,
+      "avgSpeedKmh": 99.5,
+      "avgFlowVehPerHr": 986
+    },
+    {
+      "minuteOfDay": 760,
+      "avgSpeedKmh": 99.2,
+      "avgFlowVehPerHr": 994
+    },
+    {
+      "minuteOfDay": 765,
+      "avgSpeedKmh": 98.7,
+      "avgFlowVehPerHr": 974
+    },
+    {
+      "minuteOfDay": 769,
+      "avgSpeedKmh": 98.3,
+      "avgFlowVehPerHr": 984
+    },
+    {
+      "minuteOfDay": 775,
+      "avgSpeedKmh": 97.9,
+      "avgFlowVehPerHr": 997
+    },
+    {
+      "minuteOfDay": 779,
+      "avgSpeedKmh": 97.4,
+      "avgFlowVehPerHr": 954
+    },
+    {
+      "minuteOfDay": 785,
+      "avgSpeedKmh": 97.5,
+      "avgFlowVehPerHr": 972
+    },
+    {
+      "minuteOfDay": 789,
+      "avgSpeedKmh": 97.5,
+      "avgFlowVehPerHr": 984
+    },
+    {
+      "minuteOfDay": 795,
+      "avgSpeedKmh": 97.7,
+      "avgFlowVehPerHr": 999
+    },
+    {
+      "minuteOfDay": 799,
+      "avgSpeedKmh": 97.6,
+      "avgFlowVehPerHr": 1000
+    },
+    {
+      "minuteOfDay": 805,
+      "avgSpeedKmh": 97.6,
+      "avgFlowVehPerHr": 1005
+    },
+    {
+      "minuteOfDay": 810,
+      "avgSpeedKmh": 97.7,
+      "avgFlowVehPerHr": 973
+    },
+    {
+      "minuteOfDay": 814,
+      "avgSpeedKmh": 97.8,
+      "avgFlowVehPerHr": 984
+    },
+    {
+      "minuteOfDay": 820,
+      "avgSpeedKmh": 97.9,
+      "avgFlowVehPerHr": 991
+    },
+    {
+      "minuteOfDay": 824,
+      "avgSpeedKmh": 98.1,
+      "avgFlowVehPerHr": 1000
+    },
+    {
+      "minuteOfDay": 830,
+      "avgSpeedKmh": 98,
+      "avgFlowVehPerHr": 991
+    },
+    {
+      "minuteOfDay": 834,
+      "avgSpeedKmh": 98,
+      "avgFlowVehPerHr": 975
+    },
+    {
+      "minuteOfDay": 840,
+      "avgSpeedKmh": 98.1,
+      "avgFlowVehPerHr": 953
+    },
+    {
+      "minuteOfDay": 844,
+      "avgSpeedKmh": 98.4,
+      "avgFlowVehPerHr": 988
+    },
+    {
+      "minuteOfDay": 850,
+      "avgSpeedKmh": 98.9,
+      "avgFlowVehPerHr": 989
+    },
+    {
+      "minuteOfDay": 855,
+      "avgSpeedKmh": 99.4,
+      "avgFlowVehPerHr": 1003
+    },
+    {
+      "minuteOfDay": 859,
+      "avgSpeedKmh": 99.6,
+      "avgFlowVehPerHr": 988
+    },
+    {
+      "minuteOfDay": 865,
+      "avgSpeedKmh": 99.6,
+      "avgFlowVehPerHr": 999
+    },
+    {
+      "minuteOfDay": 869,
+      "avgSpeedKmh": 100,
+      "avgFlowVehPerHr": 972
+    },
+    {
+      "minuteOfDay": 875,
+      "avgSpeedKmh": 100.2,
+      "avgFlowVehPerHr": 971
+    },
+    {
+      "minuteOfDay": 879,
+      "avgSpeedKmh": 100.5,
+      "avgFlowVehPerHr": 1002
+    },
+    {
+      "minuteOfDay": 885,
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 985
+    },
+    {
+      "minuteOfDay": 889,
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 970
+    },
+    {
+      "minuteOfDay": 895,
+      "avgSpeedKmh": 100.7,
+      "avgFlowVehPerHr": 956
+    },
+    {
+      "minuteOfDay": 900,
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 942
+    },
+    {
+      "minuteOfDay": 904,
+      "avgSpeedKmh": 100.6,
+      "avgFlowVehPerHr": 943
+    },
+    {
+      "minuteOfDay": 910,
+      "avgSpeedKmh": 100.8,
+      "avgFlowVehPerHr": 988
+    },
+    {
+      "minuteOfDay": 914,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 980
+    },
+    {
+      "minuteOfDay": 920,
+      "avgSpeedKmh": 100.7,
+      "avgFlowVehPerHr": 983
+    },
+    {
+      "minuteOfDay": 924,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 954
+    },
+    {
+      "minuteOfDay": 930,
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 964
+    },
+    {
+      "minuteOfDay": 934,
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 996
+    },
+    {
+      "minuteOfDay": 940,
+      "avgSpeedKmh": 100.6,
+      "avgFlowVehPerHr": 983
+    },
+    {
+      "minuteOfDay": 945,
+      "avgSpeedKmh": 100.5,
+      "avgFlowVehPerHr": 985
+    },
+    {
+      "minuteOfDay": 949,
+      "avgSpeedKmh": 100.9,
+      "avgFlowVehPerHr": 968
+    },
+    {
+      "minuteOfDay": 955,
+      "avgSpeedKmh": 101,
+      "avgFlowVehPerHr": 958
+    },
+    {
+      "minuteOfDay": 959,
+      "avgSpeedKmh": 101.3,
+      "avgFlowVehPerHr": 944
+    },
+    {
+      "minuteOfDay": 965,
+      "avgSpeedKmh": 101.7,
+      "avgFlowVehPerHr": 954
+    },
+    {
+      "minuteOfDay": 969,
+      "avgSpeedKmh": 101.8,
+      "avgFlowVehPerHr": 979
+    },
+    {
+      "minuteOfDay": 975,
+      "avgSpeedKmh": 101.9,
+      "avgFlowVehPerHr": 982
+    },
+    {
+      "minuteOfDay": 979,
+      "avgSpeedKmh": 102.2,
+      "avgFlowVehPerHr": 990
+    },
+    {
+      "minuteOfDay": 985,
+      "avgSpeedKmh": 102.5,
+      "avgFlowVehPerHr": 971
+    },
+    {
+      "minuteOfDay": 990,
+      "avgSpeedKmh": 102.3,
+      "avgFlowVehPerHr": 968
+    },
+    {
+      "minuteOfDay": 994,
+      "avgSpeedKmh": 102.3,
+      "avgFlowVehPerHr": 952
+    },
+    {
+      "minuteOfDay": 1000,
+      "avgSpeedKmh": 102.7,
+      "avgFlowVehPerHr": 961
+    },
+    {
+      "minuteOfDay": 1004,
+      "avgSpeedKmh": 103,
+      "avgFlowVehPerHr": 966
+    },
+    {
+      "minuteOfDay": 1010,
+      "avgSpeedKmh": 103.3,
+      "avgFlowVehPerHr": 940
+    },
+    {
+      "minuteOfDay": 1014,
+      "avgSpeedKmh": 103.7,
+      "avgFlowVehPerHr": 960
+    },
+    {
+      "minuteOfDay": 1020,
+      "avgSpeedKmh": 104.2,
+      "avgFlowVehPerHr": 939
+    },
+    {
+      "minuteOfDay": 1024,
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 942
+    },
+    {
+      "minuteOfDay": 1030,
+      "avgSpeedKmh": 104.8,
+      "avgFlowVehPerHr": 930
+    },
+    {
+      "minuteOfDay": 1035,
+      "avgSpeedKmh": 104.9,
+      "avgFlowVehPerHr": 931
+    },
+    {
+      "minuteOfDay": 1039,
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 956
+    },
+    {
+      "minuteOfDay": 1045,
+      "avgSpeedKmh": 104.6,
+      "avgFlowVehPerHr": 916
+    },
+    {
+      "minuteOfDay": 1049,
+      "avgSpeedKmh": 104.7,
+      "avgFlowVehPerHr": 903
+    },
+    {
+      "minuteOfDay": 1055,
+      "avgSpeedKmh": 104.9,
+      "avgFlowVehPerHr": 919
+    },
+    {
+      "minuteOfDay": 1059,
+      "avgSpeedKmh": 105.4,
+      "avgFlowVehPerHr": 905
+    },
+    {
+      "minuteOfDay": 1065,
+      "avgSpeedKmh": 105.7,
+      "avgFlowVehPerHr": 899
+    },
+    {
+      "minuteOfDay": 1069,
+      "avgSpeedKmh": 105.9,
+      "avgFlowVehPerHr": 871
+    },
+    {
+      "minuteOfDay": 1075,
+      "avgSpeedKmh": 106.2,
+      "avgFlowVehPerHr": 858
+    },
+    {
+      "minuteOfDay": 1080,
+      "avgSpeedKmh": 106.7,
+      "avgFlowVehPerHr": 836
+    },
+    {
+      "minuteOfDay": 1084,
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 840
+    },
+    {
+      "minuteOfDay": 1090,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 859
+    },
+    {
+      "minuteOfDay": 1094,
+      "avgSpeedKmh": 107.5,
+      "avgFlowVehPerHr": 855
+    },
+    {
+      "minuteOfDay": 1100,
+      "avgSpeedKmh": 107.4,
+      "avgFlowVehPerHr": 850
+    },
+    {
+      "minuteOfDay": 1104,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 834
+    },
+    {
+      "minuteOfDay": 1110,
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 795
+    },
+    {
+      "minuteOfDay": 1114,
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 806
+    },
+    {
+      "minuteOfDay": 1120,
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 789
+    },
+    {
+      "minuteOfDay": 1125,
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 789
+    },
+    {
+      "minuteOfDay": 1129,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 785
+    },
+    {
+      "minuteOfDay": 1135,
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 752
+    },
+    {
+      "minuteOfDay": 1139,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 764
+    },
+    {
+      "minuteOfDay": 1145,
+      "avgSpeedKmh": 107.2,
+      "avgFlowVehPerHr": 754
+    },
+    {
+      "minuteOfDay": 1149,
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 751
+    },
+    {
+      "minuteOfDay": 1155,
+      "avgSpeedKmh": 106.8,
+      "avgFlowVehPerHr": 741
+    },
+    {
+      "minuteOfDay": 1159,
+      "avgSpeedKmh": 106.5,
+      "avgFlowVehPerHr": 744
+    },
+    {
+      "minuteOfDay": 1165,
+      "avgSpeedKmh": 106.9,
+      "avgFlowVehPerHr": 714
+    },
+    {
+      "minuteOfDay": 1170,
+      "avgSpeedKmh": 107,
+      "avgFlowVehPerHr": 706
+    },
+    {
+      "minuteOfDay": 1174,
+      "avgSpeedKmh": 107.3,
+      "avgFlowVehPerHr": 687
+    },
+    {
+      "minuteOfDay": 1180,
+      "avgSpeedKmh": 107.6,
+      "avgFlowVehPerHr": 682
+    },
+    {
+      "minuteOfDay": 1184,
+      "avgSpeedKmh": 107.7,
+      "avgFlowVehPerHr": 669
+    },
+    {
+      "minuteOfDay": 1190,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 667
+    },
+    {
+      "minuteOfDay": 1194,
+      "avgSpeedKmh": 107.8,
+      "avgFlowVehPerHr": 658
+    },
+    {
+      "minuteOfDay": 1200,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 643
+    },
+    {
+      "minuteOfDay": 1204,
+      "avgSpeedKmh": 108.1,
+      "avgFlowVehPerHr": 636
+    },
+    {
+      "minuteOfDay": 1210,
+      "avgSpeedKmh": 107.9,
+      "avgFlowVehPerHr": 627
+    },
+    {
+      "minuteOfDay": 1215,
+      "avgSpeedKmh": 108,
+      "avgFlowVehPerHr": 644
+    },
+    {
+      "minuteOfDay": 1219,
+      "avgSpeedKmh": 108.2,
+      "avgFlowVehPerHr": 647
+    },
+    {
+      "minuteOfDay": 1225,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 631
+    },
+    {
+      "minuteOfDay": 1229,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 623
+    },
+    {
+      "minuteOfDay": 1235,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 591
+    },
+    {
+      "minuteOfDay": 1239,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 586
+    },
+    {
+      "minuteOfDay": 1245,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 582
+    },
+    {
+      "minuteOfDay": 1249,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 584
+    },
+    {
+      "minuteOfDay": 1255,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 565
+    },
+    {
+      "minuteOfDay": 1260,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 550
+    },
+    {
+      "minuteOfDay": 1264,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 539
+    },
+    {
+      "minuteOfDay": 1270,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 537
+    },
+    {
+      "minuteOfDay": 1274,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 531
+    },
+    {
+      "minuteOfDay": 1280,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 520
+    },
+    {
+      "minuteOfDay": 1284,
+      "avgSpeedKmh": 109.1,
+      "avgFlowVehPerHr": 518
+    },
+    {
+      "minuteOfDay": 1290,
+      "avgSpeedKmh": 109.2,
+      "avgFlowVehPerHr": 513
+    },
+    {
+      "minuteOfDay": 1294,
+      "avgSpeedKmh": 109.3,
+      "avgFlowVehPerHr": 503
+    },
+    {
+      "minuteOfDay": 1300,
+      "avgSpeedKmh": 109.3,
+      "avgFlowVehPerHr": 491
+    },
+    {
+      "minuteOfDay": 1305,
+      "avgSpeedKmh": 109.5,
+      "avgFlowVehPerHr": 484
+    },
+    {
+      "minuteOfDay": 1309,
+      "avgSpeedKmh": 109.4,
+      "avgFlowVehPerHr": 468
+    },
+    {
+      "minuteOfDay": 1315,
+      "avgSpeedKmh": 109.4,
+      "avgFlowVehPerHr": 453
+    },
+    {
+      "minuteOfDay": 1319,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 443
+    },
+    {
+      "minuteOfDay": 1325,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 447
+    },
+    {
+      "minuteOfDay": 1329,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 446
+    },
+    {
+      "minuteOfDay": 1335,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 439
+    },
+    {
+      "minuteOfDay": 1339,
+      "avgSpeedKmh": 109.1,
+      "avgFlowVehPerHr": 437
+    },
+    {
+      "minuteOfDay": 1345,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 419
+    },
+    {
+      "minuteOfDay": 1350,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 398
+    },
+    {
+      "minuteOfDay": 1354,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 381
+    },
+    {
+      "minuteOfDay": 1360,
+      "avgSpeedKmh": 108.7,
+      "avgFlowVehPerHr": 370
+    },
+    {
+      "minuteOfDay": 1364,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 365
+    },
+    {
+      "minuteOfDay": 1370,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 339
+    },
+    {
+      "minuteOfDay": 1374,
+      "avgSpeedKmh": 109,
+      "avgFlowVehPerHr": 331
+    },
+    {
+      "minuteOfDay": 1380,
+      "avgSpeedKmh": 108.9,
+      "avgFlowVehPerHr": 317
+    },
+    {
+      "minuteOfDay": 1384,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 321
+    },
+    {
+      "minuteOfDay": 1390,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 319
+    },
+    {
+      "minuteOfDay": 1395,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 305
+    },
+    {
+      "minuteOfDay": 1399,
+      "avgSpeedKmh": 108.3,
+      "avgFlowVehPerHr": 293
+    },
+    {
+      "minuteOfDay": 1405,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 274
+    },
+    {
+      "minuteOfDay": 1409,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 259
+    },
+    {
+      "minuteOfDay": 1415,
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 250
+    },
+    {
+      "minuteOfDay": 1419,
+      "avgSpeedKmh": 108.6,
+      "avgFlowVehPerHr": 248
+    },
+    {
+      "minuteOfDay": 1425,
+      "avgSpeedKmh": 108.4,
+      "avgFlowVehPerHr": 229
+    },
+    {
+      "minuteOfDay": 1429,
+      "avgSpeedKmh": 108.5,
+      "avgFlowVehPerHr": 214
+    },
+    {
+      "minuteOfDay": 1435,
+      "avgSpeedKmh": 108.8,
+      "avgFlowVehPerHr": 203
+    }
+  ]
+}
