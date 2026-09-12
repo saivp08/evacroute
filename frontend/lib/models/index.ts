@@ -10,7 +10,7 @@
 
 export type LatLng = { latitude: number; longitude: number };
 
-export type VehicleType = "ambulance" | "fire_engine" | "police_vehicle";
+export type VehicleType = "ambulance" | "fire_engine" | "police_vehicle" | "rescue_team";
 export type VehicleStatus = "available" | "en_route" | "on_scene" | "returning" | "out_of_service";
 export type VehiclePriority = "low" | "medium" | "high" | "critical";
 

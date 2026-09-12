@@ -16,9 +16,9 @@ export interface BaseMapProps {
   children?: ReactNode;
 }
 
-// Pittsburgh, PA — default operating area for development.
-const DEFAULT_CENTER: [number, number] = [40.4406, -79.9959];
-const DEFAULT_ZOOM = 12;
+// Santa Rosa, CA — the live backend's scenario area (see backend/app/models/scenario.py).
+const DEFAULT_CENTER: [number, number] = [38.4404, -122.7141];
+const DEFAULT_ZOOM = 14;
 
 function ResizeObserverBridge() {
   const map = useMap();

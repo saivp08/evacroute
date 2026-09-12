@@ -31,6 +31,7 @@ const VEHICLE_LETTER: Record<VehicleType, string> = {
   ambulance: "A",
   fire_engine: "E",
   police_vehicle: "V",
+  rescue_team: "R",
 };
 
 const VEHICLE_STATUS_COLOR: Record<VehicleStatus, string> = {

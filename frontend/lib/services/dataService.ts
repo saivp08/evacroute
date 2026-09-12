@@ -1,16 +1,14 @@
 // Data/service layer for EvacRoute.
 //
-//   Frontend component -> this service -> mock data (today) or FastAPI backend (later)
+//   Frontend component -> this service -> lib/services/backendClient -> live FastAPI backend
 //
-// Components must call these functions and never import lib/mock directly. Each function
-// is the single seam a real backend integration will replace, e.g.:
+// Components must call these functions and never fetch the backend directly. Each function
+// normalizes the backend's response shape (backend/app/models) into this app's own typed
+// models (lib/models) so components never need to know about the backend's field names.
 //
-//   export async function getVehicles(): Promise<Vehicle[]> {
-//     const res = await fetch(`${API_BASE_URL}/vehicles`);
-//     return res.json();
-//   }
-//
-// The return type stays identical, so no component needs to change when that happens.
+// Some entity types (hospitals, fire stations, police stations, hazards, field intel
+// reports) have no equivalent in the backend yet — those return an empty list rather than
+// invented data.
 import type {
   EvacuationZone,
   FireStation,
@@ -18,6 +16,7 @@ import type {
   Hospital,
   Incident,
   IntelReport,
+  LatLng,
   OperationsMetrics,
   PoliceStation,
   Road,
@@ -25,94 +24,236 @@ import type {
   Route,
   RouteUpdateEvent,
   Shelter,
+  ShelterStatus,
   SystemStatus,
   Vehicle,
   VehicleRoute,
 } from "../models";
 import {
-  mockEvacuationZones,
-  mockFireStations,
-  mockHazards,
-  mockHospitals,
-  mockIncidents,
-  mockIntelReports,
-  mockOperationsMetrics,
-  mockPoliceStations,
-  mockRoadClosures,
-  mockRoads,
-  mockRoutes,
-  mockRouteUpdateEvents,
-  mockShelters,
-  mockSystemStatuses,
-  mockVehicleRoutes,
-  mockVehicles,
-} from "../mock";
+  getBackendState,
+  getHealth,
+  type BackendCoordinate,
+  type BackendResponderRoute,
+  type BackendShelter,
+} from "./backendClient";
 
-export async function getVehicles(): Promise<Vehicle[]> {
-  return mockVehicles;
+function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
+  return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
 }
 
+function metersToMiles(meters: number): number {
+  return meters / 1609.34;
+}
+
+function secondsToMinutes(seconds: number): number {
+  return Math.round(seconds / 60);
+}
+
+function shelterStatus(shelter: BackendShelter): ShelterStatus {
+  if (!shelter.planning_available || shelter.status.toUpperCase().includes("CLOSED")) return "closed";
+  if (shelter.current_occupancy >= shelter.capacity) return "full";
+  return "open";
+}
+
+export async function getVehicles(): Promise<Vehicle[]> {
+  const { plan, scenario } = await getBackendState();
+  const dispatched = new Map<string, BackendResponderRoute>(
+    [...plan.ambulances, ...plan.rescue_teams].map((route) => [route.id, route])
+  );
+
+  return scenario.emergency_resources.map((resource) => {
+    const route = dispatched.get(resource.id);
+    return {
+      id: resource.id,
+      type: resource.type,
+      callsign: resource.name,
+      status: route ? "en_route" : resource.availability_status === "available" ? "available" : "out_of_service",
+      latitude: resource.latitude,
+      longitude: resource.longitude,
+      destination: route ? route.destination : null,
+      priority: route ? "critical" : "low",
+      route: route ? toLatLngList(route.coordinates) : [],
+      eta_minutes: route ? secondsToMinutes(route.travel_time_s) : null,
+    };
+  });
+}
+
+// No backend equivalent yet — these facility types aren't part of the scenario contract.
 export async function getHospitals(): Promise<Hospital[]> {
-  return mockHospitals;
+  return [];
 }
 
 export async function getShelters(): Promise<Shelter[]> {
-  return mockShelters;
+  const { scenario } = await getBackendState();
+  return scenario.shelters.map((shelter) => ({
+    id: shelter.id,
+    type: "shelter",
+    name: shelter.name,
+    address: shelter.address ?? "",
+    latitude: shelter.latitude,
+    longitude: shelter.longitude,
+    status: shelterStatus(shelter),
+    capacity: shelter.capacity,
+    occupancy: shelter.current_occupancy,
+  }));
 }
 
 export async function getFireStations(): Promise<FireStation[]> {
-  return mockFireStations;
+  return [];
 }
 
 export async function getPoliceStations(): Promise<PoliceStation[]> {
-  return mockPoliceStations;
+  return [];
 }
 
 export async function getRoads(): Promise<Road[]> {
-  return mockRoads;
+  const { scenario, plan } = await getBackendState();
+  const closedEdgeIds = new Set(plan.incidents.flatMap((incident) => incident.affected_edge_ids));
+  return scenario.roads.map((road) => ({
+    id: road.id,
+    name: road.name || road.road_type,
+    status: closedEdgeIds.has(road.id) ? "closed" : "open",
+    coordinates: toLatLngList(road.coordinates),
+    closure_reason: closedEdgeIds.has(road.id) ? "Active incident on this segment" : null,
+  }));
 }
 
 export async function getRoutes(): Promise<Route[]> {
-  return mockRoutes;
+  const { plan } = await getBackendState();
+  return plan.evacuation_routes.map((route) => ({
+    id: route.id,
+    origin_zone_id: route.zone,
+    destination_shelter_id: route.shelter,
+    status: "active",
+    people_count: route.people,
+    coordinates: toLatLngList(route.coordinates),
+    eta_minutes: secondsToMinutes(route.travel_time_s),
+  }));
 }
 
 export async function getIncidents(): Promise<Incident[]> {
-  return mockIncidents;
+  const { scenario, plan } = await getBackendState();
+  const zoneById = new Map(scenario.zones.map((zone) => [zone.id, zone]));
+  return plan.incidents.map((incident) => {
+    const zone = incident.zone ? zoneById.get(incident.zone) : undefined;
+    return {
+      id: incident.id,
+      type: incident.type,
+      description: `${incident.type.replace(/_/g, " ")} — ${incident.severity} severity`,
+      severity: incident.severity,
+      status: "confirmed",
+      latitude: incident.latitude ?? zone?.latitude ?? scenario.scenario.center[0],
+      longitude: incident.longitude ?? zone?.longitude ?? scenario.scenario.center[1],
+      zone_id: incident.zone,
+      reported_at: new Date().toISOString(),
+    };
+  });
 }
 
+// No backend equivalent yet — the scenario has no hazard-zone concept distinct from
+// incidents/zones.
 export async function getHazards(): Promise<Hazard[]> {
-  return mockHazards;
+  return [];
 }
 
 export async function getEvacuationZones(): Promise<EvacuationZone[]> {
-  return mockEvacuationZones;
+  const { scenario } = await getBackendState();
+  return scenario.zones.map((zone) => ({
+    id: zone.id,
+    name: zone.name,
+    status: "mandatory",
+    population: zone.population,
+    boundary: toLatLngList(zone.boundary[0] ?? []),
+  }));
 }
 
+// Derived from real signals the backend actually reports (health check, loaded road
+// network, data provenance) rather than invented subsystem names.
 export async function getSystemStatuses(): Promise<SystemStatus[]> {
-  return mockSystemStatuses;
+  const [health, { scenario }] = await Promise.all([getHealth(), getBackendState()]);
+  return [
+    {
+      id: "backend-api",
+      label: "Backend API",
+      status: health.status === "ok" ? "operational" : "offline",
+      detail: `EvacRoute FastAPI service — ${scenario.scenario.data_mode.replace(/_/g, " ")}`,
+    },
+    {
+      id: "road-network",
+      label: "Road Network",
+      status: scenario.scenario.edge_count > 0 ? "operational" : "offline",
+      detail: `${scenario.scenario.node_count} nodes / ${scenario.scenario.edge_count} edges loaded`,
+    },
+    {
+      id: "public-data",
+      label: "Public Data Feed",
+      status: "operational",
+      detail: scenario.scenario.data_note,
+    },
+  ];
 }
 
+// No backend equivalent yet — there is no field-report/analyst-intel source.
 export async function getIntelReports(): Promise<IntelReport[]> {
-  return mockIntelReports;
+  return [];
 }
 
 export async function getOperationsMetrics(): Promise<OperationsMetrics> {
-  return mockOperationsMetrics;
+  const { plan } = await getBackendState();
+  const metrics = plan.metrics;
+  const travelHours = metrics.average_effective_travel_time_s > 0 ? metrics.average_effective_travel_time_s / 3600 : null;
+  return {
+    evacuation_flow_per_hour: travelHours ? Math.round(metrics.assigned_evacuees / travelHours) : 0,
+    avg_response_eta_minutes: Math.round(metrics.average_effective_emergency_response_time_s / 60),
+    transportation_bottlenecks: metrics.uncovered_injuries + metrics.unfilled_rescue_requests,
+  };
 }
 
-// Returns null for a vehicle with no active route (available/out-of-service/already
-// arrived) as well as for an unrecognized vehicle id — both are legitimate "no route to
-// show" states for the caller, not errors.
+// Returns null for a vehicle with no active dispatch route (available/out-of-service) as
+// well as for an unrecognized vehicle id — both are legitimate "no route to show" states.
 export async function getVehicleRoute(vehicleId: string): Promise<VehicleRoute | null> {
-  return mockVehicleRoutes.find((route) => route.vehicle_id === vehicleId) ?? null;
+  const { plan } = await getBackendState();
+  const route = [...plan.ambulances, ...plan.rescue_teams].find((r) => r.id === vehicleId);
+  if (!route) return null;
+  const coordinates = toLatLngList(route.coordinates);
+  return {
+    vehicle_id: vehicleId,
+    origin: coordinates[0],
+    destination_name: route.destination,
+    destination: coordinates[coordinates.length - 1],
+    coordinates,
+    distance_miles: metersToMiles(route.distance_m),
+    eta_minutes: secondsToMinutes(route.travel_time_s),
+    status: "clear",
+    priority: "critical",
+  };
 }
 
 export async function getRoadClosures(): Promise<RoadClosure[]> {
-  return mockRoadClosures;
+  const { scenario, plan } = await getBackendState();
+  const roadById = new Map(scenario.roads.map((road) => [road.id, road]));
+  const CLOSURE_TYPES = new Set(["ROAD_CLOSURE", "ROAD_DAMAGE", "DEBRIS", "HAZARD_UPDATE"]);
+  return plan.incidents
+    .filter((incident) => CLOSURE_TYPES.has(incident.type))
+    .map((incident) => {
+      const roadId = incident.affected_edge_ids[0] ?? null;
+      const road = roadId ? roadById.get(roadId) : undefined;
+      return {
+        id: incident.id,
+        road_id: roadId,
+        road_name: road?.name || "Unnamed road",
+        reason: incident.type.replace(/_/g, " ").toLowerCase(),
+        severity: incident.severity,
+        reported_at: new Date().toISOString(),
+        coordinates: road ? toLatLngList(road.coordinates) : [],
+        status: "closed",
+      };
+    });
 }
 
-// Returns the predetermined reroute scenario for a vehicle, or null if none is defined for
-// it — most vehicles simply have no reroute event, which is a normal state, not an error.
-export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEvent | null> {
-  return mockRouteUpdateEvents.find((event) => event.vehicle_id === vehicleId) ?? null;
+// The live backend has no predetermined reroute-demo equivalent, so every vehicle
+// legitimately has none — this is the Phase 7 mock-only feature and stays retired now that
+// the app runs on real backend data.
+export async function getRerouteEvent(_vehicleId: string): Promise<RouteUpdateEvent | null> {
+  return null;
 }
