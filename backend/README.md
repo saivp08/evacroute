@@ -1,4 +1,6 @@
-# EvacRoute backend — Tasks 1–5
+# EvacRoute backend — Tasks 1–6
+
+Task 6 defaults to cached Census zones and FEMA shelter records with explicit demo supplementation. See [public data sources, setup, provenance, and validation](app/data/README.md). Numerical examples below describe the historical demo profile unless stated otherwise; select it with `EVACROUTE_DATA_MODE=demo`.
 
 Real OpenStreetMap driving roads for a roughly 5 × 5 km bounding box around downtown Santa Rosa, California (center `38.4404, -122.7141`). OSMnx keeps the largest weakly connected component and simplifies road geometry. This covers a bounded demo area, not all of Santa Rosa.
 

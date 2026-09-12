@@ -43,7 +43,7 @@ def label(value: object, fallback: str) -> str:
     return str(value) if value else fallback
 
 
-def build_scenario(graph: nx.MultiDiGraph) -> ScenarioResponse:
+def build_scenario(graph: nx.MultiDiGraph, *, use_public_data: bool = True) -> ScenarioResponse:
     zones = [Zone(id=id_, name=name, latitude=lat, longitude=lon,
                   graph_node=str(nearest_node(graph, lat, lon)), population=population)
              for id_, name, lat, lon, population in ZONE_SPECS]
@@ -65,7 +65,7 @@ def build_scenario(graph: nx.MultiDiGraph) -> ScenarioResponse:
             length_m=round(edge["length"], 2), speed_kph=round(edge["speed_kph"], 2),
             travel_time_s=round(edge["travel_time"], 2), coordinates=coordinates,
         ))
-    return ScenarioResponse(
+    scenario = ScenarioResponse(
         scenario=ScenarioInfo(node_count=len(graph), edge_count=graph.number_of_edges()),
         zones=zones, shelters=shelters, roads=roads,
         emergency_resources=[EmergencyResource(
@@ -73,3 +73,7 @@ def build_scenario(graph: nx.MultiDiGraph) -> ScenarioResponse:
             graph_node=str(nearest_node(graph, lat, lon)), response_capacity=capacity,
         ) for id_, kind, name, lat, lon, capacity in RESOURCE_SPECS],
     )
+    if use_public_data:
+        from app.data.public_data import use_processed_data
+        return use_processed_data(scenario, graph)
+    return scenario

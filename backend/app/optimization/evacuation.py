@@ -20,7 +20,7 @@ class InfeasiblePlan(Exception):
 def optimize_evacuation(graph: nx.MultiDiGraph, scenario: ScenarioResponse) -> OptimizationResponse:
     zones = sorted(scenario.zones, key=lambda item: item.id)
     shelters = sorted(scenario.shelters, key=lambda item: item.id)
-    available = {s.id: max(0, s.capacity - s.current_occupancy) for s in shelters}
+    available = {s.id: s.available_capacity for s in shelters}
     demand = sum(z.population for z in zones)
     capacity = sum(available.values())
 

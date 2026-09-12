@@ -1,0 +1,70 @@
+{
+  "source": "https://zenodo.org/records/7410114",
+  "downloaded_file": "data_routine_evacuation.xlsx",
+  "size_bytes": 12888979,
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "dimension": "A1:AB69117",
+      "first_rows": [
+        [
+          "Time",
+          "Detector",
+          "Scenario",
+          "Detector health (%)",
+          "L1 Average vehicle length (m/veh)",
+          "L1 Density (veh/km/lane)",
+          "L1 Flow (veh/h/lane)",
+          "L1 Occupancy (-)",
+          "L1 Speed (km/h)",
+          "L1 Truck Flow (trucks/h/lane)",
+          "L2 Average vehicle length (m/veh)",
+          "L2 Density (veh/km/lane)",
+          "L2 Flow (veh/h/lane)",
+          "L2 Occupancy (-)",
+          "L2 Speed (km/h)",
+          "L2 Truck Flow (trucks/h/lane)"
+        ],
+        [
+          "43736",
+          "L1N",
+          "Routine",
+          "100",
+          "7.015426089795921",
+          "5.131548610049892",
+          "588",
+          "0.036",
+          "114.5852928",
+          "0",
+          "7.566599040000001",
+          "3.436154058455303",
+          "360",
+          "0.026",
+          "104.7682944",
+          "24"
+        ],
+        [
+          "43736.00347222222",
+          "L1N",
+          "Routine",
+          "100",
+          "6.908033207547169",
+          "5.645601118042062",
+          "636",
+          "0.039",
+          "112.65408",
+          "0",
+          "7.253543314285716",
+          "5.790273550484189",
+          "588",
+          "0.042",
+          "101.5496064",
+          "36"
+        ]
+      ]
+    }
+  ],
+  "runtime_integrated": false,
+  "derived_values": {},
+  "decision": "Inspection only: station/time-series data requires matched routine periods, units and geographic sensor-to-road mapping; no defensible graph-wide multiplier derived in this task."
+}

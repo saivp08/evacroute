@@ -15,16 +15,35 @@ class Site(BaseModel):
     latitude: Latitude
     longitude: Longitude
     graph_node: str
-    simulated: Literal[True] = True
+    simulated: bool = True
+    data_source: str = "EvacRoute demo fallback"
+    source_id: str | None = None
+    retrieved_at: str | None = None
+    field_sources: dict[str, str] = Field(default_factory=dict)
 
 
 class Zone(Site):
     population: int = Field(ge=0)
+    original_population: int | None = Field(default=None, ge=0)
+    population_scale_factor: float = Field(default=1, ge=0)
+    population_is_scaled: bool = False
+    geography: str | None = None
+    boundary: list[list[Coordinate]] = Field(default_factory=list)
 
 
 class Shelter(Site):
     capacity: int = Field(ge=0)
     current_occupancy: int = Field(ge=0)
+    status: str = "DEMO_AVAILABLE"
+    planning_available: bool = True
+    address: str | None = None
+    evacuation_capacity: int | None = Field(default=None, ge=0)
+    post_impact_capacity: int | None = Field(default=None, ge=0)
+    current_occupancy_is_assumed: bool = False
+
+    @property
+    def available_capacity(self) -> int:
+        return max(0, self.capacity - self.current_occupancy) if self.planning_available else 0
 
 
 class EmergencyResource(Site):
@@ -34,6 +53,8 @@ class EmergencyResource(Site):
 
 
 class Road(BaseModel):
+    simulated: Literal[False] = False
+    data_source: str = "OpenStreetMap"
     id: str
     source: str
     target: str
@@ -57,6 +78,8 @@ class ScenarioInfo(BaseModel):
     data_note: str = "Real OpenStreetMap roads; simulated zones, shelters, populations, capacities, occupancy and emergency resources."
     attribution: str = "© OpenStreetMap contributors"
     attribution_url: str = "https://www.openstreetmap.org/copyright"
+    data_mode: str = "demo_fallback"
+    public_data_metadata: dict = Field(default_factory=dict)
 
 
 class ScenarioResponse(BaseModel):
