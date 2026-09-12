@@ -102,12 +102,46 @@ export interface BackendPlan {
   };
 }
 
+export class BackendRequestError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, init);
   if (!res.ok) {
-    throw new Error(`EvacRoute backend request failed: ${path} (${res.status})`);
+    // The backend returns a structured {error: {code, message}} body on 4xx/5xx (see
+    // backend/app/main.py's exception handlers) — surface that real message (e.g. "OpenAI
+    // is not configured") instead of a generic status-code string.
+    let message = `EvacRoute backend request failed: ${path} (${res.status})`;
+    try {
+      const body = await res.json();
+      if (typeof body?.error?.message === "string") message = body.error.message;
+    } catch {
+      // Non-JSON error body — keep the generic message.
+    }
+    throw new BackendRequestError(message, res.status);
   }
   return res.json();
+}
+
+export interface BackendParseResponse extends BackendPlan {
+  applied_events: unknown[];
+  notes: string[];
+}
+
+// Natural-language incident report -> backend/app/openai's structured extraction + replan
+// (POST /incident/parse). Requires OPEN_AI_API_KEY to be configured on the backend; if it
+// isn't, the backend itself returns a real, honest error which this surfaces as-is.
+export function submitIncidentReport(report: string) {
+  return fetchJson<BackendParseResponse>("/incident/parse", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ report }),
+  });
 }
 
 export function getHealth() {

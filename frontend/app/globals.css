@@ -1475,6 +1475,107 @@ main {
   margin: 0;
 }
 
+/* Compact always-on map key — small enough to never compete with the map itself. */
+.map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  box-shadow: var(--elevation-2);
+  font-size: var(--fs-micro);
+  color: var(--text-secondary);
+}
+
+.map-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-legend-swatch {
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.map-legend-line {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.map-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+/* Road closure label — a real, backend-derived word ("DEBRIS", "ROAD CLOSED") under the
+   closure marker rather than relying on the icon alone to carry the meaning. */
+.map-closure-label {
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-on-bright);
+  background: var(--danger);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: var(--elevation-1);
+}
+
+/* Incident report intake — the "type a report, watch it replan" demo entry point. */
+.incident-report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 4px 8px;
+}
+
+.incident-report-input {
+  background: rgba(var(--ink-rgb), 0.04);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: var(--fs-meta);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.incident-report-status {
+  margin: 0 4px 4px;
+  font-size: var(--fs-meta);
+  color: var(--text-secondary);
+}
+
+.incident-report-status-error {
+  color: var(--danger);
+}
+
+.incident-report-status-done {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(var(--success-rgb), 0.12);
+  border: 1px solid rgba(var(--success-rgb), 0.35);
+  color: var(--text-primary);
+}
+
+.incident-report-status-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--success);
+  font-size: var(--fs-micro);
+  margin-bottom: 4px;
+}
+
 @media (max-width: 1100px) {
   .overview-main-row {
     grid-template-columns: 240px 1fr 240px;

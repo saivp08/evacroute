@@ -20,6 +20,16 @@ function midpoint(coordinates: RoadClosure["coordinates"]): [number, number] {
   return [mid.longitude, mid.latitude];
 }
 
+// A short, real-data-driven label rather than a generic "Closure" — read straight off the
+// backend's own incident type/reason text, not invented copy.
+function closureLabel(closure: RoadClosure): string {
+  const reason = closure.reason.toLowerCase();
+  if (reason.includes("debris")) return "DEBRIS";
+  if (reason.includes("damage")) return "ROAD DAMAGE";
+  if (reason.includes("hazard")) return "HAZARD";
+  return "ROAD CLOSED";
+}
+
 function toLine(closure: RoadClosure): GeoJSON.Feature<GeoJSON.LineString> {
   return {
     type: "Feature",
@@ -83,9 +93,12 @@ export default function RoadClosureLayer({ selectedClosureId, onSelectClosure }:
                   onSelectClosure(closure.id);
                 }}
               >
-                <MarkerBadge color={palette.danger} size={selected ? 34 : 24} selected={selected} pulse>
-                  <ClosureIcon size={selected ? 20 : 14} color="#fff" />
-                </MarkerBadge>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                  <MarkerBadge color={palette.danger} size={selected ? 34 : 24} selected={selected} pulse>
+                    <ClosureIcon size={selected ? 20 : 14} color="#fff" />
+                  </MarkerBadge>
+                  <span className="map-closure-label">{closureLabel(closure)}</span>
+                </div>
               </Marker>
             </div>
           );

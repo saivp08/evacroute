@@ -25,6 +25,7 @@ import type {
   PoliceStation,
   Road,
   RoadClosure,
+  IncidentReportResult,
   Route,
   RouteUpdateEvent,
   Shelter,
@@ -36,6 +37,8 @@ import type {
 import {
   getBackendState,
   getHealth,
+  invalidateBackendState,
+  submitIncidentReport as submitIncidentReportToBackend,
   type BackendCoordinate,
   type BackendResponderRoute,
   type BackendShelter,
@@ -301,5 +304,23 @@ export async function getNetworkStatus(): Promise<NetworkStatus> {
     closed_count,
     open_percent: total_roads > 0 ? Math.round((open_count / total_roads) * 100) : 0,
     closed_percent: total_roads > 0 ? Math.round((closed_count / total_roads) * 100) : 0,
+  };
+}
+
+// Submits a free-text incident report for the backend to parse and apply (POST
+// /incident/parse — requires OPEN_AI_API_KEY on the backend; if unset, the backend's own
+// real error propagates as-is, never a fabricated success). Every count in the returned
+// summary is read directly off that response: applied_events.length (structured incidents
+// the backend actually accepted) and the post-replan ambulances/rescue_teams dispatched —
+// never a computed "N routes changed" delta, since a single response can't honestly derive
+// that without the caller's own before/after diff.
+export async function submitIncidentReport(report: string): Promise<IncidentReportResult> {
+  const result = await submitIncidentReportToBackend(report);
+  invalidateBackendState();
+  return {
+    appliedIncidentCount: result.applied_events.length,
+    ambulancesDispatched: result.ambulances.length,
+    rescueTeamsDispatched: result.rescue_teams.length,
+    notes: result.notes,
   };
 }

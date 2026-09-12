@@ -26,17 +26,24 @@ function centroidOf(boundary: LatLng[]): [number, number] | null {
   return [lng, lat];
 }
 
+// A short "ZONE A"-style code from the zone's own id (e.g. "zone-a" -> "ZONE A") rather
+// than a generic label, so it stays tied to the real backend identifier.
+function zoneCode(zoneId: string): string {
+  const letter = zoneId.split("-").pop() ?? "";
+  return `ZONE ${letter.toUpperCase()}`;
+}
+
 function toFeatureCollection(
   zones: EvacuationZone[],
   palette: MapPalette
-): GeoJSON.FeatureCollection<GeoJSON.Polygon, { id: string; color: string }> {
+): GeoJSON.FeatureCollection<GeoJSON.Polygon, { id: string; color: string; code: string }> {
   return {
     type: "FeatureCollection",
     features: zones
       .filter((zone) => zone.boundary.length > 2)
       .map((zone) => ({
         type: "Feature",
-        properties: { id: zone.id, color: statusColor(palette, zone.status) },
+        properties: { id: zone.id, color: statusColor(palette, zone.status), code: zoneCode(zone.id) },
         geometry: { type: "Polygon", coordinates: [[...zone.boundary.map((p): [number, number] => [p.longitude, p.latitude]), [zone.boundary[0].longitude, zone.boundary[0].latitude]]] },
       })),
   };
@@ -104,6 +111,17 @@ export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone }: Ev
           "line-color": ["get", "color"],
           "line-width": ["case", ["==", ["get", "id"], selectedZone?.id ?? ""], 3, 1.5],
         }}
+      />
+      <Layer
+        id="evac-zones-label"
+        type="symbol"
+        layout={{
+          "text-field": ["get", "code"],
+          "text-font": ["Noto Sans Bold"],
+          "text-size": 13,
+          "symbol-placement": "point",
+        }}
+        paint={{ "text-color": ["get", "color"], "text-halo-color": "#ffffff", "text-halo-width": 1.4 }}
       />
     </Source>
   );

@@ -6,12 +6,14 @@
 // draw call.
 //   map component -> this layer -> lib/services/dataService -> live backend
 import { useEffect, useMemo, useState } from "react";
-import { Source, Layer } from "react-map-gl/maplibre";
+import { Source, Layer, useMap } from "react-map-gl/maplibre";
 import type { GeoJSON } from "geojson";
 import type { Road } from "@/lib/models";
 import { getRoads } from "@/lib/services/dataService";
 import { useTheme } from "@/lib/theme";
 import { getMapPalette } from "@/lib/mapColors";
+
+const CLOSED_OVERLAY_LAYER_ID = "roads-closed-overlay";
 
 function toFeatureCollection(roads: Road[]): GeoJSON.FeatureCollection<GeoJSON.LineString, { status: string }> {
   return {
@@ -28,6 +30,7 @@ export default function RoadLayer() {
   const [roads, setRoads] = useState<Road[]>([]);
   const { theme } = useTheme();
   const palette = getMapPalette(theme);
+  const { current: map } = useMap();
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +43,26 @@ export default function RoadLayer() {
   }, []);
 
   const data = useMemo(() => toFeatureCollection(roads), [roads]);
+  const hasClosures = roads.some((r) => r.status === "closed" || r.status === "blocked");
+
+  // A subtle pulse on blocked roads — the network's most urgent visual signal — using the
+  // same real-paint-property-animation approach as the directional route dashes, not a CSS
+  // class (canvas layers can't be animated with CSS).
+  useEffect(() => {
+    if (!map || !hasClosures) return;
+    const glMap = map.getMap();
+    let raf = 0;
+    const start = Date.now();
+    function tick() {
+      if (glMap.getLayer(CLOSED_OVERLAY_LAYER_ID)) {
+        const t = (Date.now() - start) / 650;
+        glMap.setPaintProperty(CLOSED_OVERLAY_LAYER_ID, "line-opacity", 0.65 + Math.sin(t) * 0.3);
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [map, hasClosures]);
 
   return (
     <Source id="roads" type="geojson" data={data}>

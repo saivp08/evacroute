@@ -30,6 +30,7 @@ import InfrastructureLayerLoader from "@/components/map/InfrastructureLayerLoade
 import VehicleLayerLoader from "@/components/map/VehicleLayerLoader";
 import HazardLayerLoader from "@/components/map/HazardLayerLoader";
 import EvacuationZoneLayerLoader from "@/components/map/EvacuationZoneLayerLoader";
+import EvacuationRouteLayerLoader from "@/components/map/EvacuationRouteLayerLoader";
 import ActiveIncidentsPanel from "./ActiveIncidentsPanel";
 import SystemStatusPanel from "./SystemStatusPanel";
 import EmergencyFleetPanel from "./EmergencyFleetPanel";
@@ -45,6 +46,8 @@ import ContextDrawer from "./ContextDrawer";
 import CriticalAlertBanner from "./CriticalAlertBanner";
 import ToastStack from "./ToastStack";
 import LiveOperationsStream from "./LiveOperationsStream";
+import MapLegend from "./MapLegend";
+import IncidentReportPanel from "./IncidentReportPanel";
 import type { RerouteState } from "@/lib/reroute";
 import { DEFAULT_MAP_LAYER_VISIBILITY, type MapLayerKey } from "@/lib/mapLayers";
 import type { Selection, SelectionState } from "@/lib/selection";
@@ -209,6 +212,7 @@ export default function OverviewScreen() {
 
       <div className="overview-main-row">
         <aside className="overview-col overview-col-left">
+          <IncidentReportPanel />
           <LayerControlPanel layers={layers} onToggle={toggleLayer} />
           <NetworkStatusPanel />
           <ActiveIncidentsPanel
@@ -240,6 +244,7 @@ export default function OverviewScreen() {
                   <EvacuationZoneLayerLoader selectedZoneId={selectedZoneId} onSelectZone={(id) => select("zone", id)} />
                 )}
                 {layers.hazards && <HazardLayerLoader />}
+                <EvacuationRouteLayerLoader />
                 <IncidentLayerLoader selectedIncidentId={selectedIncidentId} onSelectIncident={(id) => select("incident", id)} />
                 <InfrastructureLayerLoader
                   showHospitals={layers.hospitals}
@@ -264,6 +269,7 @@ export default function OverviewScreen() {
                 zones={data.zones}
                 onClose={() => setSelection(null)}
               />
+              <MapLegend />
             </div>
             <LiveOperationsStream events={events} />
           </div>

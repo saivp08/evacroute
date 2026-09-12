@@ -6,7 +6,7 @@
 // this layer just reacts to `selectedVehicleId` by flying the camera and enlarging the
 // matching marker. No routing/movement is invented here — `vehicle.route` is the backend's
 // own dispatch route, drawn and interpolated as-is only when that vehicle is selected.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Marker, Source, Layer, useMap } from "react-map-gl/maplibre";
 import type { GeoJSON } from "geojson";
 import type { LatLng, RouteUpdateEvent, Vehicle, VehicleRoute, VehicleType } from "@/lib/models";
@@ -16,8 +16,12 @@ import { interpolateRoute, truncateRoute } from "@/lib/routeMotion";
 import type { RerouteState } from "@/lib/reroute";
 import { useTheme } from "@/lib/theme";
 import { getMapPalette } from "@/lib/mapColors";
+import { useAnimatedLineDash } from "@/lib/useAnimatedLineDash";
 import MarkerBadge from "./MarkerBadge";
 import { AmbulanceIcon, ClosureIcon, FireEngineIcon, PoliceIcon, RescueIcon } from "./icons";
+
+const RESPONSE_ROUTE_LAYER_ID = "vehicle-selected-route-line";
+const ALTERNATE_ROUTE_LAYER_ID = "vehicle-alternate-route-line";
 
 const ACTIVE_STATUSES = new Set(["en_route", "on_scene"]);
 // One full pass down the route every 45s — a deliberately unhurried, readable pace.
@@ -125,35 +129,31 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
       ? truncateRoute(rerouteEvent.alternate_coordinates, reroute!.stage === "rerouted" ? 1 : reroute!.progress)
       : [];
 
-  // A real route "feels alive" via a slow opacity breathing effect on the active-color
-  // line — a genuine animation of the route MapLibre already draws, not fabricated motion.
-  const glowRef = useRef(0.85);
-  const [, forceGlow] = useState(0);
-  useEffect(() => {
-    let raf: number;
-    const start = Date.now();
-    function tick() {
-      glowRef.current = 0.72 + Math.sin((Date.now() - start) / 500) * 0.18;
-      forceGlow((n) => n + 1);
-      raf = requestAnimationFrame(tick);
-    }
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  // Emergency response moves TOWARD the incident — a distinct amber from the evacuation
+  // layer's teal (EvacuationRouteLayer), with the same real marching-dash direction
+  // animation, so the two simultaneous flows (evacuees out, responders in) read as visually
+  // opposite/independent at a glance.
+  useAnimatedLineDash(
+    map,
+    [
+      showRoutes && selectedRoute && !rerouteActive ? RESPONSE_ROUTE_LAYER_ID : null,
+      showRoutes && alternateCoordinates.length > 1 ? ALTERNATE_ROUTE_LAYER_ID : null,
+    ].filter((id): id is string => id !== null)
+  );
 
   return (
     <>
       {showRoutes && selectedRoute && selectedRoute.coordinates.length > 1 && (
         <Source id="vehicle-selected-route" type="geojson" data={toLine(selectedRoute.coordinates)}>
           <Layer
-            id="vehicle-selected-route-line"
+            id={RESPONSE_ROUTE_LAYER_ID}
             type="line"
             layout={{ "line-cap": "round", "line-join": "round" }}
             paint={{
-              "line-color": rerouteActive ? palette.textMuted : palette.active,
+              "line-color": rerouteActive ? palette.textMuted : palette.warning,
               "line-width": rerouteActive ? 3 : 5,
-              "line-opacity": rerouteActive ? 0.5 : glowRef.current,
-              "line-dasharray": rerouteActive ? [1, 2] : [1, 0],
+              "line-opacity": rerouteActive ? 0.5 : 0.9,
+              "line-dasharray": rerouteActive ? [1, 2] : [0, 4, 3],
             }}
           />
         </Source>
@@ -162,10 +162,10 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
       {showRoutes && alternateCoordinates.length > 1 && (
         <Source id="vehicle-alternate-route" type="geojson" data={toLine(alternateCoordinates)}>
           <Layer
-            id="vehicle-alternate-route-line"
+            id={ALTERNATE_ROUTE_LAYER_ID}
             type="line"
             layout={{ "line-cap": "round", "line-join": "round" }}
-            paint={{ "line-color": palette.active, "line-width": 6, "line-opacity": glowRef.current }}
+            paint={{ "line-color": palette.warning, "line-width": 6, "line-opacity": 0.9, "line-dasharray": [0, 4, 3] }}
           />
         </Source>
       )}

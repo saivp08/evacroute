@@ -257,3 +257,12 @@ export interface OperationalEvent {
   timestamp: string;
   entityId: string | null;
 }
+
+// Real counts read directly off a single POST /incident/parse response — never a computed
+// "what changed" delta. See submitIncidentReport in lib/services/dataService.ts.
+export interface IncidentReportResult {
+  appliedIncidentCount: number;
+  ambulancesDispatched: number;
+  rescueTeamsDispatched: number;
+  notes: string[];
+}
