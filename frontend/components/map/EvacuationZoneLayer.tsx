@@ -75,7 +75,7 @@ export default function EvacuationZoneLayer({ selectedZoneId, onSelectZone }: Ev
     const zone = zones.find((z) => z.id === selectedZoneId);
     const center = zone ? centroidOf(zone.boundary) : null;
     if (!center || !map) return;
-    map.flyTo({ center, zoom: Math.max(map.getZoom(), 14), pitch: 45, duration: 900 });
+    map.flyTo({ center, zoom: Math.max(map.getZoom(), 14), duration: 900 });
   }, [selectedZoneId, zones, map]);
 
   useEffect(() => {

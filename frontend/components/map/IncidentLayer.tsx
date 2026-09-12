@@ -43,7 +43,7 @@ export default function IncidentLayer({ selectedIncidentId, onSelectIncident }: 
     if (!selectedIncidentId || !map) return;
     const incident = incidents.find((i) => i.id === selectedIncidentId);
     if (!incident) return;
-    map.flyTo({ center: [incident.longitude, incident.latitude], zoom: Math.max(map.getZoom(), 16), pitch: 55, duration: 900 });
+    map.flyTo({ center: [incident.longitude, incident.latitude], zoom: Math.max(map.getZoom(), 16), duration: 900 });
   }, [selectedIncidentId, incidents, map]);
 
   return (

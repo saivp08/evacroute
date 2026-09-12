@@ -67,7 +67,7 @@ export default function InfrastructureLayer({
     if (!selectedShelterId || !map) return;
     const shelter = shelters.find((s) => s.id === selectedShelterId);
     if (!shelter) return;
-    map.flyTo({ center: [shelter.longitude, shelter.latitude], zoom: Math.max(map.getZoom(), 16), pitch: 50, duration: 900 });
+    map.flyTo({ center: [shelter.longitude, shelter.latitude], zoom: Math.max(map.getZoom(), 16), duration: 900 });
   }, [selectedShelterId, shelters, map]);
 
   return (

@@ -64,7 +64,7 @@ export default function RoadClosureLayer({ selectedClosureId, onSelectClosure }:
     const closure = closures.find((c) => c.id === selectedClosureId);
     if (!closure || closure.coordinates.length === 0) return;
     const [lng, lat] = midpoint(closure.coordinates);
-    map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 16), pitch: 55, duration: 900 });
+    map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 16), duration: 900 });
   }, [selectedClosureId, closures, map]);
 
   return (

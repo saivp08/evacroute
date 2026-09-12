@@ -91,7 +91,6 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, rerou
     map.flyTo({
       center: [vehicle.longitude, vehicle.latitude],
       zoom: Math.max(map.getZoom(), 16),
-      pitch: 55,
       duration: 900,
     });
   }, [selectedVehicleId, vehicles, map]);
