@@ -1176,6 +1176,37 @@ main {
   border-color: var(--danger);
 }
 
+.recommend-shelter-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 4px 12px;
+}
+
+.recommend-shelter-select {
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: var(--fs-meta);
+}
+
+.recommend-shelter-rank {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--active);
+  border: 1px solid rgba(var(--active-rgb), 0.4);
+  border-radius: 50%;
+}
+
 /* NOTE: content that spatially overlaps Leaflet's tile layer (position:absolute placed on
    top of the map, at any z-index, DOM location, or layer-promotion hint) reliably failed to
    composite in this environment's headless screenshot pipeline, even though layout/DOM/CSSOM
@@ -1286,6 +1317,11 @@ main {
   font-weight: 700;
   font-size: 13px;
   box-shadow: var(--elevation-1);
+}
+
+.marker-badge-selected {
+  border-width: 3px;
+  box-shadow: 0 0 10px rgba(var(--active-rgb), 0.6), var(--elevation-2);
 }
 
 /* Vehicles: filled circular badge (vs. facilities' outlined square) so mobile units read

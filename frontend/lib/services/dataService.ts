@@ -25,6 +25,8 @@ import type {
   Route,
   RouteUpdateEvent,
   Shelter,
+  ShelterAllocationDetail,
+  ShelterRecommendation,
   ShelterStatus,
   SystemStatus,
   Vehicle,
@@ -38,7 +40,7 @@ import {
   type BackendShelter,
 } from "./backendClient";
 import { buildDetour, routeLengthMiles } from "../routeMotion";
-import { mockEvacuationZoneDetails } from "../mock";
+import { mockEvacuationZoneDetails, mockShelterAllocations } from "../mock";
 
 function toLatLngList(coordinates: BackendCoordinate[]): LatLng[] {
   return coordinates.map(([latitude, longitude]) => ({ latitude, longitude }));
@@ -282,4 +284,60 @@ export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEve
 // intentionally does not go through backendClient.
 export async function getEvacuationZoneDetails(): Promise<EvacuationZoneDetail[]> {
   return mockEvacuationZoneDetails;
+}
+
+// Phase 9 — dedicated Shelter Allocation page. Deterministic mock data, same reasoning as
+// getEvacuationZoneDetails above: the live backend's shelters have no assigned-zones,
+// congestion, or hazard-exposure concept.
+export async function getShelterAllocations(): Promise<ShelterAllocationDetail[]> {
+  return mockShelterAllocations;
+}
+
+const CONGESTION_SCORE: Record<ShelterAllocationDetail["congestion_level"], number> = {
+  low: 1,
+  medium: 0.55,
+  high: 0.2,
+};
+
+const HAZARD_SCORE: Record<ShelterAllocationDetail["hazard_exposure"], number> = {
+  low: 1,
+  medium: 0.55,
+  high: 0.2,
+};
+
+// Frontend-only mock "Recommend Shelter" ranking: a fixed weighted blend of each shelter's
+// own mock attributes (available capacity, congestion, hazard exposure) and its
+// straight-line distance from the zone's centroid. This is a heuristic display ranking for
+// the demo, not a real capacity-constrained assignment/optimization solver. A zone with no
+// entry in getEvacuationZoneDetails() has no recommendations, which is a normal state.
+export async function getShelterRecommendations(zoneId: string): Promise<ShelterRecommendation[]> {
+  const zones = await getEvacuationZoneDetails();
+  const zone = zones.find((z) => z.id === zoneId);
+  if (!zone) return [];
+
+  return mockShelterAllocations
+    .filter((shelter) => shelter.status !== "full")
+    .map((shelter) => {
+      const distance_miles = routeLengthMiles([zone.centroid, shelter.location]);
+      const capacityScore = shelter.total_capacity > 0 ? shelter.available_capacity / shelter.total_capacity : 0;
+      const distanceScore = 1 / (1 + distance_miles);
+      const score =
+        capacityScore * 0.35 +
+        distanceScore * 0.25 +
+        CONGESTION_SCORE[shelter.congestion_level] * 0.2 +
+        HAZARD_SCORE[shelter.hazard_exposure] * 0.2;
+      return { shelter, distance_miles, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map((entry, index) => ({
+      shelter_id: entry.shelter.id,
+      shelter_name: entry.shelter.name,
+      rank: index + 1,
+      score: Math.round(entry.score * 100),
+      available_capacity: entry.shelter.available_capacity,
+      distance_miles: entry.distance_miles,
+      congestion_level: entry.shelter.congestion_level,
+      hazard_exposure: entry.shelter.hazard_exposure,
+    }));
 }
