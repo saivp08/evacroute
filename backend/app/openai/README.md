@@ -7,15 +7,15 @@ OpenAI extracts events only. It never calculates routes, shelter assignments, or
 Set these in `backend/.env` (the Uvicorn command below loads it):
 
 ```dotenv
-OPEN_AI_API_KEY=your-key-here
-OPEN_AI_BASE_URL=https://api.openai.com/v1
-OPEN_AI_MODEL=gpt-4.1-mini
-OPEN_AI_TIMEOUT_SECONDS=30
+ANTHROPIC_API_KEY=your-key-here
+ANTHROPIC_BASE_URL=https://api.openai.com/v1
+ANTHROPIC_MODEL=gpt-4.1-mini
+ANTHROPIC_TIMEOUT_SECONDS=30
 ```
 
 Only the key is required; the other values shown are defaults. Never commit the real `.env`. The base URL must be HTTPS and point to a trusted provider; the client sends its authorization header there. Use the default for OpenAI. No key is needed for health, scenario, structured incidents, optimization, or reset.
 
-The client uses OpenAI's supported **POST `/v1/chat/completions`** API with `response_format.type=json_schema`, a Pydantic-generated JSON Schema, and `strict=true`. It uses a 30-second HTTP operation timeout (5-second connection timeout), no retries, no redirects, no tools, and no agent framework. Optional extraction fields are required on the wire and allow null, as required by OpenAI strict schemas. Model and endpoint availability are account/provider dependent; override `OPEN_AI_MODEL` when needed. HTTPX was already installed for tests and is now declared as a runtime dependency.
+The client uses OpenAI's supported **POST `/v1/chat/completions`** API with `response_format.type=json_schema`, a Pydantic-generated JSON Schema, and `strict=true`. It uses a 30-second HTTP operation timeout (5-second connection timeout), no retries, no redirects, no tools, and no agent framework. Optional extraction fields are required on the wire and allow null, as required by OpenAI strict schemas. Model and endpoint availability are account/provider dependent; override `ANTHROPIC_MODEL` when needed. HTTPX was already installed for tests and is now declared as a runtime dependency.
 
 Official references: [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [GPT-4.1 mini](https://developers.openai.com/api/docs/models/gpt-4.1-mini). Live OpenAI parsing has not been verified during this migration.
 
@@ -65,7 +65,7 @@ The system prompt in [prompt.py](prompt.py) treats reports as data, forbids foll
 ```text
 {
   "original_report": "...",
-  "parser": "openai",
+  "parser": "anthropic",
   "parsed_events": [/* validated model events with certainty/evidence */],
   "applied_events": [/* normalized structured requests actually applied */],
   "notes": [...],
@@ -85,9 +85,9 @@ Errors use `{"detail":{"code":"...","message":"...","incidents_applied":false}}`
 
 | Status | Code / condition |
 | --- | --- |
-| 503 | `openai_not_configured`, invalid configuration, connection failure, or upstream rate limit |
-| 504 | `openai_timeout` |
-| 502 | `openai_invalid_response`, `openai_ungrounded_event`, or upstream API rejection/failure |
+| 503 | `anthropic_not_configured`, invalid configuration, connection failure, or upstream rate limit |
+| 504 | `anthropic_timeout` |
+| 502 | `anthropic_invalid_response`, `anthropic_ungrounded_event`, or upstream API rejection/failure |
 | 422 | `unresolved_report_location` |
 | 409 | Existing evacuation infeasibility code; entire batch rejected |
 
@@ -130,4 +130,4 @@ Validation: **69 tests passed**, including all Task 1–4 tests and provider req
 
 ## Migration from Grok
 
-Use `OPEN_AI_API_KEY` (exact spelling) and the `OPEN_AI_` settings above. Old `GROK_` settings are ignored. The parsing module is now `app.openai`; responses identify `parser: "openai"` and provider error codes use the `openai_` prefix. The optional smoke-test flag is now `--live-openai`.
+Use `ANTHROPIC_API_KEY` (exact spelling) and the `OPEN_AI_` settings above. Old `GROK_` settings are ignored. The parsing module is now `app.openai`; responses identify `parser: "anthropic"` and provider error codes use the `anthropic_` prefix. The optional smoke-test flag is now `--live-openai`.

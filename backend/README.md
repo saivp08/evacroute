@@ -17,7 +17,7 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file .env
 ```
 
-Runtime-only installation uses `requirements.txt`. Only natural-language parsing requires `OPEN_AI_API_KEY`; all structured endpoints work without it. For macOS/Linux, substitute `python3`, `.venv/bin/python`, and `cp`.
+Runtime-only installation uses `requirements.txt`. Only natural-language parsing requires `ANTHROPIC_API_KEY`; all structured endpoints work without it. For macOS/Linux, substitute `python3`, `.venv/bin/python`, and `cp`.
 
 Startup prefers `backend/cache/santa_rosa_drive_2500m_v1.graphml`. A missing or corrupt cache is restored offline from the committed `datasets/processed/santa_rosa_drive_2500m_v1.graphml.gz` snapshot. FEMA/Census data also loads from the committed processed snapshot. No external service is required for normal structured demo startup after dependencies are installed.
 

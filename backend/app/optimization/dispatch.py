@@ -1,5 +1,7 @@
 """Severity-first greedy dispatch using the same dynamic paths as evacuation."""
 
+from collections import Counter
+
 import networkx as nx
 import logging
 
@@ -11,10 +13,32 @@ from app.routing.shortest_paths import compute_shortest_paths
 
 logger = logging.getLogger(__name__)
 
+# Deterministic evacuation-demand escalation: each active incident reported against a zone
+# raises that zone's evacuation demand for THIS plan by a fixed 25%, up to +100% at 4 or more
+# concurrent incidents. This only feeds the allocation below (routes/shelter assignments/
+# metrics) — GET /scenario's own zone.population stays the real, unescalated Census-derived
+# figure, since that's demographic fact, not a live operational estimate. The result is
+# reproducible from (real population, real active-incident count) alone: no randomness, and
+# running the same incident state twice yields the same escalated demand and the same plan.
+ESCALATION_STEP = 0.25
+MAX_ESCALATION_STEPS = 4
+
+
+def escalate_zone_demand(scenario: ScenarioResponse, incidents: list[ActiveIncident]) -> ScenarioResponse:
+    counts = Counter(i.zone for i in incidents if i.zone)
+    if not counts:
+        return scenario
+    escalated = scenario.model_copy(deep=True)
+    for zone in escalated.zones:
+        steps = min(counts.get(zone.id, 0), MAX_ESCALATION_STEPS)
+        if steps:
+            zone.population = round(zone.population * (1 + ESCALATION_STEP * steps))
+    return escalated
+
 
 def plan_transportation(graph: nx.MultiDiGraph, scenario: ScenarioResponse,
                         incidents: list[ActiveIncident]) -> IncidentPlan:
-    evacuation = optimize_evacuation(graph, scenario)
+    evacuation = optimize_evacuation(graph, escalate_zone_demand(scenario, incidents))
     medical = sorted((i for i in incidents if i.type in ("MEDICAL_INCIDENT", "RESCUE_INCIDENT")),
                      key=lambda i: ({"high": 0, "medium": 1, "low": 2}[i.severity], i.id))
     available = [r for r in scenario.emergency_resources if r.availability_status == "available"]

@@ -83,7 +83,7 @@ Route IDs use `route-<zone ID>-<shelter ID>`; responder route IDs are the resour
 ```text
 {
   original_report: string,
-  parser: "openai",
+  parser: "anthropic",
   parsed_events: [{type, certainty, evidence, road_name, zone, shelter,
     latitude, longitude, injuries, severity, reason}],
   applied_events: [IncidentRequest],
@@ -142,9 +142,9 @@ Read `error.code` and `error.message`. Existing `detail` remains compatible: an 
 | 404 | `road_target_not_found`, `incident_location_not_found`; unknown endpoint `http_error` |
 | 409 | `insufficient_shelter_capacity`, `unreachable_shelter_capacity`, `optimization_failed`; candidate incident rejected atomically |
 | 422 | `validation_error`, `unresolved_report_location` |
-| 502 | `openai_api_error`, `openai_invalid_response`, `openai_ungrounded_event` |
-| 503 | `openai_not_configured`, `openai_configuration_error`, `openai_unavailable`; provider rate limit |
-| 504 | `openai_timeout` |
+| 502 | `anthropic_api_error`, `anthropic_invalid_response`, `anthropic_ungrounded_event` |
+| 503 | `anthropic_not_configured`, `anthropic_configuration_error`, `anthropic_unavailable`; provider rate limit |
+| 504 | `anthropic_timeout` |
 | 500 | `internal_error`; sanitized unexpected failure |
 
 Incidents persist in memory in one backend process. Repeated planning does not consume shelters or responders. Repeated identical incidents are idempotent; updated injury counts replace demand at the same target. Reset and restart clear incidents. Use **one worker**, and disable auto-reload during the presentation. Concurrent mutations serialize under a lock; a slow OpenAI result applies when parsing finishes. Do not submit overlapping demo mutations from the UI. No durable incident store, authentication, or live resource tracking is provided.
@@ -162,7 +162,7 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file .env
 ```
 
-No environment variables are required for the offline structured demo. Set `OPEN_AI_API_KEY` in `.env` only for live parsing. Optional variables: `OPEN_AI_MODEL`, `OPEN_AI_BASE_URL`, `OPEN_AI_TIMEOUT_SECONDS`, `CENSUS_API_KEY` (manual refresh), `EVACROUTE_DATA_MODE` (default cached), and `EVACROUTE_PROCESSED_DATA_PATH`. Keep cached mode/default snapshot for the canonical sequence. Never send the OpenAI key to the frontend.
+No environment variables are required for the offline structured demo. Set `ANTHROPIC_API_KEY` in `.env` only for live parsing. Optional variables: `ANTHROPIC_MODEL`, `ANTHROPIC_BASE_URL`, `ANTHROPIC_TIMEOUT_SECONDS`, `CENSUS_API_KEY` (manual refresh), `EVACROUTE_DATA_MODE` (default cached), and `EVACROUTE_PROCESSED_DATA_PATH`. Keep cached mode/default snapshot for the canonical sequence. Never send the OpenAI key to the frontend.
 
 The committed 375 KB compressed OSM snapshot restores a missing/corrupt local GraphML cache offline. It contains the existing Santa Rosa road graph, not generated roads. If both local and bundled graph files are invalid, startup fails with a repair message; no fake graph is substituted. FEMA/Census processed-cache failures use labeled demo fallback, which keeps APIs usable but changes the canonical route expectations. Dependencies must still be installed on a clean machine.
 
@@ -181,4 +181,4 @@ Measured on this Windows development machine during a live HTTP smoke run: `/sce
 
 Task 7 preserves successful response fields and adds the shared `error` envelope plus `Server-Timing`. There are no intentional breaking API changes. Task 6 already changed zone centroids, populations, shelter count, and provenance. Live OpenAI was not validated during the provider migration; the canonical combined parsed path was validated with an injected test-only parser, and the structured sequence against a live local server.
 
-Provider migration: `/incident/parse` now returns `parser: "openai"`; provider error codes use the `openai_` prefix. Configure `OPEN_AI_API_KEY` and optional `OPEN_AI_MODEL` (default `gpt-4.1-mini`), `OPEN_AI_BASE_URL` (default `https://api.openai.com/v1`), and `OPEN_AI_TIMEOUT_SECONDS` (default `30`). Old `GROK_` settings are ignored.
+Provider migration: `/incident/parse` now returns `parser: "anthropic"`; provider error codes use the `anthropic_` prefix. Configure `ANTHROPIC_API_KEY` and optional `ANTHROPIC_MODEL` (default `gpt-4.1-mini`), `ANTHROPIC_BASE_URL` (default `https://api.openai.com/v1`), and `ANTHROPIC_TIMEOUT_SECONDS` (default `30`). Old `GROK_` settings are ignored.

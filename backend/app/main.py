@@ -22,15 +22,22 @@ from app.optimization.evacuation import InfeasiblePlan
 from app.data.incidents import IncidentState, TargetNotFound, derive_graph
 from app.models.incidents import IncidentList, IncidentPlan, IncidentRequest, IncidentResponse
 from app.optimization.dispatch import plan_transportation
-from app.optimization.planning import apply_incidents
+from app.optimization.planning import apply_incidents, resolve_incident, IncidentNotFound
 from app.openai.client import OpenAIClient, OpenAIError
 from app.openai.schemas import ParseResponse, ReportRequest
 from app.openai.service import parse_and_apply
+from app.assistant.client import AssistantError, GrokClient
+from app.assistant.schemas import AssistantChatRequest, AssistantChatResponse
+from app.assistant.service import ask_assistant
+from app.vision.client import GeminiClient, VisionError
+from app.vision.schemas import ImageAnalysisRequest, ImageAnalysisResult
 
 logger = logging.getLogger("uvicorn.error")
 
 def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
-               openai_client: OpenAIClient | None = None) -> FastAPI:
+               openai_client: OpenAIClient | None = None,
+               grok_client: GrokClient | None = None,
+               gemini_client: GeminiClient | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         app_logger = logging.getLogger("app")
@@ -44,6 +51,8 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
         application.state.scenario = build_scenario(application.state.graph)
         application.state.incidents = IncidentState()
         application.state.openai = openai_client if openai_client is not None else OpenAIClient()
+        application.state.grok = grok_client if grok_client is not None else GrokClient()
+        application.state.gemini = gemini_client if gemini_client is not None else GeminiClient()
         info = application.state.scenario.scenario
         logger.info("Scenario loaded: mode=%s nodes=%d edges=%d zones=%d shelters=%d",
                     info.data_mode, info.node_count, info.edge_count,
@@ -148,6 +157,30 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
         except InfeasiblePlan as error:
             raise HTTPException(409, detail={**error.detail.model_dump(), "incidents_applied": False}) from error
 
+    @application.post("/assistant/chat", response_model=AssistantChatResponse)
+    def assistant_chat(request: AssistantChatRequest) -> AssistantChatResponse:
+        try:
+            state = application.state.incidents
+            with state.lock:
+                plan = plan_transportation(derive_graph(application.state.graph, state.active),
+                                           application.state.scenario, state.active)
+            return ask_assistant(request.message, request.history, application.state.scenario,
+                                 plan, application.state.grok)
+        except AssistantError as error:
+            raise HTTPException(error.status, detail={"code": error.code, "message": error.message}) from error
+        except InfeasiblePlan as error:
+            raise HTTPException(409, detail=error.detail.model_dump()) from error
+
+    @application.post("/incident/analyze-image", response_model=ImageAnalysisResult)
+    def analyze_incident_image(request: ImageAnalysisRequest) -> ImageAnalysisResult:
+        # Pure analysis — does not touch incident/scenario state. The Report Incident form
+        # uses this only to prefill fields the user still reviews and submits themselves
+        # through the existing POST /incident/parse flow.
+        try:
+            return application.state.gemini.analyze(request.image_base64, request.mime_type, request.context_text)
+        except VisionError as error:
+            raise HTTPException(error.status, detail={"code": error.code, "message": error.message}) from error
+
     @application.post("/incidents/reset", response_model=IncidentPlan)
     def reset_incidents() -> IncidentPlan:
         state = application.state.incidents
@@ -158,6 +191,16 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
                 raise HTTPException(409, detail=error.detail.model_dump()) from error
             state.active = []
             return plan
+
+    @application.post("/incident/{incident_id}/resolve", response_model=IncidentPlan)
+    def resolve_one_incident(incident_id: str) -> IncidentPlan:
+        state = application.state.incidents
+        try:
+            return resolve_incident(application.state.graph, application.state.scenario, state, incident_id)
+        except IncidentNotFound as error:
+            raise HTTPException(404, detail={"code": "incident_not_found", "message": str(error)}) from error
+        except InfeasiblePlan as error:
+            raise HTTPException(409, detail=error.detail.model_dump()) from error
 
     return application
 
