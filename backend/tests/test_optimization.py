@@ -133,7 +133,6 @@ def test_zero_demand_and_colocated_sites(small_case):
     assert route.coordinates[0] == route.coordinates[-1]
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Start backend once to download real Santa Rosa graph")
 def test_real_optimize_api():
     graph = load_graph()
     app = create_app(lambda: graph)

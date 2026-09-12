@@ -1,0 +1,11 @@
+{
+  "report": "College Avenue is completely blocked by debris. Twelve people are injured in Zone C. This is a high-severity medical incident requiring urgent assistance.",
+  "reopen_report": "The debris has been cleared and College Avenue is open again.",
+  "closure": {"type": "ROAD_CLOSURE", "road_name": "College Avenue", "severity": "high"},
+  "medical": {"type": "MEDICAL_INCIDENT", "zone": "zone-c", "injuries": 12, "severity": "high"},
+  "reopen": {"type": "ROAD_REOPEN", "road_name": "College Avenue"},
+  "expected_events": [
+    {"type": "ROAD_CLOSURE", "road_name": "College Avenue", "severity": "high", "certainty": "confirmed", "evidence": "College Avenue is completely blocked by debris."},
+    {"type": "MEDICAL_INCIDENT", "zone": "Zone C", "injuries": 12, "severity": "high", "certainty": "confirmed", "evidence": "Twelve people are injured in Zone C."}
+  ]
+}

@@ -82,7 +82,6 @@ def test_download_then_cache_reload(graph, tmp_path):
     assert build_scenario(first) == build_scenario(second)
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Download real graph once to run cache integration check")
 def test_real_cached_scenario():
     with patch("app.data.road_network.ox.graph.graph_from_point", side_effect=AssertionError("Network called")):
         graph = load_graph()

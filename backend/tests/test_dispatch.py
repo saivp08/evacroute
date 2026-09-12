@@ -131,7 +131,6 @@ def test_coordinate_medical_upsert_and_road_updates_preserve_medical(fleet_case)
     assert any(i.id == first.id for i in state.active)
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Download Santa Rosa cache once")
 def test_real_combined_dispatch_closure_reset():
     graph = load_graph()
     app = create_app(lambda: graph)

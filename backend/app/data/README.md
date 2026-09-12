@@ -35,7 +35,7 @@ No new dependencies were added. Copy `.env.example` to `.env` only if needed. `E
 - `datasets/processed/santa_rosa_public.json`: small versioned, committed normalized snapshot (about 106 KB), including retrieval timestamps and source metadata.
 - `backend/cache/santa_rosa_drive_2500m_v1.graphml`: ignored OSM graph cache, 1,662 nodes and 4,358 directed edges in the current snapshot.
 - Startup reads the processed snapshot without FEMA/Census network calls. A missing, malformed, or infeasible snapshot logs a warning and uses the labeled legacy demo scenario. Site nodes are re-snapped and allocation feasibility is checked against the loaded graph.
-- Refresh failures retain previous processed source records where possible, otherwise labeled demo data. An infeasible refresh does not replace the existing processed cache. Public data can be stale; timestamps describe retrieval, not guaranteed present availability. A first OSM graph download still requires network access.
+- Refresh failures retain previous processed source records where possible, otherwise labeled demo data. An infeasible refresh does not replace the existing processed cache. Public data can be stale; timestamps describe retrieval, not guaranteed present availability. Task 7 supplies a committed compressed OSM snapshot that restores a missing/corrupt graph cache offline; explicit fresh OSM downloads still require network access.
 
 ## Kincade inspection
 

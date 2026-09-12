@@ -102,7 +102,6 @@ def test_api_hazard_replan_and_infeasible_rollback(small_case):
         assert client.post("/optimize").json() == baseline
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Download Santa Rosa cache once")
 def test_real_demo_closure_reopen_reset():
     graph = load_graph()
     cache_before = GRAPH_PATH.read_bytes()

@@ -2,17 +2,22 @@
 
 from contextlib import asynccontextmanager
 from collections.abc import Callable
+import logging
+from time import perf_counter
 
 import networkx as nx
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.data.road_network import load_graph
 from app.data.scenario import build_scenario
 from app.models.scenario import ScenarioResponse
-from app.models.optimization import OptimizationErrorResponse
+from app.models.errors import ErrorResponse
 from app.optimization.evacuation import InfeasiblePlan
 from app.data.incidents import IncidentState, TargetNotFound, derive_graph
 from app.models.incidents import IncidentList, IncidentPlan, IncidentRequest, IncidentResponse
@@ -22,19 +27,31 @@ from app.grok.client import GrokClient, GrokError
 from app.grok.schemas import ParseResponse, ReportRequest
 from app.grok.service import parse_and_apply
 
+logger = logging.getLogger("uvicorn.error")
+
 def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
                grok_client: GrokClient | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
+        app_logger = logging.getLogger("app")
+        app_logger.setLevel(logging.INFO)
+        if not app_logger.handlers:
+            app_logger.handlers = (logger.handlers or logging.getLogger("uvicorn").handlers)[:]
+        logger.info("Starting EvacRoute")
         # One download/cache load per process, never per request. Startup fails
         # visibly if OSM is unavailable and no local cache exists.
         application.state.graph = graph_loader()
         application.state.scenario = build_scenario(application.state.graph)
         application.state.incidents = IncidentState()
         application.state.grok = grok_client if grok_client is not None else GrokClient()
+        info = application.state.scenario.scenario
+        logger.info("Scenario loaded: mode=%s nodes=%d edges=%d zones=%d shelters=%d",
+                    info.data_mode, info.node_count, info.edge_count,
+                    len(application.state.scenario.zones), len(application.state.scenario.shelters))
         yield
 
-    application = FastAPI(title="EvacRoute", lifespan=lifespan)
+    application = FastAPI(title="EvacRoute", lifespan=lifespan,
+                          responses={status: {"model": ErrorResponse} for status in (404, 409, 422, 500, 502, 503, 504)})
     application.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
@@ -42,6 +59,40 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
         allow_headers=["*"],
     )
     application.add_middleware(GZipMiddleware, minimum_size=1000)
+
+    @application.exception_handler(StarletteHTTPException)
+    async def http_error(request, error):
+        detail = error.detail
+        normalized = detail if isinstance(detail, dict) else {"code": "http_error", "message": str(detail)}
+        return JSONResponse(status_code=error.status_code,
+                            content={"error": normalized, "detail": detail}, headers=error.headers)
+
+    @application.exception_handler(RequestValidationError)
+    async def validation_error(request, error):
+        # Do not echo report text, arbitrary input, or exception objects.
+        issues = [{"loc": list(item["loc"]), "msg": item["msg"], "type": item["type"]}
+                  for item in error.errors()]
+        return JSONResponse(status_code=422, content={
+            "error": {"code": "validation_error", "message": "Invalid request fields.", "fields": issues},
+            "detail": issues})
+
+    @application.middleware("http")
+    async def request_log(request, call_next):
+        started = perf_counter()
+        try:
+            response = await call_next(request)
+        except Exception as error:
+            logger.error("Request failed: %s %s (%s)", request.method, request.url.path, type(error).__name__)
+            detail = {"code": "internal_error", "message": "Unable to complete the request."}
+            response = JSONResponse(status_code=500, content={"error": detail, "detail": detail})
+            origin = request.headers.get("origin")
+            if origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
+                response.headers["Access-Control-Allow-Origin"] = origin
+                response.headers["Vary"] = "Origin"
+        elapsed = (perf_counter() - started) * 1000
+        response.headers["Server-Timing"] = f"app;dur={elapsed:.1f}"
+        logger.info("%s %s status=%d elapsed_ms=%.1f", request.method, request.url.path, response.status_code, elapsed)
+        return response
 
     @application.get("/health")
     def health() -> dict[str, str]:
@@ -51,8 +102,7 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph,
     def scenario() -> ScenarioResponse:
         return application.state.scenario
 
-    @application.post("/optimize", response_model=IncidentPlan,
-                      responses={409: {"model": OptimizationErrorResponse}})
+    @application.post("/optimize", response_model=IncidentPlan)
     def optimize() -> IncidentPlan:
         try:
             state = application.state.incidents

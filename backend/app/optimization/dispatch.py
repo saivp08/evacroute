@@ -1,12 +1,15 @@
 """Severity-first greedy dispatch using the same dynamic paths as evacuation."""
 
 import networkx as nx
+import logging
 
 from app.models.emergency import DispatchSummary, EmergencyMetrics, ResponderRoute
 from app.models.incidents import ActiveIncident, IncidentPlan
 from app.models.scenario import ScenarioResponse
 from app.optimization.evacuation import optimize_evacuation
 from app.routing.shortest_paths import compute_shortest_paths
+
+logger = logging.getLogger(__name__)
 
 
 def plan_transportation(graph: nx.MultiDiGraph, scenario: ScenarioResponse,
@@ -70,6 +73,8 @@ def plan_transportation(graph: nx.MultiDiGraph, scenario: ScenarioResponse,
         uncovered_injuries=sum(s.uncovered_injuries for s in summaries),
         unfilled_rescue_requests=sum(s.unfilled_rescue_requests for s in summaries),
     )
+    logger.info("Plan completed: evacuees=%d ambulances=%d rescue_teams=%d uncovered_injuries=%d",
+                metrics.assigned_evacuees, len(ambulances), len(rescue_teams), metrics.uncovered_injuries)
     return IncidentPlan(**evacuation.model_dump(exclude={"metrics"}), metrics=metrics,
                         incidents=list(incidents), ambulances=ambulances,
                         rescue_teams=rescue_teams, dispatch_summary=summaries)

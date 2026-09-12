@@ -1,6 +1,7 @@
 """One atomic application path for structured and parsed incident batches."""
 
 import networkx as nx
+import logging
 
 from app.data.incidents import IncidentState, derive_graph
 from app.models.incidents import IncidentRequest
@@ -19,4 +20,5 @@ def apply_incidents(graph: nx.MultiDiGraph, scenario: ScenarioResponse,
             normalized.append(incident)
         plan = plan_transportation(derive_graph(graph, candidate.active), scenario, candidate.active)
         state.active = candidate.active
+        logging.getLogger(__name__).info("Applied %d incident updates; %d active incidents", len(normalized), len(state.active))
         return normalized, plan

@@ -1,6 +1,6 @@
 # EvacRoute backend — Tasks 1–6
 
-Task 6 defaults to cached Census zones and FEMA shelter records with explicit demo supplementation. See [public data sources, setup, provenance, and validation](app/data/README.md). Numerical examples below describe the historical demo profile unless stated otherwise; select it with `EVACROUTE_DATA_MODE=demo`.
+The final frontend handoff, canonical demo, errors, and smoke commands are in [API.md](API.md). Task 6 defaults to cached Census zones and FEMA shelter records with explicit demo supplementation. See [public data sources, setup, provenance, and validation](app/data/README.md). Numerical examples below describe the historical demo profile unless stated otherwise; select it with `EVACROUTE_DATA_MODE=demo`.
 
 Real OpenStreetMap driving roads for a roughly 5 × 5 km bounding box around downtown Santa Rosa, California (center `38.4404, -122.7141`). OSMnx keeps the largest weakly connected component and simplifies road geometry. This covers a bounded demo area, not all of Santa Rosa.
 
@@ -14,14 +14,14 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 # Only if .env does not already exist:
 Copy-Item .env.example .env
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 --env-file .env
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file .env
 ```
 
 Runtime-only installation uses `requirements.txt`. Only natural-language parsing requires `GROK_API_KEY`; all structured endpoints work without it. For macOS/Linux, substitute `python3`, `.venv/bin/python`, and `cp`.
 
-The first startup downloads OSM data via Overpass and may take several minutes depending on the public service. Subsequent starts load `backend/cache/santa_rosa_drive_2500m_v1.graphml`, with no network request. The cache path is independent of the working directory and is already gitignored. OSMnx response caching lives under `backend/cache/overpass/`.
+Startup prefers `backend/cache/santa_rosa_drive_2500m_v1.graphml`. A missing or corrupt cache is restored offline from the committed `datasets/processed/santa_rosa_drive_2500m_v1.graphml.gz` snapshot. FEMA/Census data also loads from the committed processed snapshot. No external service is required for normal structured demo startup after dependencies are installed.
 
-Startup fails with an error if the graph cannot be loaded or downloaded; it never substitutes fake roads. Retry startup if the initial public-service request fails. To deliberately refresh OSM data, stop the backend and remove the GraphML file and the `overpass/` response-cache directory, then restart. A corrupt GraphML cache likewise needs removal. Run one backend process for this demo; shared-cache multi-worker coordination is out of scope.
+The graph never falls back to invented roads. If the bundled graph is corrupt, restore it from Git. The download path remains available for explicit alternate cache paths; updating the canonical snapshot requires revalidating the demo. Run one process and omit `--reload` during presentations because reload/restart clears in-memory incidents. See [API.md](API.md) for the deterministic smoke sequence and cache recovery details.
 
 ## API contract
 

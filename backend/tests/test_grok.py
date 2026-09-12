@@ -182,7 +182,6 @@ def test_batch_late_resolution_and_infeasibility_are_atomic(small_case):
         assert client.post("/optimize").json() == baseline
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Download Santa Rosa cache once")
 def test_real_graph_mocked_grok_reports_replan_and_reset():
     graph = load_graph()
     parser = fake_parser(REPORTS[0]["expected"])
@@ -213,7 +212,6 @@ def test_real_graph_mocked_grok_reports_replan_and_reset():
         assert client.post("/incidents/reset").json() == baseline
 
 
-@pytest.mark.skipif(not GRAPH_PATH.exists(), reason="Download Santa Rosa cache once")
 def test_rescue_and_shelter_reference():
     graph = load_graph()
     report = "People are trapped at Shelter B."

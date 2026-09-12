@@ -21,8 +21,6 @@ pytestmark = pytest.mark.public_data
 
 @pytest.fixture
 def graph():
-    if not GRAPH_PATH.exists():
-        pytest.skip("Download Santa Rosa graph once")
     return load_graph()
 
 

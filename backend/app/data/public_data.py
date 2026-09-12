@@ -39,8 +39,10 @@ def use_processed_data(scenario, graph, path=None):
         payload = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(payload, dict) or payload.get("schema_version") != 1:
             raise ValueError("Unsupported processed data version")
+        if not isinstance(payload.get("metadata", {}), dict):
+            raise ValueError("Invalid processed metadata")
         zones = [Zone.model_validate(row) for row in payload["zones"]]
-        if not 3 <= len(zones) <= 8 or {z.id for z in zones} != {"zone-a", "zone-b", "zone-c"}:
+        if len(zones) != 3 or {z.id for z in zones} != {"zone-a", "zone-b", "zone-c"}:
             raise ValueError("Invalid demo zone IDs/count")
         shelters = [Shelter.model_validate(row) for row in payload["shelters"]]
         if len({s.id for s in shelters}) != len(shelters):
