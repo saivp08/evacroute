@@ -11,10 +11,13 @@ import type {
   OperationsMetrics,
   PoliceStation,
   Road,
+  RoadClosure,
   Route,
+  RouteUpdateEvent,
   Shelter,
   SystemStatus,
   Vehicle,
+  VehicleRoute,
 } from "../models";
 
 // Relative to "now" (not a fixed past date) so the live "time ago" display in the UI
@@ -31,11 +34,13 @@ export const mockVehicles: Vehicle[] = [
     status: "en_route",
     latitude: 40.44,
     longitude: -79.95,
-    destination: "Placeholder General Hospital",
+    destination: "UPMC Presbyterian",
     priority: "critical",
     route: [
       { latitude: 40.44, longitude: -79.95 },
+      { latitude: 40.4408, longitude: -79.9505 },
       { latitude: 40.4415, longitude: -79.952 },
+      { latitude: 40.4412, longitude: -79.9535 },
       { latitude: 40.441, longitude: -79.955 },
     ],
     eta_minutes: 6,
@@ -71,10 +76,11 @@ export const mockVehicles: Vehicle[] = [
     status: "returning",
     latitude: 40.429,
     longitude: -79.924,
-    destination: "Placeholder Fire Station 12",
+    destination: "PBF Engine House 12",
     priority: "low",
     route: [
       { latitude: 40.429, longitude: -79.924 },
+      { latitude: 40.4285, longitude: -79.9245 },
       { latitude: 40.428, longitude: -79.925 },
     ],
     eta_minutes: 3,
@@ -98,14 +104,73 @@ export const mockVehicles: Vehicle[] = [
     status: "en_route",
     latitude: 40.465,
     longitude: -79.97,
-    destination: "Road Hazard — Placeholder Corridor",
+    destination: "Debris Site — River Parkway",
     priority: "medium",
     route: [
       { latitude: 40.465, longitude: -79.97 },
+      { latitude: 40.458, longitude: -79.971 },
       { latitude: 40.45, longitude: -79.97 },
+      { latitude: 40.443, longitude: -79.969 },
       { latitude: 40.437, longitude: -79.968 },
     ],
     eta_minutes: 9,
+  },
+];
+
+// One dispatch route per vehicle that currently has an active assignment — vehicles that
+// are available/out-of-service/already-on-scene intentionally have no entry here, so
+// getVehicleRoute() returning null for them is a real state, not a missing-data bug.
+// Coordinates deliberately trace a multi-point curve rather than a straight origin-to-
+// destination line, and mirror each vehicle's own `route` field above.
+export const mockVehicleRoutes: VehicleRoute[] = [
+  {
+    vehicle_id: "AMB-12",
+    origin: { latitude: 40.44, longitude: -79.95 },
+    destination_name: "UPMC Presbyterian",
+    destination: { latitude: 40.441, longitude: -79.955 },
+    coordinates: [
+      { latitude: 40.44, longitude: -79.95 },
+      { latitude: 40.4408, longitude: -79.9505 },
+      { latitude: 40.4415, longitude: -79.952 },
+      { latitude: 40.4412, longitude: -79.9535 },
+      { latitude: 40.441, longitude: -79.955 },
+    ],
+    distance_miles: 3.8,
+    eta_minutes: 6,
+    status: "clear",
+    priority: "critical",
+  },
+  {
+    vehicle_id: "ENG-12",
+    origin: { latitude: 40.429, longitude: -79.924 },
+    destination_name: "PBF Engine House 12",
+    destination: { latitude: 40.428, longitude: -79.925 },
+    coordinates: [
+      { latitude: 40.429, longitude: -79.924 },
+      { latitude: 40.4285, longitude: -79.9245 },
+      { latitude: 40.428, longitude: -79.925 },
+    ],
+    distance_miles: 0.4,
+    eta_minutes: 3,
+    status: "clear",
+    priority: "low",
+  },
+  {
+    vehicle_id: "UNIT-15",
+    origin: { latitude: 40.465, longitude: -79.97 },
+    destination_name: "Debris Site — River Parkway",
+    destination: { latitude: 40.437, longitude: -79.968 },
+    coordinates: [
+      { latitude: 40.465, longitude: -79.97 },
+      { latitude: 40.458, longitude: -79.971 },
+      { latitude: 40.45, longitude: -79.97 },
+      { latitude: 40.443, longitude: -79.969 },
+      { latitude: 40.437, longitude: -79.968 },
+    ],
+    distance_miles: 2.1,
+    eta_minutes: 9,
+    status: "congested",
+    priority: "medium",
   },
 ];
 
@@ -113,7 +178,7 @@ export const mockHospitals: Hospital[] = [
   {
     id: "HOSP-1",
     type: "hospital",
-    name: "Placeholder General Hospital",
+    name: "UPMC Presbyterian",
     latitude: 40.441,
     longitude: -79.955,
     status: "operational",
@@ -183,7 +248,7 @@ export const mockFireStations: FireStation[] = [
   {
     id: "FS-2",
     type: "fire_station",
-    name: "Placeholder Fire Station 12",
+    name: "PBF Engine House 12",
     latitude: 40.428,
     longitude: -79.925,
     status: "operational",
@@ -236,7 +301,7 @@ export const mockRoads: Road[] = [
   },
   {
     id: "ROAD-3",
-    name: "Placeholder Bridge Street",
+    name: "Bridge Road",
     status: "blocked",
     coordinates: [
       { latitude: 40.452, longitude: -79.965 },
@@ -253,6 +318,75 @@ export const mockRoads: Road[] = [
       { latitude: 40.423, longitude: -79.968 },
     ],
     closure_reason: "Closed for evacuation staging",
+  },
+];
+
+// Closure EVENTS shown in the Road Closures panel/map layer — richer than a Road's own
+// `status` (severity + timestamp + independent selection). CLOSURE-1 corresponds to the
+// "Bridge Road" Road entry above (road_id links them so the two stay consistent); the other
+// two are closures without a full Road network entry, which is a normal, expected state.
+export const mockRoadClosures: RoadClosure[] = [
+  {
+    id: "CLOSURE-1",
+    road_id: "ROAD-3",
+    road_name: "Bridge Road",
+    reason: "Debris",
+    severity: "high",
+    reported_at: minutesAgo(9),
+    coordinates: [
+      { latitude: 40.452, longitude: -79.965 },
+      { latitude: 40.44, longitude: -79.955 },
+    ],
+    status: "closed",
+  },
+  {
+    id: "CLOSURE-2",
+    road_id: null,
+    road_name: "Fifth Avenue",
+    reason: "Flooding",
+    severity: "critical",
+    reported_at: minutesAgo(16),
+    coordinates: [
+      { latitude: 40.4425, longitude: -79.958 },
+      { latitude: 40.446, longitude: -79.951 },
+    ],
+    status: "closed",
+  },
+  {
+    id: "CLOSURE-3",
+    road_id: null,
+    road_name: "Craig Street",
+    reason: "Vehicle accident",
+    severity: "medium",
+    reported_at: minutesAgo(22),
+    coordinates: [
+      { latitude: 40.45, longitude: -79.949 },
+      { latitude: 40.453, longitude: -79.947 },
+    ],
+    status: "closed",
+  },
+];
+
+// Predetermined detour scenarios for the "SIMULATE CLOSURE" demo. Currently only AMB-12
+// has one defined — its alternate path loops south and west around the Bridge Road closure
+// before approaching UPMC Presbyterian from the other side, rather than a straight
+// replacement line. A vehicle with no entry here has no reroute scenario, which is expected.
+export const mockRouteUpdateEvents: RouteUpdateEvent[] = [
+  {
+    vehicle_id: "AMB-12",
+    closure_id: "CLOSURE-1",
+    message: "Route updated — Bridge Road closed due to debris.",
+    alternate_coordinates: [
+      { latitude: 40.44, longitude: -79.95 },
+      { latitude: 40.4375, longitude: -79.952 },
+      { latitude: 40.435, longitude: -79.9565 },
+      { latitude: 40.437, longitude: -79.9605 },
+      { latitude: 40.4405, longitude: -79.9615 },
+      { latitude: 40.4415, longitude: -79.958 },
+      { latitude: 40.441, longitude: -79.955 },
+    ],
+    alternate_distance_miles: 4.6,
+    alternate_eta_minutes: 9,
   },
 ];
 

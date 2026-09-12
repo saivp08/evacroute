@@ -31,3 +31,28 @@ export function interpolateRoute(route: LatLng[], t: number): RoutePoint {
 
   return { latitude, longitude, headingDeg };
 }
+
+// Returns the portion of `coordinates` from the start up to `fraction` of the way along it
+// (0 = just the first point, 1 = the whole path) — used to animate a route "drawing itself
+// onto the map" during a simulated reroute. Purely a display truncation, not a real path
+// computation.
+export function truncateRoute(coordinates: LatLng[], fraction: number): LatLng[] {
+  if (coordinates.length === 0) return [];
+  const clamped = Math.min(Math.max(fraction, 0), 1);
+  if (clamped >= 1) return coordinates;
+  if (coordinates.length === 1) return coordinates;
+
+  const segments = coordinates.length - 1;
+  const scaled = clamped * segments;
+  const index = Math.min(Math.floor(scaled), segments - 1);
+  const localT = scaled - index;
+  const a = coordinates[index];
+  const b = coordinates[index + 1];
+
+  const partialPoint: LatLng = {
+    latitude: a.latitude + (b.latitude - a.latitude) * localT,
+    longitude: a.longitude + (b.longitude - a.longitude) * localT,
+  };
+
+  return [...coordinates.slice(0, index + 1), partialPoint];
+}

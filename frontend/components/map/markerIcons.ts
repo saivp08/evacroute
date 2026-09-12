@@ -5,15 +5,15 @@ import L from "leaflet";
 import type { FacilityStatus, ShelterStatus, VehicleStatus, VehicleType } from "@/lib/models";
 
 const STATUS_COLOR: Record<FacilityStatus, string> = {
-  operational: "var(--status-safe)",
-  limited: "var(--status-caution)",
-  offline: "var(--status-critical)",
+  operational: "var(--success)",
+  limited: "var(--caution)",
+  offline: "var(--danger)",
 };
 
 const SHELTER_STATUS_COLOR: Record<ShelterStatus, string> = {
-  open: "var(--status-safe)",
-  full: "var(--status-warning)",
-  closed: "var(--status-inactive)",
+  open: "var(--success)",
+  full: "var(--warning)",
+  closed: "var(--text-muted)",
 };
 
 // Fixed infrastructure uses a square outline badge (type = letter, status = ring color).
@@ -34,11 +34,11 @@ const VEHICLE_LETTER: Record<VehicleType, string> = {
 };
 
 const VEHICLE_STATUS_COLOR: Record<VehicleStatus, string> = {
-  available: "var(--status-safe)",
-  en_route: "var(--status-response)",
-  on_scene: "var(--status-response)",
-  returning: "var(--status-caution)",
-  out_of_service: "var(--status-inactive)",
+  available: "var(--success)",
+  en_route: "var(--emergency)",
+  on_scene: "var(--emergency)",
+  returning: "var(--caution)",
+  out_of_service: "var(--text-muted)",
 };
 
 // Mobile vehicles use a filled circular badge instead of a square, so they read as a
@@ -93,4 +93,39 @@ export function vehicleIcon(
 ) {
   const active = status === "en_route" || status === "on_scene";
   return vehicleBadgeIcon(VEHICLE_LETTER[type], VEHICLE_STATUS_COLOR[status], selected, active, active ? headingDeg : null);
+}
+
+// Marks the two ends of a selected vehicle's route: a small hollow ring at the origin, a
+// solid pin at the destination — distinct from each other and from every other marker type
+// on the map, both in the route's own --active color.
+export function routeEndpointIcon(kind: "origin" | "destination") {
+  if (kind === "origin") {
+    return L.divIcon({
+      className: "marker-badge-icon",
+      html: `<div class="route-origin-marker"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+    });
+  }
+  return L.divIcon({
+    className: "marker-badge-icon",
+    html: `<div class="route-destination-marker"></div>`,
+    iconSize: [22, 30],
+    iconAnchor: [11, 28],
+    popupAnchor: [0, -26],
+  });
+}
+
+// Road closure event: a diamond (distinct from infrastructure's square and vehicles'
+// circle) in the fixed --danger color, since a closure is always a danger-tier event.
+// Enlarged and brightened when selected from the Road Closures panel.
+export function roadClosureIcon(selected: boolean) {
+  const size = selected ? 26 : 20;
+  return L.divIcon({
+    className: "marker-badge-icon",
+    html: `<div class="road-closure-marker${selected ? " road-closure-marker-selected" : ""}"><span>!</span></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
 }

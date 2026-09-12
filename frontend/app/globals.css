@@ -1,22 +1,44 @@
 :root {
-  --bg: #0b1220;
-  --panel-bg: #111a2c;
-  --panel-bg-glass: rgba(17, 26, 44, 0.78);
-  --panel-bg-glass-strong: rgba(13, 22, 38, 0.9);
-  --panel-border: #1e2c47;
-  --panel-border-soft: rgba(148, 163, 184, 0.14);
-  --text: #e2e8f0;
-  --text-dim: #94a3b8;
-  --accent: #38bdf8;
+  /* ---- Dark navy foundation ---- */
+  --bg-primary: #07111f;
+  --surface-primary: #0d1b2a;
+  --surface-elevated: #13263a;
+  --surface-elevated-2: #183149;
+  --border: #29445c;
+  --border-soft: rgba(175, 192, 207, 0.14);
+
+  /* Glass variants of the elevated surfaces, used for panels that float over the map. */
+  --surface-glass: rgba(19, 38, 58, 0.78);
+  --surface-glass-strong: rgba(13, 27, 42, 0.92);
+
+  /* ---- Typography colors ---- */
+  --text-primary: #f4f7fa;
+  --text-secondary: #afc0cf;
+  --text-muted: #71869a;
+  /* For text placed on a bright chip (accent/status fills), not on the dark surfaces above. */
+  --text-on-bright: #041016;
+
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Semantic status colors — used consistently across the app, not decoratively. */
-  --status-critical: #ef4444; /* red: critical / danger */
-  --status-warning: #f97316; /* orange: warning */
-  --status-caution: #eab308; /* yellow: congestion / caution */
-  --status-safe: #22c55e; /* green: recommended / safe */
-  --status-response: #3b82f6; /* blue: emergency response */
-  --status-inactive: #64748b; /* gray: normal / inactive */
+  /* ---- Operational colors ----
+     Each has a fixed meaning used consistently everywhere (never decoratively):
+     danger = active danger/blocked/critical, warning = degraded, caution = congestion,
+     success = safe/recommended, emergency = EMS/fire/police, active = selected/interactive. */
+  --danger: #ff4d4d;
+  --warning: #ff9f43;
+  --caution: #f4d35e;
+  --success: #43d17a;
+  --emergency: #38a8ff;
+  --active: #54e0ff;
+
+  /* RGB triples for glow/pulse effects (rgba(var(--x-rgb), alpha)) — keeps every glow color
+     tied to the same token instead of a hand-picked rgba() per component. */
+  --danger-rgb: 255, 77, 77;
+  --warning-rgb: 255, 159, 67;
+  --caution-rgb: 244, 211, 94;
+  --success-rgb: 67, 209, 122;
+  --emergency-rgb: 56, 168, 255;
+  --active-rgb: 84, 224, 255;
 
   /* Type scale: a deliberate hierarchy, not one giant font-size bump.
      display > critical-value > metric-value > panel-heading > body > meta > micro */
@@ -40,6 +62,19 @@
   box-sizing: border-box;
 }
 
+/* Form controls don't inherit `color`/`font` from ancestors by default in browser UA
+   stylesheets — without this, any button/input/textarea/select silently falls back to the
+   browser's own default text color (often near-black) regardless of the dark theme around
+   it. This was a real bug (e.g. the Fleet panel's row buttons) that no per-component color
+   would fully catch, since it can happen anywhere a form control is added later. */
+button,
+input,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
 html,
 body {
   height: 100%;
@@ -48,20 +83,23 @@ body {
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-size: var(--fs-body);
 }
 
+/* Generic pulse ring: reads --pulse-rgb from whichever element uses it, so the same
+   keyframe produces a correctly-colored pulse for any status (green/red/blue/etc.)
+   instead of every pulsing element hardcoding its own rgba() glow color. */
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 0 0 rgba(var(--pulse-rgb, var(--active-rgb)), 0.55);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba(56, 189, 248, 0);
+    box-shadow: 0 0 0 9px rgba(var(--pulse-rgb, var(--active-rgb)), 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    box-shadow: 0 0 0 0 rgba(var(--pulse-rgb, var(--active-rgb)), 0);
   }
 }
 
@@ -119,8 +157,8 @@ main {
   align-items: center;
   gap: 16px;
   padding: 12px 20px;
-  background: var(--panel-bg);
-  border-bottom: 1px solid var(--panel-border);
+  background: var(--surface-primary);
+  border-bottom: 1px solid var(--border);
 }
 
 .top-bar-title h1 {
@@ -131,7 +169,7 @@ main {
 
 .top-bar-subtitle {
   font-size: 0.75rem;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .metrics-row {
@@ -155,7 +193,7 @@ main {
 
 .metric-label {
   font-size: 0.65rem;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -193,8 +231,8 @@ main {
 
 .panel-left,
 .panel-right {
-  background: var(--panel-bg);
-  border-right: 1px solid var(--panel-border);
+  background: var(--surface-primary);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -202,7 +240,7 @@ main {
 
 .panel-right {
   border-right: none;
-  border-left: 1px solid var(--panel-border);
+  border-left: 1px solid var(--border);
 }
 
 .panel-center {
@@ -223,20 +261,20 @@ main {
   justify-content: center;
   height: 100%;
   min-height: 320px;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .panel-section h2 {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   margin: 0 0 8px;
 }
 
 .empty-note {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .card-list {
@@ -250,8 +288,8 @@ main {
 
 .card {
   background: #0d1626;
-  border: 1px solid var(--panel-border);
-  border-left: 3px solid var(--accent);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--active);
   border-radius: 4px;
   padding: 8px 10px;
   font-size: 0.8rem;
@@ -270,12 +308,12 @@ main {
 }
 
 .card-meta {
-  color: var(--text-dim);
+  color: var(--text-secondary);
   margin-top: 2px;
 }
 
 .card-time {
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: 0.7rem;
 }
 
@@ -284,7 +322,7 @@ main {
   padding: 1px 6px;
   border-radius: 10px;
   background: #1e293b;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -303,7 +341,7 @@ main {
 
 .progress-fill {
   height: 100%;
-  background: var(--accent);
+  background: var(--active);
 }
 
 .progress-fill-critical {
@@ -336,14 +374,14 @@ main {
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .incident-form textarea {
   background: #0d1626;
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--text);
+  color: var(--text-primary);
   padding: 8px;
   font: inherit;
   resize: vertical;
@@ -351,8 +389,8 @@ main {
 
 .incident-form button {
   align-self: flex-start;
-  background: var(--accent);
-  color: #041016;
+  background: var(--active);
+  color: var(--text-on-bright);
   border: none;
   border-radius: 4px;
   padding: 6px 14px;
@@ -375,7 +413,7 @@ main {
   gap: 12px;
   flex-wrap: wrap;
   font-size: 0.7rem;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -398,10 +436,10 @@ main {
 .app-sidebar {
   width: 248px;
   flex-shrink: 0;
-  background: var(--panel-bg-glass);
+  background: var(--surface-glass);
   backdrop-filter: blur(var(--blur-panel));
   -webkit-backdrop-filter: blur(var(--blur-panel));
-  border-right: 1px solid var(--panel-border-soft);
+  border-right: 1px solid var(--border-soft);
   box-shadow: var(--elevation-2);
   display: flex;
   flex-direction: column;
@@ -415,7 +453,7 @@ main {
   align-items: center;
   gap: 12px;
   padding: 22px 18px;
-  border-bottom: 1px solid var(--panel-border-soft);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .sidebar-brand-mark {
@@ -425,25 +463,26 @@ main {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  background: var(--accent);
-  color: #041016;
+  background: var(--active);
+  color: var(--text-on-bright);
   font-weight: 700;
   font-size: 0.95rem;
   font-family: var(--mono);
   letter-spacing: 0.02em;
   border-radius: 4px;
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3), 0 4px 14px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 0 1px rgba(var(--active-rgb), 0.3), 0 4px 14px rgba(var(--active-rgb), 0.25);
 }
 
 .sidebar-brand-name {
   font-weight: 700;
   font-size: 1.15rem;
   letter-spacing: 0.01em;
+  color: var(--text-primary);
 }
 
 .sidebar-brand-tag {
   font-size: var(--fs-micro);
-  color: var(--text-dim);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -465,7 +504,7 @@ main {
   background: transparent;
   border: 1px solid transparent;
   border-left: 3px solid transparent;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font: inherit;
   font-size: 1rem;
   text-align: left;
@@ -476,14 +515,14 @@ main {
 }
 
 .sidebar-nav-item:hover {
-  background: rgba(148, 163, 184, 0.08);
-  color: var(--text);
+  background: rgba(175, 192, 207, 0.08);
+  color: var(--text-primary);
 }
 
 .sidebar-nav-item-active {
-  background: rgba(56, 189, 248, 0.12);
-  border-left-color: var(--accent);
-  color: var(--text);
+  background: rgba(var(--active-rgb), 0.12);
+  border-left-color: var(--active);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -492,11 +531,11 @@ main {
   width: 18px;
   justify-content: center;
   font-size: 1.05rem;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .sidebar-nav-item-active .sidebar-nav-glyph {
-  color: var(--accent);
+  color: var(--active);
 }
 
 .sidebar-scrim {
@@ -516,10 +555,10 @@ main {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 24px;
-  background: var(--panel-bg-glass);
+  background: var(--surface-glass);
   backdrop-filter: blur(var(--blur-panel));
   -webkit-backdrop-filter: blur(var(--blur-panel));
-  border-bottom: 1px solid var(--panel-border-soft);
+  border-bottom: 1px solid var(--border-soft);
   box-shadow: var(--elevation-1);
   flex-shrink: 0;
   position: relative;
@@ -538,14 +577,14 @@ main {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .sidebar-toggle {
   display: none;
   background: transparent;
-  border: 1px solid var(--panel-border);
-  color: var(--text);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
   border-radius: 4px;
   width: 34px;
   height: 34px;
@@ -562,9 +601,9 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border-soft);
-  background: rgba(148, 163, 184, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-soft);
+  background: rgba(175, 192, 207, 0.05);
   border-radius: 4px;
   padding: 6px 12px;
 }
@@ -573,44 +612,32 @@ main {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--status-safe);
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  background: var(--success);
+  --pulse-rgb: var(--success-rgb);
   animation: pulse-ring 2.4s ease-out infinite;
 }
 
 .status-pill-ok {
-  color: var(--status-safe);
+  color: var(--success);
 }
 
 .status-pill-critical {
-  color: var(--status-critical);
-  border-color: rgba(239, 68, 68, 0.4);
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border-color: rgba(var(--danger-rgb), 0.4);
+  background: rgba(var(--danger-rgb), 0.1);
   font-weight: 700;
 }
 
 .status-dot-critical {
-  background: var(--status-critical);
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
-  animation: pulse-ring-critical 1.4s ease-out infinite;
-}
-
-@keyframes pulse-ring-critical {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6);
-  }
-  70% {
-    box-shadow: 0 0 0 9px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
+  background: var(--danger);
+  --pulse-rgb: var(--danger-rgb);
+  animation: pulse-ring 1.4s ease-out infinite;
 }
 
 .status-bar-time {
   font-size: var(--fs-meta);
   font-family: var(--mono);
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -631,9 +658,9 @@ main {
 .placeholder-card {
   max-width: 420px;
   text-align: center;
-  border: 1px solid var(--panel-border);
+  border: 1px solid var(--border);
   border-radius: 2px;
-  background: var(--panel-bg);
+  background: var(--surface-primary);
   padding: 32px 28px;
 }
 
@@ -641,11 +668,12 @@ main {
   margin: 0 0 10px;
   font-size: 1.1rem;
   letter-spacing: 0.02em;
+  color: var(--text-primary);
 }
 
 .placeholder-card p {
   margin: 0 0 16px;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -656,8 +684,8 @@ main {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
   border-radius: 2px;
   padding: 3px 10px;
 }
@@ -703,7 +731,7 @@ main {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: var(--fs-body);
 }
 
@@ -745,10 +773,10 @@ main {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  background: var(--panel-bg-glass);
+  background: var(--surface-glass);
   backdrop-filter: blur(var(--blur-panel));
   -webkit-backdrop-filter: blur(var(--blur-panel));
-  border: 1px solid var(--panel-border-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   box-shadow: var(--elevation-2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   animation: fade-in-up 0.35s var(--ease) both;
@@ -760,7 +788,7 @@ main {
   justify-content: space-between;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--panel-border-soft);
+  border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
 }
 
@@ -770,15 +798,15 @@ main {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .ov-panel-count {
   font-size: var(--fs-micro);
   font-weight: 700;
   font-family: var(--mono);
-  color: var(--text-dim);
-  border: 1px solid var(--panel-border-soft);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-soft);
   border-radius: 4px;
   padding: 2px 8px;
 }
@@ -803,7 +831,7 @@ main {
   align-items: flex-start;
   gap: 10px;
   padding: 10px 4px;
-  border-bottom: 1px solid var(--panel-border-soft);
+  border-bottom: 1px solid var(--border-soft);
   font-size: var(--fs-meta);
 }
 
@@ -831,18 +859,18 @@ main {
 }
 
 .ov-row-button:hover {
-  background: rgba(148, 163, 184, 0.08);
+  background: rgba(175, 192, 207, 0.08);
 }
 
 .ov-row-selected {
-  background: rgba(56, 189, 248, 0.1);
-  box-shadow: inset 3px 0 0 var(--accent);
+  background: rgba(var(--active-rgb), 0.1);
+  box-shadow: inset 3px 0 0 var(--active);
 }
 
 .ov-row-detail {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid var(--panel-border-soft);
+  border-top: 1px solid var(--border-soft);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -854,12 +882,12 @@ main {
   justify-content: space-between;
   gap: 8px;
   font-size: var(--fs-micro);
-  color: var(--text-dim);
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 
 .ov-row-detail-line span:last-child {
-  color: var(--text);
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -876,27 +904,33 @@ main {
 }
 
 .dot-critical {
-  background: var(--status-critical);
+  background: var(--danger);
+  --pulse-rgb: var(--danger-rgb);
 }
 
 .dot-warning {
-  background: var(--status-warning);
+  background: var(--warning);
+  --pulse-rgb: var(--warning-rgb);
 }
 
 .dot-caution {
-  background: var(--status-caution);
+  background: var(--caution);
+  --pulse-rgb: var(--caution-rgb);
 }
 
 .dot-safe {
-  background: var(--status-safe);
+  background: var(--success);
+  --pulse-rgb: var(--success-rgb);
 }
 
 .dot-response {
-  background: var(--status-response);
+  background: var(--emergency);
+  --pulse-rgb: var(--emergency-rgb);
 }
 
 .dot-inactive {
-  background: var(--status-inactive);
+  background: var(--text-muted);
+  --pulse-rgb: 113, 134, 154;
 }
 
 .ov-row-main {
@@ -912,6 +946,7 @@ main {
   font-size: var(--fs-body);
   font-weight: 700;
   text-transform: capitalize;
+  color: var(--text-primary);
 }
 
 .ov-row-tag {
@@ -919,12 +954,12 @@ main {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .ov-row-sub {
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: var(--fs-meta);
   margin-top: 3px;
   text-transform: none;
@@ -933,7 +968,7 @@ main {
 
 .ov-progress {
   height: 6px;
-  background: rgba(148, 163, 184, 0.14);
+  background: rgba(175, 192, 207, 0.14);
   border-radius: 3px;
   margin-top: 7px;
   overflow: hidden;
@@ -945,18 +980,18 @@ main {
 }
 
 .ov-fill-safe {
-  background: var(--status-safe);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(var(--success-rgb), 0.5);
 }
 
 .ov-fill-caution {
-  background: var(--status-caution);
-  box-shadow: 0 0 8px rgba(234, 179, 8, 0.5);
+  background: var(--caution);
+  box-shadow: 0 0 8px rgba(var(--caution-rgb), 0.5);
 }
 
 .ov-fill-critical {
-  background: var(--status-critical);
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(var(--danger-rgb), 0.5);
 }
 
 /* ---- Incident hero: the top/most-severe incident gets a dedicated, prominent block ---- */
@@ -965,24 +1000,25 @@ main {
   margin: 8px 4px 12px;
   padding: 14px 16px;
   border-radius: 8px;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  background: linear-gradient(180deg, rgba(239, 68, 68, 0.14), rgba(239, 68, 68, 0.03));
+  border: 1px solid rgba(var(--danger-rgb), 0.35);
+  background: linear-gradient(180deg, rgba(var(--danger-rgb), 0.16), rgba(var(--danger-rgb), 0.04));
   box-shadow: var(--elevation-1);
+  color: var(--text-primary);
 }
 
 .incident-hero-warning {
-  border-color: rgba(249, 115, 22, 0.35);
-  background: linear-gradient(180deg, rgba(249, 115, 22, 0.14), rgba(249, 115, 22, 0.03));
+  border-color: rgba(var(--warning-rgb), 0.35);
+  background: linear-gradient(180deg, rgba(var(--warning-rgb), 0.16), rgba(var(--warning-rgb), 0.04));
 }
 
 .incident-hero-caution {
-  border-color: rgba(234, 179, 8, 0.35);
-  background: linear-gradient(180deg, rgba(234, 179, 8, 0.14), rgba(234, 179, 8, 0.03));
+  border-color: rgba(var(--caution-rgb), 0.35);
+  background: linear-gradient(180deg, rgba(var(--caution-rgb), 0.16), rgba(var(--caution-rgb), 0.04));
 }
 
 .incident-hero-inactive {
-  border-color: var(--panel-border-soft);
-  background: rgba(148, 163, 184, 0.06);
+  border-color: var(--border-soft);
+  background: rgba(113, 134, 154, 0.08);
 }
 
 .incident-hero-severity {
@@ -993,19 +1029,19 @@ main {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--status-critical);
+  color: var(--danger);
 }
 
 .incident-hero-warning .incident-hero-severity {
-  color: var(--status-warning);
+  color: var(--warning);
 }
 
 .incident-hero-caution .incident-hero-severity {
-  color: var(--status-caution);
+  color: var(--caution);
 }
 
 .incident-hero-inactive .incident-hero-severity {
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .incident-hero-title {
@@ -1015,6 +1051,7 @@ main {
   letter-spacing: 0.02em;
   margin: 6px 0 10px;
   line-height: 1.25;
+  color: var(--text-primary);
 }
 
 .incident-hero-grid {
@@ -1027,7 +1064,7 @@ main {
   font-size: var(--fs-micro);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .incident-hero-stat-value {
@@ -1035,6 +1072,40 @@ main {
   font-weight: 700;
   margin-top: 2px;
   text-transform: none;
+  color: var(--text-primary);
+}
+
+/* ---- Active Route panel (selected vehicle) ---- */
+
+.route-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 4px 6px;
+}
+
+.route-panel-callsign {
+  font-size: var(--fs-heading);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.route-panel-destination {
+  margin: 0 4px 12px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.route-panel-stats {
+  margin: 0 4px 10px;
+}
+
+.route-panel-eta {
+  font-family: var(--mono);
+  color: var(--active);
+  font-variant-numeric: tabular-nums;
 }
 
 /* NOTE: content that spatially overlaps Leaflet's tile layer (position:absolute placed on
@@ -1048,17 +1119,18 @@ main {
   min-height: 320px;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--panel-border-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 10px;
   overflow: hidden;
-  background: #0d1626;
+  background: var(--bg-primary);
   box-shadow: var(--elevation-3);
 }
 
 /* Selected vehicle's route: glowing + flowing dashes, so an active route reads as "live"
-   rather than a static line. */
+   rather than a static line. Cyan (--active), not the emergency-response blue, since this
+   specifically marks the currently-selected route, not just "an emergency corridor". */
 .route-flow {
-  filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.85));
+  filter: drop-shadow(0 0 5px rgba(var(--active-rgb), 0.85));
   animation: dash-flow 0.8s linear infinite;
 }
 
@@ -1070,10 +1142,10 @@ main {
 @keyframes road-glow {
   0%,
   100% {
-    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+    filter: drop-shadow(0 0 2px rgba(var(--danger-rgb), 0.5));
   }
   50% {
-    filter: drop-shadow(0 0 7px rgba(239, 68, 68, 0.95));
+    filter: drop-shadow(0 0 7px rgba(var(--danger-rgb), 0.95));
   }
 }
 
@@ -1086,7 +1158,7 @@ main {
 .base-map {
   height: 100%;
   width: 100%;
-  background: #0d1626;
+  background: var(--bg-primary);
 }
 
 /* Headline KPIs sit directly above the map inside the same dark frame — still reads as one
@@ -1100,28 +1172,29 @@ main {
    the operations-console theme instead of its default light styling. */
 .leaflet-container {
   font: inherit;
-  background: #0d1626;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .leaflet-bar,
 .leaflet-bar a {
-  background: var(--panel-bg);
-  border-color: var(--panel-border) !important;
-  color: var(--text);
+  background: var(--surface-primary);
+  border-color: var(--border) !important;
+  color: var(--text-primary);
 }
 
 .leaflet-bar a:hover {
-  background: #0d1626;
-  color: var(--accent);
+  background: var(--surface-elevated);
+  color: var(--active);
 }
 
 .leaflet-control-attribution {
-  background: rgba(17, 26, 44, 0.75);
-  color: var(--text-dim);
+  background: rgba(13, 27, 42, 0.75);
+  color: var(--text-secondary);
 }
 
 .leaflet-control-attribution a {
-  color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 /* Infrastructure marker badges: shape/letter = type, ring color = status. Sized up from the
@@ -1137,10 +1210,10 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--panel-bg);
-  border: 2px solid var(--status-inactive);
+  background: var(--surface-primary);
+  border: 2px solid var(--text-muted);
   border-radius: 4px;
-  color: var(--text);
+  color: var(--text-primary);
   font-family: var(--mono);
   font-weight: 700;
   font-size: 13px;
@@ -1174,7 +1247,7 @@ main {
   height: 0;
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;
-  border-bottom: 7px solid var(--text);
+  border-bottom: 7px solid var(--text-primary);
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
 }
 
@@ -1185,8 +1258,8 @@ main {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 2px solid var(--bg);
-  color: #041016;
+  border: 2px solid var(--bg-primary);
+  color: var(--text-on-bright);
   font-family: var(--mono);
   font-weight: 700;
   font-size: 13px;
@@ -1194,25 +1267,93 @@ main {
 }
 
 .marker-vehicle-badge-active {
+  --pulse-rgb: var(--emergency-rgb);
   animation: pulse-ring 1.8s ease-out infinite;
 }
 
 .marker-vehicle-badge-selected {
-  border-color: var(--accent);
+  border-color: var(--active);
   border-width: 3px;
   font-size: 15px;
   box-shadow: var(--elevation-2);
+}
+
+/* Selected vehicle's route endpoints: a hollow ring at the start, a pin at the destination —
+   both in the route's --active color, clearly distinct from every other marker type. */
+.route-origin-marker {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--active);
+  background: var(--bg-primary);
+  box-shadow: 0 0 6px rgba(var(--active-rgb), 0.6);
+}
+
+.route-destination-marker {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: var(--active);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px rgba(var(--active-rgb), 0.7), var(--elevation-2);
+}
+
+.route-destination-marker::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--active);
+}
+
+/* Road closure marker: a diamond (distinct from infrastructure's square and vehicles'
+   circle) so a closure event reads as its own category at a glance. Reuses the same
+   danger-glow pulse as the blocked-road line (.road-blocked) — one motion language, not a
+   new animation invented per feature. */
+.road-closure-marker {
+  width: 100%;
+  height: 100%;
+  background: var(--danger);
+  border: 2px solid var(--bg-primary);
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(var(--danger-rgb), 0.7), var(--elevation-1);
+  animation: road-glow 2s ease-in-out infinite;
+}
+
+.road-closure-marker span {
+  display: inline-block;
+  transform: rotate(-45deg);
+  color: var(--text-on-bright);
+  font-weight: 800;
+  font-size: 12px;
+  font-family: var(--mono);
+}
+
+.road-closure-marker-selected {
+  border-color: var(--active);
+  border-width: 3px;
+  box-shadow: 0 0 12px rgba(var(--danger-rgb), 0.85), var(--elevation-2);
 }
 
 /* Leaflet popups, restyled to match the operations console instead of default white.
    !important is needed because leaflet.css is injected client-side (dynamic import) and
    can land after this stylesheet in the cascade, otherwise winning equal-specificity ties. */
 .leaflet-popup-content-wrapper {
-  background: var(--panel-bg-glass-strong) !important;
+  background: var(--surface-glass-strong) !important;
   backdrop-filter: blur(var(--blur-panel));
   -webkit-backdrop-filter: blur(var(--blur-panel));
-  color: var(--text) !important;
-  border: 1px solid var(--panel-border-soft);
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-soft);
   border-radius: 8px !important;
   box-shadow: var(--elevation-3) !important;
 }
@@ -1222,13 +1363,13 @@ main {
 }
 
 .leaflet-popup-tip {
-  background: var(--panel-bg-glass-strong) !important;
-  border: 1px solid var(--panel-border-soft);
+  background: var(--surface-glass-strong) !important;
+  border: 1px solid var(--border-soft);
   box-shadow: none !important;
 }
 
 .leaflet-popup-close-button {
-  color: var(--text-dim) !important;
+  color: var(--text-secondary) !important;
   font-size: 1.1rem !important;
 }
 
@@ -1241,10 +1382,11 @@ main {
   font-weight: 800;
   font-size: var(--fs-heading);
   margin-bottom: 3px;
+  color: var(--text-primary);
 }
 
 .marker-popup-sub {
-  color: var(--text-dim);
+  color: var(--text-secondary);
   font-size: var(--fs-micro);
   margin-bottom: 8px;
   text-transform: capitalize;
@@ -1255,12 +1397,12 @@ main {
   justify-content: space-between;
   gap: 12px;
   padding: 3px 0;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   text-transform: capitalize;
 }
 
 .marker-popup-row span:last-child {
-  color: var(--text);
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -1274,10 +1416,10 @@ main {
 
 .metrics-strip-tile {
   position: relative;
-  background: var(--panel-bg-glass-strong);
+  background: var(--surface-glass-strong);
   backdrop-filter: blur(var(--blur-panel));
   -webkit-backdrop-filter: blur(var(--blur-panel));
-  border: 1px solid var(--panel-border-soft);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   padding: 12px 18px 14px;
   text-align: left;
@@ -1292,11 +1434,11 @@ main {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--accent);
+  background: var(--active);
 }
 
 .metrics-strip-tile-warning::before {
-  background: var(--status-warning);
+  background: var(--warning);
 }
 
 .metrics-strip-value {
@@ -1305,10 +1447,11 @@ main {
   font-family: var(--mono);
   line-height: 1.1;
   letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .metrics-strip-value-warning {
-  color: var(--status-warning);
+  color: var(--warning);
 }
 
 .metrics-strip-label {
@@ -1316,7 +1459,7 @@ main {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--text-dim);
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 

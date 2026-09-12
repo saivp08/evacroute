@@ -6,6 +6,7 @@ import type {
   Incident,
   IntelReport,
   OperationsMetrics,
+  RoadClosure,
   Shelter,
   SystemStatus,
   Vehicle,
@@ -15,12 +16,14 @@ import {
   getIncidents,
   getIntelReports,
   getOperationsMetrics,
+  getRoadClosures,
   getShelters,
   getSystemStatuses,
   getVehicles,
 } from "@/lib/services/dataService";
 import BaseMapLoader from "@/components/map/BaseMapLoader";
 import RoadLayerLoader from "@/components/map/RoadLayerLoader";
+import RoadClosureLayerLoader from "@/components/map/RoadClosureLayerLoader";
 import InfrastructureLayerLoader from "@/components/map/InfrastructureLayerLoader";
 import VehicleLayerLoader from "@/components/map/VehicleLayerLoader";
 import ActiveIncidentsPanel from "./ActiveIncidentsPanel";
@@ -30,6 +33,14 @@ import ShelterCapacityPanel from "./ShelterCapacityPanel";
 import EvacuationStatusPanel from "./EvacuationStatusPanel";
 import FieldIntelligencePanel from "./FieldIntelligencePanel";
 import MetricsStrip from "./MetricsStrip";
+import RoutePanel from "./RoutePanel";
+import RoadClosuresPanel from "./RoadClosuresPanel";
+import type { RerouteState } from "@/lib/reroute";
+
+// How long each stage of the "SIMULATE CLOSURE" demo takes. Purely a UI pacing choice —
+// no data is computed here, just a fixed, replayable animation timeline.
+const ACTIVATING_MS = 900;
+const REROUTING_MS = 1400;
 
 interface OverviewData {
   incidents: Incident[];
@@ -39,11 +50,60 @@ interface OverviewData {
   zones: EvacuationZone[];
   intelReports: IntelReport[];
   metrics: OperationsMetrics;
+  roadClosures: RoadClosure[];
 }
 
 export default function OverviewScreen() {
   const [data, setData] = useState<OverviewData | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
+  const [selectedClosureId, setSelectedClosureId] = useState<string | null>(null);
+  const [reroute, setReroute] = useState<RerouteState | null>(null);
+
+  // Switching to a different vehicle always starts fresh — a reroute demo shouldn't carry
+  // over onto whatever vehicle the user selects next.
+  useEffect(() => {
+    setReroute(null);
+  }, [selectedVehicleId]);
+
+  // Drives the "activating -> rerouting -> rerouted" timeline. Re-running this only when
+  // the STAGE changes (not on every progress tick) keeps a single interval alive for the
+  // whole reveal instead of recreating one every frame.
+  useEffect(() => {
+    if (!reroute) return;
+    if (reroute.stage === "activating") {
+      const timer = setTimeout(() => {
+        setReroute((r) => (r ? { ...r, stage: "rerouting", progress: 0 } : r));
+      }, ACTIVATING_MS);
+      return () => clearTimeout(timer);
+    }
+    if (reroute.stage === "rerouting") {
+      const start = Date.now();
+      const id = setInterval(() => {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(1, elapsed / REROUTING_MS);
+        setReroute((r) => (r ? { ...r, progress } : r));
+        if (progress >= 1) {
+          clearInterval(id);
+          setReroute((r) => (r ? { ...r, stage: "rerouted", progress: 1 } : r));
+        }
+      }, 50);
+      return () => clearInterval(id);
+    }
+  }, [reroute?.stage]);
+
+  function handleSimulateClosure() {
+    if (!selectedVehicleId) return;
+    setReroute({ vehicleId: selectedVehicleId, stage: "activating", progress: 0 });
+  }
+
+  function handleReplayReroute() {
+    if (!selectedVehicleId) return;
+    setReroute({ vehicleId: selectedVehicleId, stage: "activating", progress: 0 });
+  }
+
+  function handleResetReroute() {
+    setReroute(null);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -55,9 +115,10 @@ export default function OverviewScreen() {
       getEvacuationZones(),
       getIntelReports(),
       getOperationsMetrics(),
-    ]).then(([incidents, systemStatuses, vehicles, shelters, zones, intelReports, metrics]) => {
+      getRoadClosures(),
+    ]).then(([incidents, systemStatuses, vehicles, shelters, zones, intelReports, metrics, roadClosures]) => {
       if (cancelled) return;
-      setData({ incidents, systemStatuses, vehicles, shelters, zones, intelReports, metrics });
+      setData({ incidents, systemStatuses, vehicles, shelters, zones, intelReports, metrics, roadClosures });
     });
     return () => {
       cancelled = true;
@@ -73,6 +134,11 @@ export default function OverviewScreen() {
       <div className="overview-main-row">
         <aside className="overview-col overview-col-left">
           <ActiveIncidentsPanel incidents={data.incidents} />
+          <RoadClosuresPanel
+            closures={data.roadClosures}
+            selectedClosureId={selectedClosureId}
+            onSelectClosure={setSelectedClosureId}
+          />
           <SystemStatusPanel statuses={data.systemStatuses} />
           <FieldIntelligencePanel reports={data.intelReports} />
         </aside>
@@ -85,8 +151,13 @@ export default function OverviewScreen() {
             <div className="map-frame-canvas">
               <BaseMapLoader>
                 <RoadLayerLoader />
+                <RoadClosureLayerLoader selectedClosureId={selectedClosureId} onSelectClosure={setSelectedClosureId} />
                 <InfrastructureLayerLoader />
-                <VehicleLayerLoader selectedVehicleId={selectedVehicleId} onSelectVehicle={setSelectedVehicleId} />
+                <VehicleLayerLoader
+                  selectedVehicleId={selectedVehicleId}
+                  onSelectVehicle={setSelectedVehicleId}
+                  reroute={reroute}
+                />
               </BaseMapLoader>
             </div>
           </div>
@@ -98,6 +169,7 @@ export default function OverviewScreen() {
             selectedVehicleId={selectedVehicleId}
             onSelectVehicle={setSelectedVehicleId}
           />
+          <RoutePanel vehicle={data.vehicles.find((v) => v.id === selectedVehicleId) ?? null} />
           <ShelterCapacityPanel shelters={data.shelters} />
           <EvacuationStatusPanel zones={data.zones} />
         </aside>

@@ -89,8 +89,30 @@ export interface Road {
   closure_reason: string | null;
 }
 
+export type RoadClosureStatus = "closed" | "reopened";
+
+// A discrete closure EVENT — richer than Road.status (which is just the road's current
+// state): this carries severity/timestamp/geometry so it can be listed, selected, and
+// centered on independently, the way an incident can. `road_id` links back to the Road
+// entity when the closure corresponds to a mapped segment, but is optional since not every
+// closure needs a full Road entry to exist. Fetched via getRoadClosures() — purely a visual
+// event state; no route avoidance or rerouting is computed from it.
+export interface RoadClosure {
+  id: string;
+  road_id: string | null;
+  road_name: string;
+  reason: string;
+  severity: IncidentSeverity;
+  reported_at: string;
+  coordinates: LatLng[];
+  status: RoadClosureStatus;
+}
+
 export type RouteStatus = "planned" | "active" | "completed" | "cancelled";
 
+// Evacuation route: civilian flow from a zone to a shelter (see EvacuationStatusPanel /
+// ShelterCapacityPanel). Distinct from VehicleRoute below, which is a single emergency
+// vehicle's dispatch route to an incident/facility — different domain, different shape.
 export interface Route {
   id: string;
   origin_zone_id: string;
@@ -99,6 +121,37 @@ export interface Route {
   people_count: number;
   coordinates: LatLng[];
   eta_minutes: number | null;
+}
+
+export type VehicleRouteStatus = "clear" | "congested" | "blocked" | "completed";
+
+// A single emergency vehicle's current dispatch route. Fetched via getVehicleRoute(vehicle_id)
+// — kept separate from Vehicle itself (which only carries a bare coordinate path for the
+// map's movement animation) so route-specific data has one clear source once a backend
+// route API exists.
+export interface VehicleRoute {
+  vehicle_id: string;
+  origin: LatLng;
+  destination_name: string;
+  destination: LatLng;
+  coordinates: LatLng[];
+  distance_miles: number;
+  eta_minutes: number;
+  status: VehicleRouteStatus;
+  priority: VehiclePriority;
+}
+
+// A predetermined mock alternate route: what a vehicle's route becomes if the referenced
+// closure is simulated. Fetched via getRerouteEvent(vehicle_id) — a vehicle with no entry
+// here simply has no reroute scenario defined, which is a normal state, not an error.
+// This is a fixed, hand-authored detour, not computed pathfinding.
+export interface RouteUpdateEvent {
+  vehicle_id: string;
+  closure_id: string;
+  message: string;
+  alternate_coordinates: LatLng[];
+  alternate_distance_miles: number;
+  alternate_eta_minutes: number;
 }
 
 export type IncidentSeverity = "low" | "medium" | "high" | "critical";

@@ -9,11 +9,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Marker, Polyline, Popup, useMap } from "react-leaflet";
 import type L from "leaflet";
-import type { Vehicle } from "@/lib/models";
-import { getVehicles } from "@/lib/services/dataService";
+import type { RouteUpdateEvent, Vehicle, VehicleRoute } from "@/lib/models";
+import { getRerouteEvent, getVehicleRoute, getVehicles } from "@/lib/services/dataService";
 import { useTickingEta } from "@/lib/useTickingEta";
-import { interpolateRoute } from "@/lib/routeMotion";
-import { vehicleIcon } from "./markerIcons";
+import { interpolateRoute, truncateRoute } from "@/lib/routeMotion";
+import type { RerouteState } from "@/lib/reroute";
+import { routeEndpointIcon, vehicleIcon } from "./markerIcons";
 
 const ACTIVE_STATUSES = new Set(["en_route", "on_scene"]);
 // One full pass down the route every 45s — a deliberately unhurried, readable pace.
@@ -23,9 +24,12 @@ const TICK_MS = 250;
 interface VehicleLayerProps {
   selectedVehicleId: string | null;
   onSelectVehicle: (id: string) => void;
+  // Only ever set for the currently-selected vehicle — the parent resets it to null
+  // whenever selection changes, so this layer doesn't need to re-check the id itself.
+  reroute: RerouteState | null;
 }
 
-export default function VehicleLayer({ selectedVehicleId, onSelectVehicle }: VehicleLayerProps) {
+export default function VehicleLayer({ selectedVehicleId, onSelectVehicle, reroute }: VehicleLayerProps) {
   const [fetchedVehicles, setFetchedVehicles] = useState<Vehicle[]>([]);
   const vehicles = useTickingEta(fetchedVehicles);
   const markerRefs = useRef(new Map<string, L.Marker>());
@@ -62,22 +66,92 @@ export default function VehicleLayer({ selectedVehicleId, onSelectVehicle }: Veh
     markerRefs.current.get(vehicle.id)?.openPopup();
   }, [selectedVehicleId, vehicles, map]);
 
+  // The drawn route line + endpoint markers come from the dedicated route service (not
+  // vehicle.route, which only exists to drive the movement animation below) — this is the
+  // seam a real backend route API will replace later.
+  const [selectedRoute, setSelectedRoute] = useState<VehicleRoute | null>(null);
+  const [rerouteEvent, setRerouteEvent] = useState<RouteUpdateEvent | null>(null);
+
+  useEffect(() => {
+    if (!selectedVehicleId) {
+      setSelectedRoute(null);
+      setRerouteEvent(null);
+      return;
+    }
+    let cancelled = false;
+    getVehicleRoute(selectedVehicleId).then((route) => {
+      if (!cancelled) setSelectedRoute(route);
+    });
+    getRerouteEvent(selectedVehicleId).then((event) => {
+      if (!cancelled) setRerouteEvent(event);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedVehicleId]);
+
   const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
+
+  // Once a reroute is underway, the original route fades instead of disappearing — it's
+  // still useful context ("this is the route that got affected") — while the alternate
+  // route draws in with the same bright/glowing treatment the original had.
+  const rerouteActive = reroute && reroute.stage !== "idle";
+  const showAlternate = rerouteActive && rerouteEvent && (reroute!.stage === "rerouting" || reroute!.stage === "rerouted");
+  const alternateCoordinates =
+    showAlternate && rerouteEvent
+      ? truncateRoute(rerouteEvent.alternate_coordinates, reroute!.stage === "rerouted" ? 1 : reroute!.progress)
+      : [];
 
   return (
     <>
-      {selectedVehicle && selectedVehicle.route.length > 1 && (
+      {selectedRoute && selectedRoute.coordinates.length > 1 && (
+        <>
+          <Polyline
+            positions={selectedRoute.coordinates.map((p): [number, number] => [p.latitude, p.longitude])}
+            pathOptions={
+              rerouteActive
+                ? { color: "var(--text-muted)", weight: 3, dashArray: "4 8", opacity: 0.5 }
+                : { color: "var(--active)", weight: 4, dashArray: "10 8", className: "route-flow" }
+            }
+          />
+          <Marker
+            position={[selectedRoute.origin.latitude, selectedRoute.origin.longitude]}
+            icon={routeEndpointIcon("origin")}
+          />
+          <Marker
+            position={[selectedRoute.destination.latitude, selectedRoute.destination.longitude]}
+            icon={routeEndpointIcon("destination")}
+          >
+            <Popup>
+              <div className="marker-popup">
+                <div className="marker-popup-title">{selectedRoute.destination_name}</div>
+                <div className="marker-popup-row">
+                  <span>Route status</span>
+                  <span>{selectedRoute.status}</span>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        </>
+      )}
+
+      {alternateCoordinates.length > 1 && (
         <Polyline
-          positions={selectedVehicle.route.map((p): [number, number] => [p.latitude, p.longitude])}
-          pathOptions={{ color: "var(--status-response)", weight: 4, dashArray: "10 8", className: "route-flow" }}
+          positions={alternateCoordinates.map((p): [number, number] => [p.latitude, p.longitude])}
+          pathOptions={{ color: "var(--active)", weight: 5, dashArray: "10 8", className: "route-flow" }}
         />
       )}
 
       {vehicles.map((vehicle) => {
         const selected = vehicle.id === selectedVehicleId;
-        const moving = ACTIVE_STATUSES.has(vehicle.status) && vehicle.route.length > 1;
+        // Once this vehicle's reroute has fully drawn in, its movement continues along the
+        // new path instead of the original one — the same predetermined mock coordinates
+        // used for the drawn line above, not a recomputed one.
+        const isRerouted = selected && reroute?.stage === "rerouted" && rerouteEvent;
+        const motionPath = isRerouted ? rerouteEvent!.alternate_coordinates : vehicle.route;
+        const moving = ACTIVE_STATUSES.has(vehicle.status) && motionPath.length > 1;
         const display = moving
-          ? interpolateRoute(vehicle.route, progress)
+          ? interpolateRoute(motionPath, progress)
           : { latitude: vehicle.latitude, longitude: vehicle.longitude, headingDeg: null };
         return (
           <Marker

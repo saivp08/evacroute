@@ -21,10 +21,13 @@ import type {
   OperationsMetrics,
   PoliceStation,
   Road,
+  RoadClosure,
   Route,
+  RouteUpdateEvent,
   Shelter,
   SystemStatus,
   Vehicle,
+  VehicleRoute,
 } from "../models";
 import {
   mockEvacuationZones,
@@ -35,10 +38,13 @@ import {
   mockIntelReports,
   mockOperationsMetrics,
   mockPoliceStations,
+  mockRoadClosures,
   mockRoads,
   mockRoutes,
+  mockRouteUpdateEvents,
   mockShelters,
   mockSystemStatuses,
+  mockVehicleRoutes,
   mockVehicles,
 } from "../mock";
 
@@ -92,4 +98,21 @@ export async function getIntelReports(): Promise<IntelReport[]> {
 
 export async function getOperationsMetrics(): Promise<OperationsMetrics> {
   return mockOperationsMetrics;
+}
+
+// Returns null for a vehicle with no active route (available/out-of-service/already
+// arrived) as well as for an unrecognized vehicle id — both are legitimate "no route to
+// show" states for the caller, not errors.
+export async function getVehicleRoute(vehicleId: string): Promise<VehicleRoute | null> {
+  return mockVehicleRoutes.find((route) => route.vehicle_id === vehicleId) ?? null;
+}
+
+export async function getRoadClosures(): Promise<RoadClosure[]> {
+  return mockRoadClosures;
+}
+
+// Returns the predetermined reroute scenario for a vehicle, or null if none is defined for
+// it — most vehicles simply have no reroute event, which is a normal state, not an error.
+export async function getRerouteEvent(vehicleId: string): Promise<RouteUpdateEvent | null> {
+  return mockRouteUpdateEvents.find((event) => event.vehicle_id === vehicleId) ?? null;
 }

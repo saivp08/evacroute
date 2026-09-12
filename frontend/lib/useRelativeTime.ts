@@ -24,5 +24,9 @@ export function formatRelativeTime(isoTimestamp: string, now: number): string {
 }
 
 export function formatClock(isoTimestamp: string): string {
-  return new Date(isoTimestamp).toLocaleTimeString(undefined, { hour12: false });
+  return new Date(isoTimestamp).toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
