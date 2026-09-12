@@ -5,13 +5,15 @@ from collections.abc import Callable
 
 import networkx as nx
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 from app.data.road_network import load_graph
 from app.data.scenario import build_scenario
 from app.models.scenario import ScenarioResponse
+from app.models.optimization import OptimizationErrorResponse, OptimizationResponse
+from app.optimization.evacuation import InfeasiblePlan, optimize_evacuation
 
 def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph) -> FastAPI:
     @asynccontextmanager
@@ -26,7 +28,7 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph) -> Fast
     application.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
     application.add_middleware(GZipMiddleware, minimum_size=1000)
@@ -38,6 +40,14 @@ def create_app(graph_loader: Callable[[], nx.MultiDiGraph] = load_graph) -> Fast
     @application.get("/scenario", response_model=ScenarioResponse)
     def scenario() -> ScenarioResponse:
         return application.state.scenario
+
+    @application.post("/optimize", response_model=OptimizationResponse,
+                      responses={409: {"model": OptimizationErrorResponse}})
+    def optimize() -> OptimizationResponse:
+        try:
+            return optimize_evacuation(application.state.graph, application.state.scenario)
+        except InfeasiblePlan as error:
+            raise HTTPException(status_code=409, detail=error.detail.model_dump()) from error
 
     return application
 
