@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import type { Incident } from "@/lib/models";
 import { getIncidents } from "@/lib/services/dataService";
 
-interface StatusBarProps {
-  sectionLabel: string;
-  onMenuClick: () => void;
-}
-
-export default function StatusBar({ sectionLabel, onMenuClick }: StatusBarProps) {
+export default function StatusBar() {
   const [now, setNow] = useState<Date | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
 
@@ -35,10 +30,13 @@ export default function StatusBar({ sectionLabel, onMenuClick }: StatusBarProps)
   return (
     <header className="app-status-bar">
       <div className="status-bar-left">
-        <button type="button" className="sidebar-toggle" onClick={onMenuClick} aria-label="Toggle navigation">
-          ☰
-        </button>
-        <span className="status-bar-section">{sectionLabel}</span>
+        <div className="status-bar-brand">
+          <span className="status-bar-brand-mark">EV</span>
+          <div>
+            <div className="status-bar-brand-name">EvacRoute</div>
+            <div className="status-bar-brand-tag">Operations Center</div>
+          </div>
+        </div>
       </div>
       <div className="status-bar-right">
         {isCritical ? (

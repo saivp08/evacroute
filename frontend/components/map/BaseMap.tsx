@@ -1,7 +1,8 @@
 "use client";
 
-// Reusable base map for EvacRoute. Intentionally minimal: real geography, zoom/pan,
-// dark basemap, and correct resize behavior — nothing else. Future layers (roads,
+// Reusable base map for EvacRoute. Intentionally minimal: real geography, zoom/pan, a
+// light desaturated basemap (matching the editorial civic-tech design system — see
+// globals.css), and correct resize behavior — nothing else. Future layers (roads,
 // vehicles, hospitals, shelters, hazards, evacuation zones, routes, closures,
 // congestion, population, fire detections) will be added as sibling children/props
 // later; this component is the shell they will render into.
@@ -47,7 +48,7 @@ export default function BaseMap({ center = DEFAULT_CENTER, zoom = DEFAULT_ZOOM, 
     >
       <TileLayer
         attribution='Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors'
-        url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
       />
       {/* Bottom-right so it never collides with the headline KPI overlay pinned to the top. */}
       <ZoomControl position="bottomright" />
