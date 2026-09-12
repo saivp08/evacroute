@@ -169,7 +169,13 @@ export default function OverviewScreen() {
             selectedVehicleId={selectedVehicleId}
             onSelectVehicle={setSelectedVehicleId}
           />
-          <RoutePanel vehicle={data.vehicles.find((v) => v.id === selectedVehicleId) ?? null} />
+          <RoutePanel
+            vehicle={data.vehicles.find((v) => v.id === selectedVehicleId) ?? null}
+            reroute={reroute}
+            onSimulateClosure={handleSimulateClosure}
+            onReplay={handleReplayReroute}
+            onReset={handleResetReroute}
+          />
           <ShelterCapacityPanel shelters={data.shelters} />
           <EvacuationStatusPanel zones={data.zones} />
         </aside>

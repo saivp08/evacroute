@@ -1108,6 +1108,74 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+/* "Route Update" banner: warning-colored (not danger, not active) — a forced reroute is a
+   degraded-but-handled operational state, distinct from the closure event that caused it
+   and from ordinary selection/interaction highlighting. */
+.route-update-banner {
+  margin: 4px 4px 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--warning-rgb), 0.4);
+  background: linear-gradient(180deg, rgba(var(--warning-rgb), 0.14), rgba(var(--warning-rgb), 0.04));
+  animation: fade-in-up 0.3s var(--ease) both;
+}
+
+.route-update-banner-title {
+  font-size: var(--fs-micro);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--warning);
+  margin-bottom: 4px;
+}
+
+.route-update-banner-message {
+  font-size: var(--fs-meta);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.route-panel-actions {
+  display: flex;
+  gap: 8px;
+  margin: 10px 4px 2px;
+}
+
+/* Operations-console action button: a bordered chip, not a filled rounded button — matches
+   the existing status-pill/ov-panel-count language instead of looking like a generic
+   dashboard CTA. */
+.op-button {
+  flex: 1;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+
+.op-button:hover {
+  background: rgba(148, 163, 184, 0.14);
+  border-color: var(--text-secondary);
+}
+
+.op-button-danger {
+  color: var(--danger);
+  border-color: rgba(var(--danger-rgb), 0.4);
+  background: rgba(var(--danger-rgb), 0.08);
+}
+
+.op-button-danger:hover {
+  background: rgba(var(--danger-rgb), 0.16);
+  border-color: var(--danger);
+}
+
 /* NOTE: content that spatially overlaps Leaflet's tile layer (position:absolute placed on
    top of the map, at any z-index, DOM location, or layer-promotion hint) reliably failed to
    composite in this environment's headless screenshot pipeline, even though layout/DOM/CSSOM
