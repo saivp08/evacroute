@@ -8,7 +8,7 @@ from app.models.optimization import OptimizationResponse
 from app.models.scenario import Latitude, Longitude
 from app.models.emergency import DispatchSummary, EmergencyMetrics, ResponderRoute
 
-IncidentType = Literal["ROAD_CLOSURE", "ROAD_REOPEN", "HAZARD_UPDATE", "ROAD_DAMAGE", "DEBRIS", "MEDICAL_INCIDENT"]
+IncidentType = Literal["ROAD_CLOSURE", "ROAD_REOPEN", "HAZARD_UPDATE", "ROAD_DAMAGE", "DEBRIS", "MEDICAL_INCIDENT", "RESCUE_INCIDENT"]
 Severity = Literal["low", "medium", "high"]
 
 
@@ -29,11 +29,15 @@ class IncidentRequest(BaseModel):
     def validate_target(self):
         if (self.latitude is None) != (self.longitude is None):
             raise ValueError("latitude and longitude must be provided together")
-        if self.type == "MEDICAL_INCIDENT":
+        if self.type in ("MEDICAL_INCIDENT", "RESCUE_INCIDENT"):
             if self.edge_id is not None or self.edge_ids is not None or self.road_name is not None:
-                raise ValueError("Medical incidents target a zone or latitude+longitude, not road edges")
-            if (self.zone is not None) == (self.latitude is not None) or self.injuries is None:
-                raise ValueError("Medical incidents require injuries and exactly one zone or latitude+longitude")
+                raise ValueError("Emergency incidents target a zone or latitude+longitude, not road edges")
+            if (self.zone is not None) == (self.latitude is not None):
+                raise ValueError("Emergency incidents require exactly one zone or latitude+longitude")
+            if self.type == "MEDICAL_INCIDENT" and self.injuries is None:
+                raise ValueError("Medical incidents require injuries")
+            if self.type == "RESCUE_INCIDENT" and self.injuries is not None:
+                raise ValueError("Report injuries separately as MEDICAL_INCIDENT")
             return self
         if self.zone is not None or self.injuries is not None:
             raise ValueError("zone and injuries are only supported for MEDICAL_INCIDENT")

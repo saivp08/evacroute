@@ -38,6 +38,7 @@ class DispatchSummary(BaseModel):
 
 class EmergencyMetrics(OptimizationMetrics):
     active_medical_incidents: int = Field(default=0, ge=0)
+    active_rescue_incidents: int = Field(default=0, ge=0)
     ambulances_dispatched: int = Field(default=0, ge=0)
     rescue_teams_dispatched: int = Field(default=0, ge=0)
     average_emergency_response_time_s: float = Field(default=0, ge=0)
